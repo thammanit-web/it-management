@@ -92,10 +92,10 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
         <div className="mb-6 flex items-start justify-between">
           <div className="flex-1">
             <h3 className="text-[13px] font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-              <Activity className="h-4 w-4 text-blue-500" /> สมดุลภาระงาน / Workload Balance Trend
+              <Activity className="h-4 w-4 text-blue-500" /> สรุปสมดุลภาระงาน (Workload Balance)
             </h3>
             <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">
-              เปรียบเทียบเคสเปิดใหม่ VS ปิดได้ (ย้อนหลัง {chartConfig.trend.months} เดือน)
+              เปรียบเทียบรายการเปิดใหม่ VS แก้ไขเสร็จสิ้น (ย้อนหลัง {chartConfig.trend.months} เดือน)
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -104,7 +104,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               size="icon" 
               className="h-7 w-7 rounded-lg hover:bg-blue-50 text-blue-500 transition-colors"
               onClick={() => exportToImage(trendRef, 'Workload_Trend')}
-              title="Export Graph"
+              title="ดาวน์โหลดรูปภาพ"
             >
               <Download className="h-3.5 w-3.5" />
             </Button>
@@ -140,19 +140,19 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                     const d = payload[0].payload;
                     return (
                       <div className="p-3 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.1)] rounded-xl min-w-[150px]" style={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, borderWidth: 1 }}>
-                        <p className="text-[12px] font-black mb-2 uppercase border-b pb-2" style={{ color: titleColor, borderColor: tooltipBorder }}>{label} <span className="text-zinc-400 font-bold ml-1 text-[9px]">- {d.total} TICKETS</span></p>
+                        <p className="text-[12px] font-black mb-2 uppercase border-b pb-2" style={{ color: titleColor, borderColor: tooltipBorder }}>{label} <span className="text-zinc-400 font-bold ml-1 text-[9px]">- {d.total} รายการ</span></p>
                         {!hiddenSeries.includes('new') && (
                           <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider flex justify-between gap-4 mb-2">
-                            <span className="text-rose-500 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" />เปิดใหม่ / New</span><span className="text-zinc-900">{d.new}</span>
+                            <span className="text-rose-500 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-rose-500" />เปิดใหม่</span><span className="text-zinc-900">{d.new}</span>
                           </p>
                         )}
                         {!hiddenSeries.includes('resolved') && (
                           <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider flex justify-between gap-4 mb-2">
-                            <span className="text-emerald-500 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />ปิดได้ / Resolved</span><span className="text-zinc-900">{d.resolved}</span>
+                            <span className="text-emerald-500 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />เสร็จเรียบร้อย</span><span className="text-zinc-900">{d.resolved}</span>
                           </p>
                         )}
                         <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider flex justify-between gap-4 border-t border-zinc-50 pt-2 mt-1">
-                          <span className="flex items-center gap-1.5"><Clock className="h-3 w-3" />ค้างคา / Pending</span><span className="text-zinc-900">{d.pending}</span>
+                          <span className="flex items-center gap-1.5"><Clock className="h-3 w-3" />รอดำเนินการ</span><span className="text-zinc-900">{d.pending}</span>
                         </p>
                       </div>
                     );
@@ -166,18 +166,18 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                   <ul className="flex flex-wrap justify-center gap-6 pb-5 border-b border-zinc-50 mb-3">
                     <li className={cn("flex items-center gap-2 cursor-pointer text-[10px] font-black uppercase tracking-wider transition-opacity duration-300", !hiddenSeries.includes('new') ? "opacity-100" : "opacity-40")} onClick={() => toggleSeries('new')}>
                       <span className="w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-rose-100" />
-                      <span className={cn(!hiddenSeries.includes('new') ? "text-rose-600" : "text-zinc-400")}>เปิดใหม่ (New)</span>
+                      <span className={cn(!hiddenSeries.includes('new') ? "text-rose-600" : "text-zinc-400")}>เปิดใหม่</span>
                     </li>
                     <li className={cn("flex items-center gap-2 cursor-pointer text-[10px] font-black uppercase tracking-wider transition-opacity duration-300", !hiddenSeries.includes('resolved') ? "opacity-100" : "opacity-40")} onClick={() => toggleSeries('resolved')}>
                       <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-100" />
-                      <span className={cn(!hiddenSeries.includes('resolved') ? "text-emerald-600" : "text-zinc-400")}>ปิดแล้ว (Resolved)</span>
+                      <span className={cn(!hiddenSeries.includes('resolved') ? "text-emerald-600" : "text-zinc-400")}>เสร็จเรียบร้อย</span>
                     </li>
                   </ul>
                 )}
                 verticalAlign="top"
               />
-              <Area hide={hiddenSeries.includes('new')} name="เปิดใหม่ / New" type="monotone" dataKey="new" stroke="#EF4444" strokeWidth={3} fillOpacity={1} fill="url(#colorNew)" animationDuration={1500} activeDot={{ r: 5, strokeWidth: 2, fill: '#fff', stroke: '#EF4444' }} />
-              <Area hide={hiddenSeries.includes('resolved')} name="ปิดแล้ว / Resolved" type="monotone" dataKey="resolved" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorRes)" animationDuration={1500} activeDot={{ r: 5, strokeWidth: 2, fill: '#fff', stroke: '#10B981' }} />
+              <Area hide={hiddenSeries.includes('new')} name="เปิดใหม่" type="monotone" dataKey="new" stroke="#EF4444" strokeWidth={3} fillOpacity={1} fill="url(#colorNew)" animationDuration={1500} activeDot={{ r: 5, strokeWidth: 2, fill: '#fff', stroke: '#EF4444' }} />
+              <Area hide={hiddenSeries.includes('resolved')} name="เสร็จเรียบร้อย" type="monotone" dataKey="resolved" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorRes)" animationDuration={1500} activeDot={{ r: 5, strokeWidth: 2, fill: '#fff', stroke: '#10B981' }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -189,9 +189,9 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
         <div className="mb-6 flex items-start justify-between">
           <div className="flex-1">
             <h3 className="text-[13px] font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-rose-500" /> วิเคราะห์ระดับความด่วน
+              <AlertCircle className="h-4 w-4 text-rose-500" /> วิเคราะห์ระดับความสำคัญ
             </h3>
-            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">Priority Analysis (ย้อนหลัง {chartConfig.priority.months} เดือน)</p>
+            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">ระดับความเร่งด่วน (ย้อนหลัง {chartConfig.priority.months} เดือน)</p>
           </div>
           <div className="flex items-center gap-2">
             <Button 
@@ -199,7 +199,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               size="icon" 
               className="h-7 w-7 rounded-lg hover:bg-rose-50 text-rose-500 transition-colors"
               onClick={() => exportToImage(priorityRef, 'Priority_Analysis')}
-              title="Export Graph"
+              title="ดาวน์โหลดรูปภาพ"
             >
               <Download className="h-3.5 w-3.5" />
             </Button>
@@ -225,7 +225,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                     const total = payload.reduce((acc: number, item: any) => acc + item.value, 0);
                     return (
                       <div className="p-3 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.1)] rounded-xl min-w-[150px]" style={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, borderWidth: 1 }}>
-                        <p className="text-[12px] font-black mb-2 uppercase border-b pb-2" style={{ color: titleColor, borderColor: tooltipBorder }}>{label} <span className="text-zinc-400 font-bold ml-1 text-[9px]">- {total} TICKETS</span></p>
+                        <p className="text-[12px] font-black mb-2 uppercase border-b pb-2" style={{ color: titleColor, borderColor: tooltipBorder }}>{label} <span className="text-zinc-400 font-bold ml-1 text-[9px]">- {total} รายการ</span></p>
                         {payload.map((entry: any, index: number) => (
                           <div key={index} className="flex justify-between items-center gap-4 mb-2">
                             <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5" style={{ color: entry.fill }}>
@@ -246,9 +246,9 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               <Legend
                 content={() => {
                   const items = [
-                    { key: 'high', name: 'สูง (High)', color: '#EF4444' },
-                    { key: 'medium', name: 'ปานกลาง (Medium)', color: '#F59E0B' },
-                    { key: 'low', name: 'ต่ำ (Low)', color: '#3B82F6' }
+                    { key: 'high', name: 'สูง', color: '#EF4444' },
+                    { key: 'medium', name: 'ปานกลาง', color: '#F59E0B' },
+                    { key: 'low', name: 'ต่ำ', color: '#3B82F6' }
                   ];
                   return (
                     <ul className="flex flex-wrap justify-center gap-4 pb-4 border-b border-zinc-50 mb-3">
@@ -257,7 +257,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                         return (
                           <li key={item.key} className={cn("flex items-center gap-1.5 cursor-pointer text-[9px] font-black uppercase tracking-wider transition-opacity duration-300", isActive ? "opacity-100" : "opacity-40 grayscale")} onClick={() => toggleSeries(item.key)}>
                             <span className="w-2.5 h-1.5 rounded" style={{ backgroundColor: item.color }} />
-                            <span className={cn(isActive ? "text-zinc-700" : "text-zinc-400")}>{item.name.split(' ')[0]}</span>
+                            <span className={cn(isActive ? "text-zinc-700" : "text-zinc-400")}>{item.name}</span>
                           </li>
                         );
                       })}
@@ -279,10 +279,10 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
         <div className="mb-6 flex items-start justify-between">
           <div className="flex-1">
             <h3 className="text-[13px] font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-              <LayoutDashboard className="h-4 w-4 text-[#0F1059]" /> สัดส่วนอุปกรณ์ที่เป็นปัญหา
+              <LayoutDashboard className="h-4 w-4 text-[#0F1059]" /> สัดส่วนกลุ่มอุปกรณ์ที่มีปัญหา
             </h3>
             <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">
-              {chartConfig.proportion.limit === 'ALL' ? 'ทั้งหมด' : `Top ${chartConfig.proportion.limit}`} แบ่งตาม Hardware/Software
+              {chartConfig.proportion.limit === 'ALL' ? 'หมวดหมู่ทั้งหมด' : `ยอดนิยม ${chartConfig.proportion.limit} อันดับ`} แบ่งตาม ฮาร์ดแวร์/ซอฟต์แวร์
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -291,7 +291,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               size="icon" 
               className="h-7 w-7 rounded-lg hover:bg-indigo-50 text-indigo-500 transition-colors"
               onClick={() => exportToImage(proportionRef, 'Proportion_Analysis')}
-              title="Export Graph"
+              title="ดาวน์โหลดรูปภาพ"
             >
               <Download className="h-3.5 w-3.5" />
             </Button>
@@ -330,8 +330,8 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                         <div className="w-2.5 h-10 rounded-full" style={{ backgroundColor: fill }} />
                         <div>
                           <p className="text-[11px] font-black uppercase" style={{ color: titleColor }}>{payload[0].name}</p>
-                          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-0.5"><span className="text-zinc-900 text-sm font-black mr-1">{payload[0].value}</span> Tickets</p>
-                          <p className="text-[8px] font-black text-blue-500 uppercase tracking-widest mt-1 opacity-70">คลิกเพื่อดูรายการ / Click to drill down</p>
+                          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-0.5"><span className="text-zinc-900 text-sm font-black mr-1">{payload[0].value}</span> รายการ</p>
+                          <p className="text-[8px] font-black text-blue-500 uppercase tracking-widest mt-1 opacity-70">คลิกเพื่อดูรายละเอียดเชิงลึก</p>
                         </div>
                       </div>
                     );
@@ -368,10 +368,10 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
         <div className="mb-6 flex items-start justify-between">
           <div className="flex-1">
             <h3 className="text-[13px] font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-              <Users className="h-4 w-4 text-indigo-500" /> แหล่งที่มาของปัญหารายเดือน
+              <Users className="h-4 w-4 text-indigo-500" /> จำนวนคำร้องแยกตามแผนก
             </h3>
             <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">
-              Requests by Department (ย้อนหลัง {chartConfig.department.months} เดือน)
+              สถิติการร้องแยกตามแผนก (ย้อนหลัง {chartConfig.department.months} เดือน)
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -380,7 +380,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               size="icon" 
               className="h-7 w-7 rounded-lg hover:bg-indigo-50 text-indigo-500 transition-colors"
               onClick={() => exportToImage(departmentRef, 'Department_Analysis')}
-              title="Export Graph"
+              title="ดาวน์โหลดรูปภาพ"
             >
               <Download className="h-3.5 w-3.5" />
             </Button>
@@ -391,7 +391,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               updateChartConfig={updateChartConfig}
               deptSearch={deptSearch}
               setDeptSearch={setDeptSearch}
-              options={Array.from(new Set(requests.map(r => r.employee?.department || 'ไม่ระบุ (Unknown)')))} 
+              options={Array.from(new Set(requests.map(r => r.employee?.department || 'ไม่ระบุ')))} 
             />
           </div>
         </div>
@@ -407,7 +407,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                     const total = payload[0].payload.total;
                     return (
                       <div className="p-3 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.1)] rounded-xl min-w-[150px]" style={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, borderWidth: 1 }}>
-                        <p className="text-[12px] font-black mb-2 uppercase border-b pb-2" style={{ color: titleColor, borderColor: tooltipBorder }}>{label} <span className="text-zinc-400 font-bold ml-1 text-[9px]">- {total} TICKETS</span></p>
+                        <p className="text-[12px] font-black mb-2 uppercase border-b pb-2" style={{ color: titleColor, borderColor: tooltipBorder }}>{label} <span className="text-zinc-400 font-bold ml-1 text-[9px]">- {total} รายการ</span></p>
                         {payload.map((entry: any, index: number) => (
                           <div key={index} className="flex justify-between items-center gap-4 mb-1">
                             <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5" style={{ color: entry.fill }}>
@@ -470,7 +470,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               <LayoutDashboard className="h-4 w-4 text-purple-500" /> ลักษณะงานที่พบบ่อย
             </h3>
             <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">
-              {chartConfig.type.limit === 'ALL' ? 'ประเภทงานทั้งหมด' : `Top ${chartConfig.type.limit} ประเภทงานที่พบบ่อย`}
+              {chartConfig.type.limit === 'ALL' ? 'ประเภทงานทั้งหมด' : `ยอดนิยม ${chartConfig.type.limit} ประเภทงานที่พบบ่อย`}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -479,7 +479,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               size="icon" 
               className="h-7 w-7 rounded-lg hover:bg-purple-50 text-purple-500 transition-colors"
               onClick={() => exportToImage(typeRef, 'Type_Request_Analysis')}
-              title="Export Graph"
+              title="ดาวน์โหลดรูปภาพ"
             >
               <Download className="h-3.5 w-3.5" />
             </Button>
@@ -506,7 +506,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                         <div className="w-2 h-8 rounded-full bg-purple-500" />
                         <div>
                           <p className="text-[11px] font-black uppercase truncate max-w-[150px]">{payload[0].payload.name}</p>
-                          <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider mt-0.5"><span className="text-white text-sm font-black mr-1">{payload[0].value}</span> Tickets</p>
+                          <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider mt-0.5"><span className="text-white text-sm font-black mr-1">{payload[0].value}</span> รายการ</p>
                         </div>
                       </div>
                     );

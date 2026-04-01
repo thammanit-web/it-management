@@ -87,6 +87,9 @@ export default function TicketsPage() {
 
   // Export states
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [exportDateStart, setExportDateStart] = useState("");
   const [exportDateEnd, setExportDateEnd] = useState("");
 
@@ -317,12 +320,24 @@ export default function TicketsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm(t('common.confirm_delete'))) return;
+    setDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/requests/${id}`, { method: "DELETE" });
-      if (res.ok) fetchTickets();
+      const res = await fetch(`/api/requests/${deleteId}`, { method: "DELETE" });
+      if (res.ok) {
+        setIsDeleteModalOpen(false);
+        fetchTickets();
+      }
     } catch (error) {
       console.error("Delete error:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteId(null);
     }
   };
 
@@ -1155,6 +1170,47 @@ export default function TicketsPage() {
           >
             {t('common.close')}
           </Button>
+        </div>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title={locale === 'th' ? "ยืนยันการลบรายคำร้อง" : "Confirm Delete Ticket"}
+        size="sm"
+      >
+        <div className="space-y-6 text-center">
+          <div className="mx-auto w-16 h-16 rounded-3xl bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100 mb-2">
+            <Trash2 className="h-8 w-8" />
+          </div>
+          <div>
+            <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight">
+              {locale === 'th' ? "คุณแน่ใจหรือไม่?" : "Are you sure?"}
+            </h3>
+            <p className="text-[13px] font-bold text-zinc-400 mt-2 leading-relaxed uppercase tracking-widest">
+              {locale === 'th' 
+                ? "การลบรายการนี้จะไม่สามารถกู้คืนข้อมูลได้ คุณต้องการดำเนินการต่อหรือไม่?" 
+                : "This action cannot be undone. All data associated with this ticket will be permanently removed."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-rose-500/20"
+            >
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : (locale === 'th' ? "ยืนยันการลบข้อมูล" : "Delete Permanently")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-2xl text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-widest text-[11px]"
+            >
+              {t('common.cancel')}
+            </Button>
+          </div>
         </div>
       </Modal>
     </div>

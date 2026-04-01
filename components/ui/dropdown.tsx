@@ -39,7 +39,7 @@ export function Dropdown({ trigger, children, align = "right", className }: Drop
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             className={cn(
-              "absolute z-50 mt-2 min-w-48 overflow-hidden rounded-2xl border border-zinc-100 shadow-sm bg-white p-1.5 dark:border-zinc-800 dark:bg-zinc-900",
+              "absolute z-50 mt-2 min-w-48 overflow-hidden rounded-xl border border-border shadow-lg bg-surface p-1.5 transition-colors",
               align === "left" ? "left-0" : "right-0",
               className
             )}
@@ -58,10 +58,10 @@ export function DropdownItem({ children, onClick, className, destructive }: any)
     <button
       onClick={onClick}
       className={cn(
-        "flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-normal transition-all duration-200 uppercase tracking-wide",
+        "flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
         destructive 
-          ? "text-rose-500 hover:bg-rose-50" 
-          : "text-[#0F1059] hover:bg-[#F8F9FA] hover:text-[#0F1059]/80",
+          ? "text-danger hover:bg-danger/10" 
+          : "text-foreground hover:bg-secondary",
         className
       )}
     >

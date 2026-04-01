@@ -99,7 +99,7 @@ export async function POST(request: Request) {
           approval,
           approval_status: finalApprovalStatus,
           approval_comment: standardTypes.includes(type_request) 
-            ? `อนุมัติอัตโนมัติ: รายการงาน "${typeName}" นี้เป็นบริการมาตรฐานที่มีความเสี่ยงต่ำ จึงไม่ต้องรอการอนุมัติรายกรณี / Pre-approved standard ${type_request} request.` 
+            ? `รายการงาน "${typeName}" นี้เป็นบริการมาตรฐานที่มีความเสี่ยงต่ำ จึงไม่ต้องรอการอนุมัติรายกรณี / Pre-approved standard ${type_request} request.` 
             : approval_comment,
           it_approval,
           it_approval_status: it_approval_status || "PENDING",

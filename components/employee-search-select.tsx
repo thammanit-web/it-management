@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { Search, ChevronDown, Check, User, X, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Employee {
+export interface Employee {
   id: string;
   employee_name_th: string;
   employee_code: string;
@@ -13,7 +13,7 @@ interface Employee {
   position?: string;
 }
 
-interface EmployeeSearchSelectProps {
+export interface EmployeeSearchSelectProps {
   value: string;
   onChange: (value: string) => void;
   employees: Employee[];
@@ -30,7 +30,7 @@ export function EmployeeSearchSelect({
 }: EmployeeSearchSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0, placement: 'bottom' as 'top' | 'bottom' });
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -63,29 +63,28 @@ export function EmployeeSearchSelect({
   // Update position on open or scroll
   useEffect(() => {
     if (isOpen && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      setDropdownPos({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width
-      });
-
-      const handleScrollOrResize = () => {
+      const updatePosition = () => {
         const rect = containerRef.current?.getBoundingClientRect();
         if (rect) {
+          const spaceBelow = window.innerHeight - rect.bottom;
+          const dropdownHeight = 350; // Max estimated height
+          const placement = spaceBelow < dropdownHeight && rect.top > dropdownHeight ? 'top' : 'bottom';
+          
           setDropdownPos({
-            top: rect.bottom + window.scrollY,
-            left: rect.left + window.scrollX,
-            width: rect.width
+            top: placement === 'bottom' ? rect.bottom : rect.top,
+            left: rect.left,
+            width: rect.width,
+            placement
           });
         }
       };
 
-      window.addEventListener('scroll', handleScrollOrResize, true);
-      window.addEventListener('resize', handleScrollOrResize);
+      updatePosition();
+      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition);
       return () => {
-        window.removeEventListener('scroll', handleScrollOrResize, true);
-        window.removeEventListener('resize', handleScrollOrResize);
+        window.removeEventListener('scroll', updatePosition, true);
+        window.removeEventListener('resize', updatePosition);
       };
     }
   }, [isOpen]);
@@ -93,12 +92,15 @@ export function EmployeeSearchSelect({
   const Dropdown = (
     <div 
       ref={dropdownRef}
-      className="fixed z-9999 bg-white border border-zinc-100 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top shadow-2xl"
+      className={cn(
+        "fixed z-9999 bg-white border border-zinc-100 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 shadow-2xl",
+        dropdownPos.placement === 'top' ? "origin-bottom" : "origin-top"
+      )}
       style={{
-        top: dropdownPos.top - window.scrollY,
+        top: dropdownPos.placement === 'top' ? 'auto' : dropdownPos.top + 8,
+        bottom: dropdownPos.placement === 'top' ? (window.innerHeight - dropdownPos.top) + 8 : 'auto',
         left: dropdownPos.left,
         width: dropdownPos.width,
-        marginTop: '8px'
       }}
     >
       <div className="p-3 border-b border-zinc-50 flex items-center gap-2 bg-zinc-50/30 text-zinc-900">
@@ -165,10 +167,15 @@ export function EmployeeSearchSelect({
         onClick={() => {
             if (!isOpen && containerRef.current) {
                 const rect = containerRef.current.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                const dropdownHeight = 350;
+                const placement = spaceBelow < dropdownHeight && rect.top > dropdownHeight ? 'top' : 'bottom';
+
                 setDropdownPos({
-                    top: rect.bottom + window.scrollY,
-                    left: rect.left + window.scrollX,
-                    width: rect.width
+                    top: placement === 'bottom' ? rect.bottom : rect.top,
+                    left: rect.left,
+                    width: rect.width,
+                    placement
                 });
             }
             setIsOpen(!isOpen);

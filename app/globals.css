@@ -4,8 +4,18 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
+  --color-surface: var(--surface);
   --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  
+  --radius-default: 0.5rem; /* rounded-lg */
+  --radius-card: 0.75rem;    /* rounded-xl */
+  
   --font-sans: var(--font-bai-jamjuree), ui-sans-serif, system-ui;
 }
 
@@ -13,29 +23,42 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #F8F9FA;
+  --background: #FFFFFF;
   --foreground: #212529;
   --primary: #0F1059;
-  --secondary: #E9ECEF;
+  --primary-hover: #1A1B7A;
+  --secondary: #F1F3F5;
+  --surface: #FFFFFF;
   --accent: #ADB5BD;
+  --border: #e2e8f0; /* slate-200 */
+  --success: #198754;
+  --warning: #FFC107;
+  --danger: #DC3545;
   
   /* Layout shifts and scrollbars */
   scrollbar-gutter: stable;
 }
 
+html.dark {
+  --background: #0B0C10;
+  --surface: #111217;
+  --foreground: #E9ECEF;
+  --primary: #4C6EF5;
+  --primary-hover: #5C7CFA;
+  --secondary: #1A1D24;
+  --accent: #868E96;
+  --border: #334155; /* slate-700 */
+  --success: #2FBF71;
+  --warning: #FFD43B;
+  --danger: #FF6B6B;
+  color-scheme: dark;
+}
+
 html {
-  color-scheme: light;
   background-color: var(--background);
   color: var(--foreground);
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-html.dark {
-  --background: #09090b; /* zinc-950 */
-  --foreground: #fafafa; /* zinc-50 */
-  --secondary: #27272a; /* zinc-800 */
-  --accent: #52525b; /* zinc-600 */
-  color-scheme: dark;
+  font-size: 14px; /* Default Typography 14px as body */
 }
 
 body {
@@ -44,6 +67,47 @@ body {
   font-family: var(--font-bai-jamjuree), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: clamp(16px, 5vw, 20px); /* Header: 16–20px */
+  font-weight: 600;
+}
+
+/* UI Behavior Utility Classes */
+.table-padding {
+  padding-top: 0.75rem; /* py-3 */
+  padding-bottom: 0.75rem;
+  padding-left: 1rem;   /* px-4 */
+  padding-right: 1rem;
+}
+
+.card-padding {
+  padding: 1rem; /* p-4 */
+}
+
+.layout-gap {
+  gap: 1rem; /* gap-4 */
+}
+
+.card-gap {
+  gap: 0.75rem; /* gap-3 */
+}
+
+.border-default {
+  border: 1px solid var(--border);
+}
+
+.rounded-default {
+  border-radius: var(--radius-default);
+}
+
+.rounded-card {
+  border-radius: var(--radius-card);
+}
+
+.shadow-card {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -68,22 +132,19 @@ body {
   background: var(--primary);
 }
 
-/* Ensure chart containers and modals respect variables */
+/* Charts colors */
 [data-theme='dark'], .dark {
-  --chart-1: #3b82f6;
-  --chart-2: #10b981;
-  --chart-3: #f59e0b;
+  --chart-1: #4C6EF5;
+  --chart-2: #2FBF71;
+  --chart-3: #FFD43B;
   --chart-4: #8b5cf6;
-  --chart-5: #ef4444;
+  --chart-5: #FF6B6B;
 }
 
 [data-theme='light'], :root {
-  --chart-1: #2563eb;
-  --chart-2: #059669;
-  --chart-3: #d97706;
+  --chart-1: #0F1059;
+  --chart-2: #198754;
+  --chart-3: #FFC107;
   --chart-4: #7c3aed;
-  --chart-5: #dc2626;
+  --chart-5: #DC3545;
 }
-
-/* Remove the hacky overrides from previous implementation that used !important */
-/* Instead, we expect components to use dark: variants correctly or semantic tokens */

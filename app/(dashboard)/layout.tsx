@@ -1,99 +1,141 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useEffect, useState, useMemo } from "react";
+import { useSession, signOut } from "next-auth/react";
 import { Sidebar } from "@/components/sidebar";
 import { 
   Menu, 
   Bell, 
-  Search, 
   User, 
-  Settings,
-  ChevronDown
+  ChevronRight,
+  LogOut,
+  Globe
 } from "lucide-react";
 import { Dropdown, DropdownItem } from "@/components/ui/dropdown";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { usePathname } from "next/navigation";
+import { useTranslation } from "@/lib/i18n/LanguageContext";
 
- export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const pathname = usePathname();
+  const { t } = useTranslation();
+  
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [employee, setEmployee] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEmployee = async () => {
       const empId = (session?.user as any)?.employeeId;
-      if (!empId) {
-        setLoading(false);
-        return;
-      }
+      if (!empId) return;
       try {
         const res = await fetch(`/api/employees/${empId}`);
         const data = await res.json();
         setEmployee(data);
       } catch (error) {
         console.error("Fetch employee error:", error);
-      } finally {
-        setLoading(false);
       }
     };
     if (session) fetchEmployee();
   }, [session]);
 
-  return (
-    <div className="flex min-h-screen bg-[#F8F9FA] transition-colors duration-300 font-sans relative">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+  const breadcrumbs = useMemo(() => {
+    const paths = pathname.split("/").filter(Boolean);
+    return paths.map((p, i) => ({
+      name: p.charAt(0).toUpperCase() + p.slice(1).replace(/-/g, " "),
+      href: "/" + paths.slice(0, i + 1).join("/"),
+    }));
+  }, [pathname]);
 
-      {/* Offset the main area by the fixed sidebar width on lg+ screens */}
-      <main className="flex-1 flex flex-col min-w-0 lg:pl-64">
-        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b bg-white px-8 border-zinc-100 shadow-sm">
+  return (
+    <div className="flex min-h-screen bg-background text-foreground transition-colors duration-300 font-sans">
+      <Sidebar 
+        isCollapsed={isSidebarCollapsed} 
+        onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        isMobileOpen={isMobileOpen}
+        onCloseMobile={() => setIsMobileOpen(false)}
+      />
+
+      <div className={cn(
+        "flex flex-col flex-1 transition-all duration-300 min-w-0",
+        isSidebarCollapsed ? "lg:pl-[72px]" : "lg:pl-[240px]"
+      )}>
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-surface px-4 lg:px-6 border-border">
           <div className="flex items-center gap-4">
-             <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-2 -ml-1 text-[#ADB5BD] hover:text-[#0F1059] transition-all rounded-md active:bg-[#F8F9FA]">
-                <Menu className="h-6 w-6" />
+             <button 
+               onClick={() => setIsMobileOpen(true)} 
+               className="lg:hidden p-2 text-accent hover:text-primary transition-all rounded-lg hover:bg-secondary"
+             >
+                <Menu className="h-5 w-5" />
              </button>
-              <div className="hidden lg:block">
-                 <h2 className="text-xs font-black text-zinc-400 uppercase tracking-widest leading-none mb-1">ภาพรวม / Overview</h2>
-                 <p className="text-lg font-black text-[#0F1059] leading-none uppercase">หน้าแรก / Dashboard</p>
-              </div>
+             
+             {/* Breadcrumb */}
+             <nav className="hidden md:flex items-center text-sm font-medium text-accent">
+                <span className="hover:text-primary cursor-pointer transition-colors" onClick={() => window.location.href = '/'}>Home</span>
+                {breadcrumbs.map((crumb, i) => (
+                  <div key={i} className="flex items-center">
+                    <ChevronRight className="h-4 w-4 mx-2 opacity-50" />
+                    <span className={cn(
+                      "capitalize",
+                      i === breadcrumbs.length - 1 ? "text-foreground font-semibold" : "hover:text-primary cursor-pointer"
+                    )}>
+                      {crumb.name}
+                    </span>
+                  </div>
+                ))}
+             </nav>
           </div>
 
-          <div className="flex items-center gap-6">
-             <div className="flex items-center gap-2">
-                <ThemeSwitcher />
-                <LanguageSwitcher />
-             </div>
-             <div className="w-px h-3 bg-zinc-200 mx-0.5 hidden md:block" />
+          <div className="flex items-center gap-3 lg:gap-4">
+             <ThemeSwitcher />
+             <LanguageSwitcher />
 
-             <div className="flex items-center gap-4 group cursor-pointer">
-                <div className="text-right hidden sm:block">
-                   <p className="text-sm font-black text-zinc-900 leading-none mb-1 uppercase tracking-tight">
-                      {employee?.employee_name_th || session?.user?.name || "System Member"}
-                   </p>
-                   <div className="flex items-center justify-end gap-2">
-                      <Badge variant="secondary" className="rounded-lg h-5 text-[9px] font-black uppercase bg-[#0F1059]/5 text-[#0F1059] border-none">
-                         ID: {employee?.employee_code || "---"}
-                      </Badge>
-                      <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
-                         {employee?.department || "No Dept"}
-                      </span>
-                   </div>
-                </div>
+             <button className="p-2 text-accent hover:text-primary relative hover:bg-secondary rounded-lg transition-all">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-surface"></span>
+             </button>
 
-                <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-[#0F1059] to-[#2B2D8E] flex items-center justify-center text-white border-2 border-white group-hover:scale-105 transition-all duration-300">
-                   <User className="h-5 w-5" />
+             <div className="h-8 w-px bg-border mx-1 hidden sm:block"></div>
+
+             {/* Profile Dropdown */}
+             <Dropdown
+                trigger={
+                  <button className="flex items-center gap-2 lg:gap-3 p-1 hover:bg-secondary rounded-xl transition-all group">
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold border border-primary/20 transition-transform group-hover:scale-105">
+                       {session?.user?.name?.[0] || <User className="h-5 w-5" />}
+                    </div>
+                    <div className="text-left hidden sm:block pr-1">
+                       <p className="text-sm font-bold text-foreground leading-none">{employee?.employee_name_th || session?.user?.name || "System Member"}</p>
+                       <p className="text-[10px] text-accent font-medium uppercase mt-1 tracking-tight">{employee?.department || (session?.user as any)?.role || "User"}</p>
+                    </div>
+                  </button>
+                }
+              >
+                <div className="w-56 p-2">
+                  <div className="px-3 py-2 border-b border-border mb-1">
+                    <p className="text-xs font-semibold text-accent uppercase">{t('profile.account')}</p>
+                  </div>
+                  <DropdownItem className="rounded-lg gap-3 py-2.5">
+                    <User className="h-4 w-4" />
+                    <span>{t('profile.my_profile')}</span>
+                  </DropdownItem>
+                  <DropdownItem className="rounded-lg gap-3 py-2.5" onClick={() => signOut()}>
+                    <LogOut className="h-4 w-4 text-danger" />
+                    <span className="text-danger font-semibold">{t('profile.sign_out')}</span>
+                  </DropdownItem>
                 </div>
-             </div>
+             </Dropdown>
           </div>
         </header>
 
-        {/* Full-width content area — no fixed max-width */}
-        <div className="flex-1 w-full p-6 lg:p-8">
+        <main className="flex-1 p-4 lg:p-6 layout-gap flex flex-col">
           {children}
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

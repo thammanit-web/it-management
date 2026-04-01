@@ -131,6 +131,10 @@ export async function DELETE(
     const ip = headList.get("x-forwarded-for") || "unknown";
     const ua = headList.get("user-agent") || "unknown";
 
+    await prisma.request.delete({
+      where: { id: id }
+    });
+
     await logAudit({
       userId: (session.user as any)?.id,
       userName: (session.user as any)?.name,

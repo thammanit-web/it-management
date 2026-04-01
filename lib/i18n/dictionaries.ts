@@ -1,6 +1,20 @@
 export const translations = {
   en: {
+    profile: {
+      title: "Profile",
+      subtitle: "Manage your profile",
+      my_requests: "My Requests",
+      my_borrowings: "My Borrowings",
+      my_purchase_orders: "My Purchase Orders",
+      my_receiving: "My Receiving",
+      my_inventory: "My Inventory",
+      my_users: "My Users",
+      my_logs: "My Logs",
+      my_profile: "My Profile",
+      sign_out: "Sign Out",
+    },
     common: {
+      type: "Type",
       search: "Search",
       loading: "Loading...",
       save: "Save",
@@ -404,7 +418,21 @@ export const translations = {
     }
   },
   th: {
+    profile: {
+      title: "โปรไฟล์",
+      subtitle: "จัดการโปรไฟล์ของคุณ",
+      my_requests: "คำขอของฉัน",
+      my_borrowings: "การยืมของฉัน",
+      my_purchase_orders: "ใบสั่งซื้อของฉัน",
+      my_receiving: "การรับของของฉัน",
+      my_inventory: "คลังสินค้าของฉัน",
+      my_users: "ผู้ใช้ของฉัน",
+      my_logs: "ประวัติของฉัน",
+      my_profile: "โปรไฟล์ของฉัน",
+      sign_out: "ออกจากระบบ",
+    },
     common: {
+      type: "ประเภท",
       search: "ค้นหา",
       loading: "กำลังโหลด...",
       save: "บันทึก",

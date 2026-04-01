@@ -114,10 +114,21 @@ export function useDashboardData(isAdmin: boolean, session: any) {
   }, [requests, dateFilter]);
 
   const categoryData = useMemo(() => {
+    const CATEGORY_MAP: Record<string, string> = {
+      'hardware': 'อุปกรณ์ฮาร์ดแวร์',
+      'software': 'ซอฟต์แวร์และโปรแกรม',
+      'network': 'ระบบเครือข่าย',
+      'account': 'บัญชีผู้ใช้งาน',
+      'other': 'อื่นๆ',
+      'unknown': 'ไม่ระบุ'
+    };
+
     const counts: Record<string, number> = {};
     filteredRequests.forEach(r => {
-      const cat = r.category || 'Other';
-      counts[cat] = (counts[cat] || 0) + 1;
+      const cat = r.category || 'other';
+      const normalizedCat = cat.toLowerCase().trim();
+      const thaiCat = CATEGORY_MAP[normalizedCat] || cat;
+      counts[thaiCat] = (counts[thaiCat] || 0) + 1;
     });
 
     let data = Object.entries(counts).map(([name, value]) => ({ name, value }));
@@ -250,10 +261,40 @@ export function useDashboardData(isAdmin: boolean, session: any) {
   }, [requests, dateFilter, chartConfig.department]);
 
   const typeRequestData = useMemo(() => {
-    const counts: Record<string, number> = {};
+    // Standard IT Task Types in Thai
+    const TASK_TYPE_MAP: Record<string, string> = {
+      'repair': 'งานซ่อมแซมและแก้ไข',
+      'access': 'จัดการสิทธิ์เข้าใช้งาน',
+      'account': 'จัดการสิทธิ์เข้าใช้งาน',
+      'purchase': 'จัดซื้ออุปกรณ์ IT',
+      'software': 'งานด้านซอฟต์แวร์',
+      'hardware': 'งานด้านฮาร์ดแวร์',
+      'network': 'แก้ปัญหาเครือข่าย',
+      'consulting': 'ให้คำปรึกษาด้าน IT',
+      'other': 'งานบริการอื่นๆ',
+      'None': 'ไม่ระบุประเภท',
+      'unknown': 'ไม่ระบุประเภท'
+    };
+
+    // Initialize with common tasks to ensure they appear in the graph even if count is 0
+    // "ใส่เข้าไปในกราฟทั้งหมด" interpretation: Show these standard categories
+    const counts: Record<string, number> = {
+      'งานซ่อมแซมและแก้ไข': 0,
+      'จัดการสิทธิ์เข้าใช้งาน': 0,
+      'จัดซื้ออุปกรณ์ IT': 0,
+      'งานด้านซอฟต์แวร์': 0,
+      'งานด้านฮาร์ดแวร์': 0,
+      'แก้ปัญหาเครือข่าย': 0,
+      'งานบริการอื่นๆ': 0
+    };
+
     filteredRequests.forEach(r => {
-      const type = r.type_request || 'ไม่ระบุ (None)';
-      counts[type] = (counts[type] || 0) + 1;
+      let type = r.type_request || 'unknown';
+      // Normalize and map to Thai
+      const normalizedType = type.toLowerCase().trim();
+      const thaiType = TASK_TYPE_MAP[normalizedType] || type;
+      
+      counts[thaiType] = (counts[thaiType] || 0) + 1;
     });
     
     let data = Object.entries(counts).map(([name, value]) => ({ name, value }));
@@ -261,7 +302,9 @@ export function useDashboardData(isAdmin: boolean, session: any) {
     
     data.sort((a, b) => {
       if (sort === 'value') {
-        return order === 'asc' ? a.value - b.value : b.value - a.value;
+        if (a.value !== b.value) {
+          return order === 'asc' ? a.value - b.value : b.value - a.value;
+        }
       }
       return order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
     });
