@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -51,9 +52,13 @@ export default function PurchaseOrdersPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<PO | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -184,7 +189,7 @@ export default function PurchaseOrdersPage() {
     setIsExportModalOpen(false);
   };
 
-  const openModal = (order: PO | null = null) => {
+  const openDrawer = (order: PO | null = null) => {
     if (order) {
       setSelectedOrder(order);
       setFormData({
@@ -214,7 +219,7 @@ export default function PurchaseOrdersPage() {
         date_order: new Date().toISOString().split('T')[0]
       });
     }
-    setIsModalOpen(true);
+    setIsDrawerOpen(true);
   };
 
   const uploadFile = async (file: File) => {
@@ -266,7 +271,7 @@ export default function PurchaseOrdersPage() {
       });
 
       if (res.ok) {
-        setIsModalOpen(false);
+        setIsDrawerOpen(false);
         fetchOrders();
       }
     } catch (error) {
@@ -276,39 +281,44 @@ export default function PurchaseOrdersPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('common.confirm_delete'))) return;
+  const confirmDelete = async () => {
+    if (!orderToDelete) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/equipment-purchase-orders/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/equipment-purchase-orders/${orderToDelete}`, { method: "DELETE" });
       if (res.ok) fetchOrders();
+      setIsDeleteModalOpen(false);
+      setOrderToDelete(null);
     } catch (error) {
       console.error("Delete error:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 w-full animate-in fade-in duration-700">
+    <div className="p-4 space-y-4">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-black text-[#0F1059] tracking-tighter uppercase leading-none flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-[#0F1059] flex items-center justify-center text-white border border-[#0F1059]/10">
-              <ShoppingCart className="h-6 w-6" />
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight uppercase leading-none flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-[#0F1059] flex items-center justify-center text-white border border-slate-200 shadow-sm">
+              <ShoppingCart className="h-5 w-5" />
             </div>
             {t('po.title')}
           </h1>
-          <p className="text-[12px] font-medium text-zinc-500 uppercase tracking-widest mt-2">{t('po.subtitle')}</p>
+          <p className="text-[12px] font-medium text-slate-500 uppercase tracking-widest mt-1">{t('po.subtitle')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
             onClick={() => handleExportExcel()}
             variant="outline"
-            className="rounded-2xl border-zinc-200 hover:border-[#0F1059] hover:text-[#0F1059] py-6 px-6 font-black uppercase tracking-widest text-[11px] transition-all h-14"
+            className="rounded-lg border-slate-200 hover:border-[#0F1059] hover:text-[#0F1059] h-10 px-4 font-bold uppercase tracking-widest text-[11px] transition-all"
           >
             <FileSpreadsheet className="mr-2 h-4 w-4 text-emerald-600" /> {t('admin_tickets.export_excel')}
           </Button>
           <Button
-            onClick={() => openModal()}
-            className="rounded-2xl h-14 px-8 bg-[#0F1059] hover:bg-black text-white transition-all text-[11px] font-black uppercase tracking-widest shadow-xl shadow-[#0F1059]/10"
+            onClick={() => openDrawer()}
+            className="rounded-lg h-10 px-4 bg-[#0F1059] hover:bg-black text-white transition-all text-[11px] font-black uppercase tracking-widest shadow-sm"
           >
             <Plus className="mr-2 h-4 w-4" /> {t('po.add_new')}
           </Button>
@@ -316,11 +326,11 @@ export default function PurchaseOrdersPage() {
       </header>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center p-4 rounded-3xl border border-zinc-100 bg-white/50 shadow-sm font-sans">
-        <div className="flex items-center gap-3 px-4 py-2 bg-zinc-50 rounded-2xl border border-zinc-100 group focus-within:border-[#0F1059]/30 transition-all lg:col-span-3">
-          <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-[#0F1059]" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4 rounded-xl border border-slate-200 bg-white shadow-sm font-sans">
+        <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg border border-slate-200 group focus-within:border-[#0F1059]/30 transition-all md:col-span-3">
+          <Search className="h-4 w-4 text-slate-400 group-focus-within:text-[#0F1059]" />
           <input
-            className="bg-transparent border-none outline-none text-[10px] font-black uppercase w-full"
+            className="bg-transparent border-none outline-none text-sm font-bold uppercase w-full placeholder:text-slate-400"
             placeholder={t('po.search_placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -328,26 +338,26 @@ export default function PurchaseOrdersPage() {
         </div>
 
         <select
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 font-sans"
+          className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 focus:border-[#0F1059]/30 cursor-pointer"
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
         >
           <option value="ALL">{t('po.all_status')}</option>
-          <option value="PENDING">PENDING / {t('po.pending')}</option>
-          <option value="ORDERED">ORDERED / {t('po.ordered')}</option>
-          <option value="RECEIVED">RECEIVED / {t('po.received')}</option>
-          <option value="CANCELLED">CANCELLED / {t('po.cancelled')}</option>
+          <option value="PENDING">{t('po.pending')}</option>
+          <option value="ORDERED">{t('po.ordered')}</option>
+          <option value="RECEIVED">{t('po.received')}</option>
+          <option value="CANCELLED">{t('po.cancelled')}</option>
         </select>
       </div>
 
-      <Card className="rounded-[40px] border-zinc-100 overflow-hidden bg-white/90">
+      <div className="hidden lg:block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <Table className="w-full text-left font-sans">
-            <TableHeader className="bg-zinc-50/50">
-              <TableRow className="border-none">
-                <TableHead className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest w-24">{t('po.media')}</TableHead>
+          <Table className="w-full text-left">
+            <TableHeader className="bg-slate-50 border-b border-slate-200">
+              <TableRow>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest w-24">{t('po.media')}</TableHead>
                 <TableHead
-                  className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                  className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                   onClick={() => handleSort('po_code')}
                 >
                   <div className="flex items-center gap-1">
@@ -356,7 +366,7 @@ export default function PurchaseOrdersPage() {
                   </div>
                 </TableHead>
                 <TableHead
-                  className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                  className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                   onClick={() => handleSort('list')}
                 >
                   <div className="flex items-center gap-1">
@@ -365,7 +375,7 @@ export default function PurchaseOrdersPage() {
                   </div>
                 </TableHead>
                 <TableHead
-                  className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                  className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                   onClick={() => handleSort('quantity')}
                 >
                   <div className="flex items-center gap-1">
@@ -374,7 +384,7 @@ export default function PurchaseOrdersPage() {
                   </div>
                 </TableHead>
                 <TableHead
-                  className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                  className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                   onClick={() => handleSort('date_order')}
                 >
                   <div className="flex items-center gap-1">
@@ -382,79 +392,64 @@ export default function PurchaseOrdersPage() {
                     {sortConfig.key === 'date_order' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('po.buyer')}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{locale === 'th' ? 'ผู้ตรวจสอบ' : 'REVIEWER'}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{locale === 'th' ? 'ผู้อนุมัติ' : 'APPROVER'}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('common.status')}</TableHead>
-                <TableHead className="p-0"></TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('po.buyer')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('common.status')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-zinc-100">
+            <TableBody className="divide-y divide-slate-100">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell colSpan={10} className="h-24 animate-pulse bg-zinc-50/20" />
+                    <TableCell colSpan={8} className="py-8 animate-pulse bg-slate-50/50" />
                   </TableRow>
                 ))
               ) : filteredOrders.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="px-6 py-20 text-center text-zinc-400 italic font-bold uppercase tracking-widest">
+                  <TableCell colSpan={8} className="py-20 text-center text-slate-400 italic font-bold uppercase tracking-widest">
                     {t('po.no_pos_found')}
                   </TableCell>
                 </TableRow>
               ) : filteredOrders.map((order) => (
-                <TableRow key={order.id} className="hover:bg-zinc-50/50 transition-colors group">
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                     {order.picture ? (
-                      <div className="w-14 h-14 rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200 shadow-sm">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
                         <img
                           src={order.picture}
                           alt={order.list}
-                          className="w-full h-full object-cover cursor-pointer hover:scale-125 transition-transform duration-700"
+                          className="w-full h-full object-cover cursor-pointer"
                           onClick={() => window.open(order.picture, '_blank')}
                         />
                       </div>
                     ) : (
-                      <div className="w-14 h-14 rounded-2xl bg-zinc-50 flex items-center justify-center border border-dashed border-zinc-200 text-zinc-300">
-                        <ImageIcon className="w-6 h-6" />
+                      <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center border border-dashed border-slate-200 text-slate-300">
+                        <ImageIcon className="w-5 h-5" />
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <Badge variant="outline" className="text-[9px] font-black uppercase px-2 py-1 border-zinc-200 text-[#0F1059] bg-[#0F1059]/5">
-                      {order.po_code}
-                    </Badge>
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-[11px] font-bold text-[#0F1059] uppercase tracking-tight">
+                    {order.po_code}
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <div className="font-bold text-[#0F1059] uppercase text-sm">{order.list}</div>
-                    <div className="text-[10px] text-zinc-400 font-bold uppercase truncate max-w-[180px] mt-0.5 italic">
-                      {order.detail || t('common.no_info')}
+                  <TableCell className="py-3 px-4 min-w-[200px]">
+                    <div className="font-bold text-slate-900 text-sm">{order.list}</div>
+                    <div className="text-[10px] text-slate-400 font-medium truncate max-w-[180px]">
+                      {order.detail || '-'}
                     </div>
-                    {order.reason_order && (
-                      <div className="text-[9px] text-amber-500 font-medium mt-0.5 truncate max-w-[180px]">
-                        {locale === 'th' ? 'เหตุผล' : 'Reason'}: {order.reason_order}
-                      </div>
-                    )}
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-xl font-black tracking-tighter text-[#0F1059]">{order.quantity}</span>
-                    <span className="text-[9px] font-black text-zinc-300 uppercase ml-1">{t('po.units')}</span>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <span className="text-lg font-black text-slate-900">{order.quantity}</span>
+                    <span className="text-[9px] font-bold text-slate-300 uppercase ml-1">{t('po.units')}</span>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap text-xs font-bold text-zinc-600">
-                    {order.date_order ? new Date(order.date_order).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-[11px] font-medium text-slate-600">
+                    {order.date_order ? new Date(order.date_order).toLocaleDateString('en-GB') : '-'}
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap text-[10px] font-black text-[#0F1059] uppercase tracking-tight">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-[11px] font-bold text-slate-500 uppercase">
                     {order.buyer || '-'}
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase">{order.reviewer || '-'}</span>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase">{order.approver || '-'}</span>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                     <Badge variant="outline"
-                      className={cn("rounded-lg text-[8px] font-black uppercase tracking-widest px-2.5 py-1 border-zinc-200",
+                      className={cn("rounded text-[9px] font-bold uppercase tracking-wider px-2 py-0 border-none",
                         order.status === "RECEIVED" ? "text-emerald-600 bg-emerald-50" :
                           order.status === "PENDING" ? "text-amber-600 bg-amber-50" :
                             order.status === "CANCELLED" ? "text-rose-600 bg-rose-50" : "text-blue-600 bg-blue-50"
@@ -466,12 +461,12 @@ export default function PurchaseOrdersPage() {
                             order.status === 'CANCELLED' ? t('po.cancelled') : order.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap text-right">
-                    <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-                      <button onClick={() => openModal(order)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-[#0F1059] transition-all">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-right">
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => openDrawer(order)} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-[#0F1059] transition-all shadow-sm">
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button onClick={() => handleDelete(order.id)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-rose-600 transition-all">
+                      <button onClick={() => { setOrderToDelete(order.id); setIsDeleteModalOpen(true); }} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 transition-all shadow-sm">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -481,69 +476,115 @@ export default function PurchaseOrdersPage() {
             </TableBody>
           </Table>
         </div>
-      </Card>
+      </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+      {/* Mobile View: Cards */}
+      <div className="lg:hidden space-y-3">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-32 bg-slate-50 animate-pulse rounded-xl" />
+          ))
+        ) : filteredOrders.length === 0 ? (
+          <div className="py-10 text-center text-slate-400 italic uppercase font-bold tracking-widest">{t('po.no_pos_found')}</div>
+        ) : filteredOrders.map((order) => (
+          <Card key={order.id} className="p-4 shadow-sm rounded-xl border border-slate-200 bg-white space-y-3">
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                 <Badge variant="outline" className="text-[8px] font-bold uppercase py-0 border-slate-200 bg-slate-50 text-slate-500">{order.po_code}</Badge>
+                 <h3 className="text-sm font-bold text-slate-900 leading-snug line-clamp-1">{order.list}</h3>
+                 <p className="text-[11px] text-slate-500 font-medium">{order.date_order ? new Date(order.date_order).toLocaleDateString('en-GB') : '-'}</p>
+              </div>
+              <Badge className={cn("text-[8px] font-bold uppercase", 
+                  order.status === "RECEIVED" ? "bg-emerald-500" :
+                  order.status === "PENDING" ? "bg-amber-500" :
+                  order.status === "CANCELLED" ? "bg-rose-500" : "bg-blue-500"
+              )}>
+                 {order.status}
+              </Badge>
+            </div>
+            
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+               <div className="flex gap-4">
+                  <div>
+                     <p className="text-[8px] font-bold text-slate-400 uppercase leading-none mb-1">{t('po.quantity')}</p>
+                     <p className="text-sm font-black text-[#0F1059] leading-none">{order.quantity}</p>
+                  </div>
+                  <div>
+                     <p className="text-[8px] font-bold text-slate-400 uppercase leading-none mb-1">{t('po.buyer')}</p>
+                     <p className="text-[10px] font-bold text-slate-600 leading-none truncate max-w-[80px]">{order.buyer || '-'}</p>
+                  </div>
+               </div>
+               <div className="flex gap-1">
+                  <button onClick={() => openDrawer(order)} className="p-2 text-slate-400 hover:text-[#0F1059] transition-colors"><Edit2 className="w-4 h-4" /></button>
+                  <button onClick={() => { setOrderToDelete(order.id); setIsDeleteModalOpen(true); }} className="p-2 text-slate-400 hover:text-rose-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
+               </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Drawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
         title={selectedOrder ? t('po.edit_title') : t('po.new_title')}
+        size="lg"
       >
-        <form onSubmit={handleSave} className="space-y-6 max-h-[85vh] overflow-y-auto pr-2 px-1 font-sans">
+        <form onSubmit={handleSave} className="space-y-6">
           {selectedOrder && (
-            <div className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-[#0F1059]/5 border border-[#0F1059]/10 shadow-inner">
+            <div className="grid grid-cols-2 gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
               <div>
-                <p className="text-[9px] font-black text-[#0F1059]/60 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'วันที่สร้าง' : 'Created At'}</p>
-                <p className="text-[11px] font-bold text-[#0F1059]">{selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}</p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'วันที่สร้าง' : 'Created At'}</p>
+                <p className="text-[10px] font-bold text-[#0F1059]">{selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleDateString('en-GB') : '-'}</p>
               </div>
               <div>
-                <p className="text-[9px] font-black text-[#0F1059]/60 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'อัพเดตล่าสุด' : 'Updated At'}</p>
-                <p className="text-[11px] font-bold text-[#0F1059]">{selectedOrder.updatedAt ? new Date(selectedOrder.updatedAt).toLocaleString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}</p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'อัพเดตล่าสุด' : 'Updated At'}</p>
+                <p className="text-[10px] font-bold text-[#0F1059]">{selectedOrder.updatedAt ? new Date(selectedOrder.updatedAt).toLocaleDateString('en-GB') : '-'}</p>
               </div>
             </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5 sm:col-span-2">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.item_name')}</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5 md:col-span-2">
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('po.item_name')}</label>
               <input
                 required
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all"
                 value={formData.list}
                 onChange={(e) => setFormData({ ...formData, list: e.target.value })}
               />
             </div>
 
-            <div className="space-y-1.5 sm:col-span-2">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('requests.ticket_details')}</label>
+            <div className="space-y-1.5 md:col-span-2">
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('requests.ticket_details')}</label>
               <textarea
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-[80px] focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none min-h-[80px] focus:border-[#0F1059]/30 transition-all"
                 value={formData.detail}
                 onChange={(e) => setFormData({ ...formData, detail: e.target.value })}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.quantity')}</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('po.quantity')}</label>
               <input
                 type="number"
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none"
                 value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 0 })}
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.order_date')}</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('po.order_date')}</label>
               <input
                 type="date"
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none"
                 value={formData.date_order}
                 onChange={(e) => setFormData({ ...formData, date_order: e.target.value })}
               />
             </div>
 
-            <div className="space-y-1.5 sm:col-span-2">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.reason')}</label>
+            <div className="space-y-1.5 md:col-span-2">
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('po.reason')}</label>
               <select
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm cursor-pointer"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none cursor-pointer"
                 value={formData.reason_order}
                 onChange={(e) => setFormData({ ...formData, reason_order: e.target.value })}
               >
@@ -553,7 +594,7 @@ export default function PurchaseOrdersPage() {
                 <option value="ขาดสต๊อก">{locale === 'th' ? 'ขาดสต๊อก' : 'Lack of stock'}</option>
                 <option value="ขอซื้อรายการใหม่">{locale === 'th' ? 'ขอซื้อรายการใหม่' : 'Request to buy a new item'}</option>
                 {formData.reason_order && !["ชำรุด", "สูญหาย", "ขาดสต๊อก", "ขอซื้อรายการใหม่"].includes(formData.reason_order) && (
-                  <option value={formData.reason_order} className="text-zinc-400">
+                  <option value={formData.reason_order}>
                     {locale === 'th' ? '(อดีต) ' : '(Old) '} {formData.reason_order}
                   </option>
                 )}
@@ -561,7 +602,7 @@ export default function PurchaseOrdersPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.buyer')}</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('po.buyer')}</label>
               <EmployeeSearchSelect
                 value={formData.buyer}
                 employees={employees}
@@ -570,7 +611,21 @@ export default function PurchaseOrdersPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{locale === 'th' ? 'ผู้ตรวจสอบ' : 'Reviewer'}</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('common.status')}</label>
+              <select
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold text-[#0F1059] uppercase outline-none"
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              >
+                <option value="PENDING">{t('po.pending')}</option>
+                <option value="ORDERED">{t('po.ordered')}</option>
+                <option value="RECEIVED">{t('po.received')}</option>
+                <option value="CANCELLED">{t('po.cancelled')}</option>
+              </select>
+            </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{locale === 'th' ? 'ผู้ตรวจสอบ' : 'Reviewer'}</label>
               <EmployeeSearchSelect
                 value={formData.reviewer}
                 employees={employees}
@@ -579,7 +634,7 @@ export default function PurchaseOrdersPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{locale === 'th' ? 'ผู้อนุมัติ' : 'Approver'}</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{locale === 'th' ? 'ผู้อนุมัติ' : 'Approver'}</label>
               <EmployeeSearchSelect
                 value={formData.approver}
                 employees={employees}
@@ -587,25 +642,12 @@ export default function PurchaseOrdersPage() {
                 placeholder={t('requests.select_employee')}
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('common.status')}</label>
-              <select
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-black text-[#0F1059] uppercase outline-none focus:border-[#0F1059]/30 shadow-sm"
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              >
-                <option value="PENDING">PENDING / {t('po.pending')}</option>
-                <option value="ORDERED">ORDERED / {t('po.ordered')}</option>
-                <option value="RECEIVED">RECEIVED / {t('po.received')}</option>
-                <option value="CANCELLED">CANCELLED / {t('po.cancelled')}</option>
-              </select>
-            </div>
 
-            <div className="space-y-1.5 sm:col-span-2">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.image_attachment')}</label>
+            <div className="space-y-1.5 md:col-span-2">
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('po.image_attachment')}</label>
               <div className="flex flex-col gap-3">
                 {formData.picture ? (
-                  <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-zinc-50 border border-zinc-100 group shadow-sm">
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-slate-50 border border-slate-200 group">
                     <img
                       src={formData.picture}
                       alt="Preview"
@@ -614,9 +656,9 @@ export default function PurchaseOrdersPage() {
                     <button
                       type="button"
                       onClick={removePicture}
-                      className="absolute top-4 right-4 p-3 bg-rose-500 text-white rounded-2xl shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:scale-110 active:scale-90"
+                      className="absolute top-2 right-2 p-2 bg-rose-500 text-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
@@ -624,16 +666,14 @@ export default function PurchaseOrdersPage() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="w-full aspect-video rounded-3xl border-2 border-dashed border-zinc-100 flex flex-col items-center justify-center gap-3 hover:bg-zinc-50 hover:border-[#0F1059]/20 transition-all text-zinc-300 group bg-white shadow-sm"
+                    className="w-full aspect-video rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 hover:bg-slate-50 transition-colors text-slate-300"
                   >
                     {isUploading ? (
-                      <Loader2 className="w-8 h-8 animate-spin text-[#0F1059]" />
+                      <Loader2 className="w-6 h-6 animate-spin text-[#0F1059]" />
                     ) : (
                       <>
-                        <div className="h-14 w-14 rounded-full bg-zinc-50 flex items-center justify-center group-hover:bg-white transition-colors shadow-sm">
-                          <Upload className="w-6 h-6 group-hover:text-[#0F1059]" />
-                        </div>
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">{t('po.click_upload')}</span>
+                        <Upload className="w-6 h-6" />
+                        <span className="text-[9px] font-black uppercase tracking-widest">{t('po.click_upload')}</span>
                       </>
                     )}
                   </button>
@@ -649,11 +689,11 @@ export default function PurchaseOrdersPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 pt-4 border-t border-zinc-50">
+          <div className="flex items-center gap-3 pt-6 border-t border-slate-100">
             <Button
               type="button"
               variant="ghost"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => setIsDrawerOpen(false)}
               className="flex-1 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest"
             >
               {t('common.cancel')}
@@ -667,7 +707,7 @@ export default function PurchaseOrdersPage() {
             </Button>
           </div>
         </form>
-      </Modal>
+      </Drawer>
 
       <Modal
         isOpen={isExportModalOpen}
@@ -725,6 +765,46 @@ export default function PurchaseOrdersPage() {
               className="flex-1 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-600/20"
             >
               {t('admin_tickets.download_excel')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title={locale === 'th' ? "ยืนยันการลบรายการสั่งซื้อ" : "Confirm Delete Purchase Order"}
+        size="sm"
+      >
+        <div className="space-y-6 text-center shadow-none">
+          <div className="mx-auto w-16 h-16 rounded-[24px] bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100 mb-2">
+            <Trash2 className="h-8 w-8" />
+          </div>
+          <div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+               {locale === 'th' ? "ยอมรับการลบข้อมูล?" : "Are you sure?"}
+            </h3>
+            <p className="text-[13px] font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-widest">
+               {locale === 'th' 
+                 ? "ข้อมูลรายการสั่งซื้อนี้จะถูกลบลบถาวร" 
+                 : "This action cannot be undone. This purchase order will be permanently removed."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-rose-500/20"
+            >
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : (locale === 'th' ? "ยืนยันการลบ" : "Delete Permanently")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl text-slate-400 hover:text-slate-900 font-black uppercase tracking-widest text-[11px]"
+            >
+              {t('common.cancel')}
             </Button>
           </div>
         </div>

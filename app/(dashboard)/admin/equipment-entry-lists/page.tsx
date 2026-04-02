@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -63,10 +64,14 @@ export default function EquipmentEntriesPage() {
   const [search, setSearch] = useState("");
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Filters & Sorting logic states
   const [filterType, setFilterType] = useState("ALL");
@@ -222,7 +227,7 @@ export default function EquipmentEntriesPage() {
     setIsExportModalOpen(false);
   };
 
-  const openModal = (entry?: Entry) => {
+  const openDrawer = (entry?: Entry) => {
     if (entry) {
       setEditingId(entry.id);
       setSelectedEntry(entry);
@@ -250,7 +255,7 @@ export default function EquipmentEntriesPage() {
         date_received: new Date().toISOString().split('T')[0]
       });
     }
-    setIsModalOpen(true);
+    setIsDrawerOpen(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -267,7 +272,7 @@ export default function EquipmentEntriesPage() {
       });
 
       if (res.ok) {
-        setIsModalOpen(false);
+        setIsDrawerOpen(false);
         fetchEntries();
       } else {
          const err = await res.json();
@@ -280,48 +285,53 @@ export default function EquipmentEntriesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('common.confirm_delete'))) return;
+  const confirmDelete = async () => {
+    if (!entryToDelete) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/equipment-entry-lists/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/equipment-entry-lists/${entryToDelete}`, { method: "DELETE" });
       if (res.ok) fetchEntries();
+      setIsDeleteModalOpen(false);
+      setEntryToDelete(null);
     } catch (error) {
        console.error("Delete error:", error);
+    } finally {
+       setIsDeleting(false);
     }
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="p-4 space-y-4">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[#0F1059] tracking-tight uppercase flex items-center gap-3">
-             <div className="h-10 w-10 rounded-2xl bg-[#0F1059] flex items-center justify-center text-white border border-[#0F1059]/10">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight uppercase flex items-center gap-3">
+             <div className="h-10 w-10 rounded-lg bg-[#0F1059] flex items-center justify-center text-white border border-slate-200 shadow-sm">
                 <Truck className="h-5 w-5" />
              </div>
              {t('receiving.title')}
           </h1>
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest mt-1">{t('receiving.subtitle')}</p>
+          <p className="text-sm font-medium text-slate-500 uppercase tracking-widest mt-1">{t('receiving.subtitle')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
            <Button 
              onClick={() => handleExportExcel()} 
              variant="outline"
-             className="rounded-2xl border-zinc-200 hover:border-[#0F1059] hover:text-[#0F1059] py-6 px-6 font-black uppercase tracking-widest text-[11px] h-12 transition-all"
+             className="rounded-lg border-slate-200 hover:border-[#0F1059] hover:text-[#0F1059] h-10 px-4 font-bold uppercase tracking-widest text-[11px] transition-all"
           >
             <FileSpreadsheet className="mr-2 h-4 w-4 text-emerald-600" /> {t('admin_tickets.export_excel')}
           </Button>
-          <Button onClick={() => openModal()} className="rounded-2xl bg-[#0F1059] hover:bg-black py-6 px-8 font-black uppercase tracking-widest text-[11px] h-12 transition-all shadow-xl shadow-[#0F1059]/10">
+          <Button onClick={() => openDrawer()} className="rounded-lg bg-[#0F1059] hover:bg-black h-10 px-4 font-bold uppercase tracking-widest text-[11px] transition-all shadow-sm">
             <Plus className="mr-2 h-4 w-4" /> {t('receiving.new_reception')}
           </Button>
         </div>
       </header>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center p-4 rounded-3xl border border-zinc-100 bg-white/50 shadow-sm font-sans uppercase">
-        <div className="flex items-center gap-3 px-4 py-2 bg-zinc-50 rounded-2xl border border-zinc-100 group focus-within:border-[#0F1059]/30 transition-all lg:col-span-3">
-             <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-[#0F1059]" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4 rounded-xl border border-slate-200 bg-white shadow-sm font-sans uppercase">
+        <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg border border-slate-200 group focus-within:border-[#0F1059]/30 transition-all md:col-span-3">
+             <Search className="h-4 w-4 text-slate-400 group-focus-within:text-[#0F1059]" />
              <input 
-                className="bg-transparent border-none outline-none text-[10px] font-black uppercase w-full"
+                className="bg-transparent border-none outline-none text-sm font-bold uppercase w-full placeholder:text-slate-400"
                 placeholder={t('receiving.search_placeholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -329,7 +339,7 @@ export default function EquipmentEntriesPage() {
         </div>
         
         <select 
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 cursor-pointer transition-all"
+          className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 focus:border-[#0F1059]/30 cursor-pointer transition-all"
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >
@@ -342,14 +352,14 @@ export default function EquipmentEntriesPage() {
         </select>
       </div>
 
-      <Card className="rounded-[40px] border-zinc-100 overflow-hidden bg-white/90">
+      <div className="hidden lg:block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <Table className="w-full text-left font-sans">
-            <TableHeader className="bg-zinc-50/50">
-              <TableRow className="border-none">
-                <TableHead className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest w-24">{t('po.media')}</TableHead>
+          <Table className="w-full text-left">
+            <TableHeader className="bg-slate-50 border-b border-slate-200">
+              <TableRow>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest w-24">{t('po.media')}</TableHead>
                 <TableHead 
-                  className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                  className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                   onClick={() => handleSort('list')}
                 >
                   <div className="flex items-center gap-1">
@@ -357,10 +367,10 @@ export default function EquipmentEntriesPage() {
                     {sortConfig.key === 'list' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('receiving.classification')}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('receiving.recipient')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('receiving.classification')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('receiving.recipient')}</TableHead>
                 <TableHead 
-                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest text-center cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-center cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('quantity')}
                 >
                    <div className="flex items-center justify-center gap-1">
@@ -369,7 +379,7 @@ export default function EquipmentEntriesPage() {
                    </div>
                 </TableHead>
                 <TableHead 
-                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('date_received')}
                 >
                    <div className="flex items-center gap-1">
@@ -377,27 +387,27 @@ export default function EquipmentEntriesPage() {
                       {sortConfig.key === 'date_received' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                    </div>
                 </TableHead>
-                <TableHead className="p-0"></TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-zinc-100">
+            <TableBody className="divide-y divide-slate-100">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell colSpan={7} className="h-24 animate-pulse bg-zinc-50/20" />
+                    <TableCell colSpan={7} className="py-8 animate-pulse bg-slate-50/50" />
                   </TableRow>
                 ))
               ) : filteredEntries.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="px-6 py-20 text-center text-zinc-400 italic font-bold uppercase tracking-widest">
+                  <TableCell colSpan={7} className="py-20 text-center text-slate-400 italic font-bold uppercase tracking-widest">
                       {t('receiving.no_records_found')}
                   </TableCell>
                 </TableRow>
               ) : filteredEntries.map((entry) => (
-                <TableRow key={entry.id} className="hover:bg-zinc-50/50 transition-all group">
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableRow key={entry.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-center">
                     {entry.purchaseOrder?.picture ? (
-                       <div className="w-14 h-14 rounded-2xl overflow-hidden bg-white border border-zinc-100 shadow-sm transition-transform duration-700 hover:scale-125">
+                       <div className="w-12 h-12 rounded-lg overflow-hidden bg-white border border-slate-200 shadow-sm mx-auto">
                           <img 
                             src={entry.purchaseOrder.picture} 
                             alt={entry.list || entry.purchaseOrder.list} 
@@ -406,58 +416,58 @@ export default function EquipmentEntriesPage() {
                           />
                        </div>
                     ) : (
-                       <div className="w-14 h-14 rounded-2xl bg-zinc-50 flex items-center justify-center border border-dashed border-zinc-200 text-zinc-300">
-                          <ImageIcon className="w-6 h-6" />
+                       <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center border border-dashed border-slate-200 text-slate-300 mx-auto">
+                          <ImageIcon className="w-5 h-5" />
                        </div>
                     )}
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-bold text-[#0F1059] uppercase text-sm leading-tight">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <div className="font-bold text-slate-900 text-sm leading-tight">
                        {entry.list || entry.purchaseOrder?.list}
                     </div>
-                    <div className="flex items-center gap-2 mt-1.5">
-                       <Badge variant="outline" className="text-[8.5px] font-black uppercase px-2 shadow-none border-zinc-200 text-zinc-400">
-                          {t('receiving.po_ref')}: {entry.purchaseOrder?.po_code || 'INTERNAL'}
+                    <div className="flex items-center gap-2 mt-1">
+                       <Badge variant="outline" className="text-[9px] font-bold uppercase px-1.5 py-0 border-slate-200 bg-slate-50 text-slate-400">
+                          {entry.purchaseOrder?.po_code || 'INTERNAL'}
                        </Badge>
-                       <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest">
+                       <span className="text-[10px] font-bold text-amber-600 uppercase">
                            {entry.brand_name || '-'}
                        </span>
                     </div>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                     <Badge variant="outline" className={cn(
-                      "rounded-lg text-[8px] font-black uppercase tracking-widest px-2 py-1",
-                      entry.item_type === "MAIN" ? "text-blue-600 bg-blue-50 border-blue-200" :
-                      entry.item_type === "PERIPHERAL" ? "text-purple-600 bg-purple-50 border-purple-200" :
-                      entry.item_type === "CONSUMABLE" ? "text-amber-600 bg-amber-50 border-amber-200" :
-                      entry.item_type === "SOFTWARE" ? "text-teal-600 bg-teal-50 border-teal-200" :
-                      "text-zinc-500 bg-zinc-50 border-zinc-200"
+                      "rounded text-[9px] font-bold uppercase tracking-wider px-2 py-0 border-none",
+                      entry.item_type === "MAIN" ? "text-blue-600 bg-blue-50" :
+                      entry.item_type === "PERIPHERAL" ? "text-purple-600 bg-purple-50" :
+                      entry.item_type === "CONSUMABLE" ? "text-amber-600 bg-amber-50" :
+                      entry.item_type === "SOFTWARE" ? "text-teal-600 bg-teal-50" :
+                      "text-slate-500 bg-slate-50"
                     )}>
                       {entry.item_type || '-'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                        <UserCheck className="h-3.5 w-3.5 text-zinc-300" />
-                        <span className="text-xs font-black text-zinc-700 uppercase tracking-tight">{entry.recipient || '-'}</span>
+                        <UserCheck className="h-3.5 w-3.5 text-slate-300" />
+                        <span className="text-sm font-medium text-slate-600">{entry.recipient || '-'}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-center">
-                    <span className="text-xl font-black tracking-tighter text-[#0F1059]">{entry.quantity}</span>
-                    <span className="text-[9px] font-black text-zinc-300 uppercase ml-1.5">{entry.unit || t('po.units')}</span>
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-center">
+                    <span className="text-sm font-bold text-slate-900">{entry.quantity}</span>
+                    <span className="text-[10px] text-slate-400 font-medium ml-1">{entry.unit || t('po.units')}</span>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2 text-xs font-bold text-zinc-500">
-                       <Calendar className="h-3.5 w-3.5 text-zinc-300" />
-                       {entry.date_received ? new Date(entry.date_received).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                       <Calendar className="h-3.5 w-3.5 text-slate-300" />
+                       {entry.date_received ? new Date(entry.date_received).toLocaleDateString('en-GB') : '-'}
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-right">
-                    <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-                        <button onClick={() => openModal(entry)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-[#0F1059] transition-all">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-right">
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openDrawer(entry)} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-[#0F1059] transition-all">
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDelete(entry.id)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-rose-600 transition-all">
+                        <button onClick={() => { setEntryToDelete(entry.id); setIsDeleteModalOpen(true); }} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 transition-all">
                           <Trash2 className="w-4 h-4" />
                         </button>
                     </div>
@@ -467,31 +477,83 @@ export default function EquipmentEntriesPage() {
             </TableBody>
           </Table>
         </div>
-      </Card>
+      </div>
 
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      {/* Mobile View: Cards */}
+      <div className="lg:hidden space-y-3">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-28 bg-slate-50 animate-pulse rounded-xl" />
+          ))
+        ) : filteredEntries.length === 0 ? (
+          <div className="py-10 text-center text-slate-400 italic">{t('receiving.no_records_found')}</div>
+        ) : filteredEntries.map((entry) => (
+          <Card key={entry.id} className="p-4 shadow-sm rounded-xl border border-slate-200 space-y-3 bg-white">
+            <div className="flex justify-between items-start">
+              <div className="flex gap-3">
+                {entry.purchaseOrder?.picture ? (
+                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-white border border-slate-200 shadow-sm">
+                    <img src={entry.purchaseOrder.picture} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center border border-dashed border-slate-200 text-slate-300">
+                    <ImageIcon className="w-5 h-5" />
+                  </div>
+                )}
+                <div className="space-y-0.5">
+                  <p className="text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{entry.purchaseOrder?.po_code || 'INTERNAL'}</p>
+                  <h3 className="text-sm font-bold text-slate-900 line-clamp-1">{entry.list || entry.purchaseOrder?.list}</h3>
+                </div>
+              </div>
+              <Badge variant="outline" className="rounded text-[9px] font-bold uppercase tracking-wider py-0 border-none bg-slate-50 text-slate-500">
+                {entry.item_type || '-'}
+              </Badge>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-[12px] pt-3 border-t border-slate-100">
+               <div className="space-y-0.5">
+                 <p className="text-[9px] font-bold text-slate-400 uppercase">{t('po.quantity')}</p>
+                 <p className="font-bold text-slate-700">{entry.quantity} {entry.unit}</p>
+               </div>
+               <div className="space-y-0.5 text-right">
+                 <p className="text-[9px] font-bold text-slate-400 uppercase">{t('receiving.recipient')}</p>
+                 <p className="font-bold text-slate-700 truncate">{entry.recipient || '-'}</p>
+               </div>
+            </div>
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span className="text-[10px] text-slate-400 font-bold">{entry.date_received ? new Date(entry.date_received).toLocaleDateString('en-GB') : '-'}</span>
+              <div className="flex gap-1">
+                <button onClick={() => openDrawer(entry)} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-400"><Edit2 className="h-4 w-4" /></button>
+                <button onClick={() => { setEntryToDelete(entry.id); setIsDeleteModalOpen(true); }} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-400"><Trash2 className="h-4 w-4" /></button>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Drawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
         title={editingId ? t('receiving.edit_title') : t('receiving.new_title')}
+        size="xl"
       >
-        <form onSubmit={handleSave} className="space-y-6 max-h-[85vh] overflow-y-auto pr-2 px-1 font-sans">
+        <form onSubmit={handleSave} className="space-y-6">
            {selectedEntry && (
-              <div className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-[#0F1059]/5 border border-[#0F1059]/10 shadow-inner">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-2 gap-4">
                  <div>
-                    <p className="text-[9px] font-black text-[#0F1059]/60 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'วันที่สร้าง' : 'Created At'}</p>
-                    <p className="text-[11px] font-bold text-[#0F1059]">{selectedEntry.createdAt ? new Date(selectedEntry.createdAt).toLocaleString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}</p>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">{locale === 'th' ? 'วันที่สร้าง' : 'Created At'}</label>
+                    <p className="text-xs font-bold text-slate-700">{selectedEntry.createdAt ? new Date(selectedEntry.createdAt).toLocaleString('en-GB') : '-'}</p>
                  </div>
                  <div>
-                    <p className="text-[9px] font-black text-[#0F1059]/60 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'อัพเดตล่าสุด' : 'Updated At'}</p>
-                    <p className="text-[11px] font-bold text-[#0F1059]">{selectedEntry.updatedAt ? new Date(selectedEntry.updatedAt).toLocaleString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}</p>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">{locale === 'th' ? 'อัพเดตล่าสุด' : 'Updated At'}</label>
+                    <p className="text-xs font-bold text-slate-700">{selectedEntry.updatedAt ? new Date(selectedEntry.updatedAt).toLocaleString('en-GB') : '-'}</p>
                  </div>
               </div>
            )}
            <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('receiving.po_source')}</label>
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('receiving.po_source')}</label>
               <select 
                  required
-                 className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-4 text-sm font-black text-[#0F1059] uppercase outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm cursor-pointer"
+                 className="w-full bg-slate-50 border border-slate-100 rounded-xl px-5 py-3 text-sm font-bold text-[#0F1059] uppercase outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm cursor-pointer"
                  value={formData.purchase_id}
                  onChange={(e) => handlePOChange(e.target.value)}
               >
@@ -508,26 +570,26 @@ export default function EquipmentEntriesPage() {
            
            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-1.5 col-span-2">
-                 <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('receiving.final_item_name')}</label>
+                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('receiving.final_item_name')}</label>
                  <input 
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-3.5 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-5 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                     value={formData.list}
                     onChange={(e) => setFormData({...formData, list: e.target.value})}
                     placeholder="Specific name if different from PO..."
                  />
               </div>
-              <div className="space-y-1.5">
-                 <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('receiving.brand_name')}</label>
+              <div className="space-y-1.5 font-sans">
+                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('receiving.brand_name')}</label>
                  <input 
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-3.5 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-5 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                     value={formData.brand_name}
                     onChange={(e) => setFormData({...formData, brand_name: e.target.value})}
                  />
               </div>
               <div className="space-y-1.5">
-                 <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('receiving.classification')}</label>
+                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('receiving.classification')}</label>
                  <select 
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-3.5 text-sm font-black text-zinc-700 uppercase outline-none focus:border-[#0F1059]/30 shadow-sm"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-5 py-3 text-sm font-bold text-slate-700 uppercase outline-none focus:border-[#0F1059]/30 shadow-sm"
                     value={formData.item_type}
                     onChange={(e) => setFormData({...formData, item_type: e.target.value})}
                  >
@@ -539,25 +601,25 @@ export default function EquipmentEntriesPage() {
                  </select>
               </div>
               <div className="space-y-1.5">
-                 <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('po.quantity')}</label>
+                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('po.quantity')}</label>
                  <input 
                     type="number"
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-3.5 text-sm font-black text-[#0F1059] outline-none focus:border-[#0F1059]/30 shadow-sm"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-5 py-3 text-sm font-bold text-[#0F1059] outline-none focus:border-[#0F1059]/30 shadow-sm"
                     value={formData.quantity}
                     onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value) || 0})}
                  />
               </div>
               <div className="space-y-1.5">
-                 <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('receiving.unit_of_measure')}</label>
+                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('receiving.unit_of_measure')}</label>
                  <input 
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-3.5 text-sm font-medium outline-none focus:border-[#0F1059]/30 shadow-sm"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-5 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 shadow-sm"
                     value={formData.unit}
                     onChange={(e) => setFormData({...formData, unit: e.target.value})}
                     placeholder="Each, Set, Unit..."
                  />
               </div>
               <div className="space-y-1.5">
-                 <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('receiving.receiver')}</label>
+                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('receiving.receiver')}</label>
                  <EmployeeSearchSelect 
                     value={formData.recipient}
                     employees={employees}
@@ -566,79 +628,79 @@ export default function EquipmentEntriesPage() {
                  />
               </div>
               <div className="space-y-1.5">
-                 <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('receiving.inbound_date')}</label>
+                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('receiving.inbound_date')}</label>
                  <input 
                     type="date"
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl px-5 py-3.5 text-sm font-medium outline-none focus:border-[#0F1059]/30 shadow-sm"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-5 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 shadow-sm"
                     value={formData.date_received}
                     onChange={(e) => setFormData({...formData, date_received: e.target.value})}
                  />
               </div>
            </div>
 
-           <div className="flex items-center gap-3 pt-6 border-t border-zinc-100">
+           <div className="flex items-center gap-3 pt-6 border-t border-slate-100">
               <Button 
                  type="button" 
                  variant="ghost" 
-                 onClick={() => setIsModalOpen(false)}
-                 className="flex-1 h-14 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-zinc-100"
+                 onClick={() => setIsDrawerOpen(false)}
+                 className="flex-1 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest"
               >
                  {t('common.cancel')}
               </Button>
               <Button 
                 type="submit" 
                 disabled={isSaving}
-                className="flex-1 h-14 rounded-2xl bg-[#0F1059] hover:bg-black text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-[#0F1059]/10"
+                className="flex-1 h-12 rounded-xl bg-[#0F1059] hover:bg-black text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-[#0F1059]/10"
               >
-                 {isSaving ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : t('receiving.complete_reception')}
+                 {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : t('receiving.complete_reception')}
               </Button>
            </div>
         </form>
-      </Modal>
+      </Drawer>
 
       <Modal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         title={t('admin_tickets.export_report_title')}
       >
-        <div className="space-y-6 font-sans">
-          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center gap-4 shadow-sm">
-             <div className="h-12 w-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white">
+        <div className="space-y-6">
+          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center gap-4">
+             <div className="h-12 w-12 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
                 <FileSpreadsheet className="h-6 w-6" />
              </div>
              <div>
-                <h3 className="text-sm font-black text-emerald-900 uppercase">{t('admin_tickets.export_settings')}</h3>
+                <h3 className="text-sm font-bold text-emerald-900 uppercase">{t('admin_tickets.export_settings')}</h3>
                 <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">{locale === 'th' ? 'เลือกข้อมูลที่คุณต้องการรายงาน' : 'Select filters for your report'}</p>
              </div>
           </div>
 
           <div className="space-y-4">
              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                   <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{locale === 'th' ? 'วันที่เริ่ม' : 'Start Date'}</label>
+                <div className="space-y-1">
+                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{locale === 'th' ? 'วันที่เริ่ม' : 'Start Date'}</label>
                    <input 
                       type="date" 
-                      className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none"
                       value={exportDateStart}
                       onChange={(e) => setExportDateStart(e.target.value)}
                    />
                 </div>
-                <div className="space-y-1.5">
-                   <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{locale === 'th' ? 'วันที่สิ้นสุด' : 'End Date'}</label>
+                <div className="space-y-1">
+                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{locale === 'th' ? 'วันที่สิ้นสุด' : 'End Date'}</label>
                    <input 
                       type="date" 
-                      className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none"
                       value={exportDateEnd}
                       onChange={(e) => setExportDateEnd(e.target.value)}
                    />
                 </div>
              </div>
 
-             <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 space-y-2">
-                <p className="text-[10px] font-black text-zinc-400 uppercase">{t('admin_tickets.active_filters')}</p>
+             <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
+                <p className="text-[10px] font-bold text-slate-400 uppercase">{t('admin_tickets.active_filters')}</p>
                 <div className="flex flex-wrap gap-2">
-                   <Badge variant="outline" className="bg-white text-[#0F1059] border-zinc-100 text-[10px] uppercase">Type: {filterType}</Badge>
-                   {search && <Badge variant="outline" className="bg-white text-[#0F1059] border-zinc-100 text-[10px] uppercase">Search: {search}</Badge>}
+                   <Badge variant="outline" className="bg-white text-[#0F1059] border-slate-200 text-[9px] uppercase font-bold tracking-wider">Type: {filterType}</Badge>
+                   {search && <Badge variant="outline" className="bg-white text-[#0F1059] border-slate-200 text-[9px] uppercase font-bold tracking-wider">Search: {search}</Badge>}
                 </div>
              </div>
           </div>
@@ -653,6 +715,47 @@ export default function EquipmentEntriesPage() {
              >
                 {t('admin_tickets.download_excel')}
              </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title={locale === 'th' ? "ยืนยันการลบข้อมูลการรับของ" : "Confirm Delete Reception Record"}
+        size="sm"
+      >
+        <div className="space-y-6 text-center">
+          <div className="mx-auto w-16 h-16 rounded-[24px] bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100 mb-2">
+            <Trash2 className="h-8 w-8" />
+          </div>
+          <div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+              {locale === 'th' ? "ยอมรับการลบข้อมูล?" : "Are you sure?"}
+            </h3>
+            <p className="text-[13px] font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-widest">
+              {locale === 'th' 
+                ? "ข้อมูลการรับอุปกรณ์นี้จะถูกลบลบถาวร" 
+                : "This action cannot be undone. This reception record will be permanently removed."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-rose-500/20"
+            >
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : (locale === 'th' ? "ยืนยันการลบ" : "Delete Permanently")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl text-slate-400 hover:text-slate-900 font-black uppercase tracking-widest text-[11px]"
+            >
+              {t('common.cancel')}
+            </Button>
           </div>
         </div>
       </Modal>

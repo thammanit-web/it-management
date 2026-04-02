@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -91,12 +92,16 @@ export default function AdminEquipmentRequestsPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<BorrowGroup | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [previewData, setPreviewData] = useState<BorrowGroup | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [requestToDelete, setRequestToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Filters & Sorting logic states
   const [filterItStatus, setFilterItStatus] = useState("ALL");
@@ -260,7 +265,7 @@ export default function AdminEquipmentRequestsPage() {
     setIsExportModalOpen(false);
   };
 
-  const openModal = (group?: BorrowGroup) => {
+  const openDrawer = (group?: BorrowGroup) => {
     if (group) {
       setEditingId(group.id);
       setSelectedGroup(group);
@@ -292,7 +297,7 @@ export default function AdminEquipmentRequestsPage() {
         it_approval_comment: ""
       });
     }
-    setIsModalOpen(true);
+    setIsDrawerOpen(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -334,7 +339,7 @@ export default function AdminEquipmentRequestsPage() {
       });
 
       if (res.ok) {
-        setIsModalOpen(false);
+        setIsDrawerOpen(false);
         fetchRequests();
       } else {
          const err = await res.json();
@@ -368,48 +373,53 @@ export default function AdminEquipmentRequestsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('common.confirm_delete'))) return;
+  const confirmDelete = async () => {
+    if (!requestToDelete) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/equipment-requests/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/equipment-requests/${requestToDelete}`, { method: "DELETE" });
       if (res.ok) fetchRequests();
+      setIsDeleteModalOpen(false);
+      setRequestToDelete(null);
     } catch (error) {
       console.error("Delete error:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="p-4 space-y-4">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-black text-[#0F1059] tracking-tighter uppercase leading-none flex items-center gap-3">
-             <div className="h-12 w-12 rounded-2xl bg-[#0F1059] flex items-center justify-center text-white border border-[#0F1059]/10">
-                <Package className="h-6 w-6" />
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight uppercase leading-none flex items-center gap-3">
+             <div className="h-10 w-10 rounded-lg bg-[#0F1059] flex items-center justify-center text-white border border-slate-200 shadow-sm">
+                <Package className="h-5 w-5" />
              </div>
              {t('borrowing.title')}
           </h1>
-          <p className="text-[12px] font-medium text-zinc-500 uppercase tracking-widest mt-2">{t('borrowing.subtitle')}</p>
+          <p className="text-[12px] font-medium text-slate-500 uppercase tracking-widest mt-1">{t('borrowing.subtitle')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button 
              onClick={() => handleExportExcel()} 
              variant="outline"
-             className="rounded-2xl border-zinc-200 hover:border-[#0F1059] hover:text-[#0F1059] py-6 px-6 font-black uppercase tracking-widest text-[11px] h-14 transition-all"
+             className="rounded-lg border-slate-200 hover:border-[#0F1059] hover:text-[#0F1059] h-10 px-4 font-bold uppercase tracking-widest text-[11px] transition-all"
           >
             <FileSpreadsheet className="mr-2 h-4 w-4 text-emerald-600" /> {t('admin_tickets.export_excel')}
           </Button>
-          <Button onClick={() => openModal()} className="rounded-2xl bg-[#0F1059] hover:bg-black py-6 px-8 h-14 font-black uppercase tracking-widest text-[11px] transition-all shadow-xl shadow-[#0F1059]/10">
+          <Button onClick={() => openDrawer()} className="rounded-lg bg-[#0F1059] hover:bg-black h-10 px-4 font-bold uppercase tracking-widest text-[11px] transition-all shadow-sm">
             <Package className="mr-2 h-4 w-4" /> {t('borrowing.create_request')}
           </Button>
         </div>
       </header>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center p-4 rounded-3xl border border-zinc-100 bg-white/50 shadow-sm font-sans uppercase">
-        <div className="flex items-center gap-3 px-4 py-2 bg-zinc-50 rounded-2xl border border-zinc-100 group focus-within:border-[#0F1059]/30 transition-all lg:col-span-2">
-             <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-[#0F1059]" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4 rounded-xl border border-slate-200 bg-white shadow-sm font-sans uppercase">
+        <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg border border-slate-200 group focus-within:border-[#0F1059]/30 transition-all md:col-span-2">
+             <Search className="h-4 w-4 text-slate-400 group-focus-within:text-[#0F1059]" />
              <input 
-                className="bg-transparent border-none outline-none text-[10px] font-black uppercase w-full"
+                className="bg-transparent border-none outline-none text-sm font-bold uppercase w-full placeholder:text-slate-400"
                 placeholder={t('borrowing.search_placeholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -417,7 +427,7 @@ export default function AdminEquipmentRequestsPage() {
         </div>
         
         <select 
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 cursor-pointer"
+          className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 focus:border-[#0F1059]/30 cursor-pointer"
           value={filterDeptStatus}
           onChange={(e) => setFilterDeptStatus(e.target.value)}
         >
@@ -428,7 +438,7 @@ export default function AdminEquipmentRequestsPage() {
         </select>
 
         <select 
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 cursor-pointer"
+          className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 focus:border-[#0F1059]/30 cursor-pointer"
           value={filterItStatus}
           onChange={(e) => setFilterItStatus(e.target.value)}
         >
@@ -439,13 +449,13 @@ export default function AdminEquipmentRequestsPage() {
         </select>
       </div>
 
-      <Card className="rounded-[40px] border-zinc-100 overflow-hidden bg-white/90">
+      <div className="hidden lg:block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <Table className="w-full text-left font-sans">
-            <TableHeader className="bg-zinc-50/50">
-              <TableRow className="border-none">
+          <Table className="w-full text-left">
+            <TableHeader className="bg-slate-50 border-b border-slate-200">
+              <TableRow>
                 <TableHead 
-                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('createdAt')}
                 >
                   <div className="flex items-center gap-1">
@@ -453,85 +463,85 @@ export default function AdminEquipmentRequestsPage() {
                     {sortConfig.key === 'createdAt' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('receiving.recipient')}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{locale === 'th' ? 'รหัส' : 'EMP CODE'}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest text-center">{t('po.quantity')}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{locale === 'th' ? 'ประเภท' : 'TYPE'}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('borrowing.date_needed')}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest text-center">DEPT</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest text-center">IT FINAL</TableHead>
-                <TableHead className="p-0"></TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('receiving.recipient')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{locale === 'th' ? 'รหัส' : 'EMP CODE'}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-center">{t('po.quantity')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{locale === 'th' ? 'ประเภท' : 'TYPE'}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('borrowing.date_needed')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-center">DEPT</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-center">IT FINAL</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-zinc-100">
+            <TableBody className="divide-y divide-slate-100">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell colSpan={9} className="h-20 animate-pulse bg-zinc-50/20" />
+                    <TableCell colSpan={9} className="py-8 animate-pulse bg-slate-50/50" />
                   </TableRow>
                 ))
               ) : filteredRequests.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="px-6 py-20 text-center text-zinc-400 italic font-bold uppercase tracking-widest">
+                  <TableCell colSpan={9} className="py-20 text-center text-slate-400 italic font-bold uppercase tracking-widest">
                       {t('borrowing.no_requests_found')}
                   </TableCell>
                 </TableRow>
               ) : filteredRequests.map((g: BorrowGroup) => (
-                <TableRow key={g.id} className="hover:bg-zinc-50/50 transition-colors group">
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableRow key={g.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                           <span className="text-[10px] font-bold text-[#0F1059] bg-[#0F1059]/5 px-2 py-0.5 rounded-lg border border-[#0F1059]/5">{g.group_code}</span>
-                           <div className="font-bold text-[#0F1059] uppercase text-sm">
+                           <span className="text-[10px] font-bold text-[#0F1059] bg-[#0F1059]/5 px-2 py-0.5 rounded border border-[#0F1059]/5">{g.group_code}</span>
+                           <div className="font-bold text-slate-900 text-sm">
                                {g.requests.length === 1 
                                  ? (g.requests[0].equipmentList?.equipmentEntry?.list || g.requests[0].equipmentList?.equipmentEntry?.item_name)
                                  : `Batch: ${g.requests.length} Items`}
                            </div>
                         </div>
-                        <div className="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em] mt-0.5">
-                           DATE: {new Date(g.createdAt).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-GB')}
+                        <div className="text-[9px] text-slate-400 font-bold uppercase mt-0.5">
+                           DATE: {new Date(g.createdAt).toLocaleDateString('en-GB')}
                         </div>
                     </div>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                        <User2 className="h-3.5 w-3.5 text-zinc-300" />
-                        <span className="text-[11px] font-black text-zinc-700 uppercase">{g.user?.employee?.employee_name_th || g.user?.username}</span>
+                        <User2 className="h-3.5 w-3.5 text-slate-300" />
+                        <span className="text-sm font-medium text-slate-600">{g.user?.employee?.employee_name_th || g.user?.username}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-[10px] font-bold text-[#0F1059]/60 bg-[#0F1059]/5 px-2 py-0.5 rounded uppercase">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
                       {g.user?.employee?.employee_code || '-'}
                     </span>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap text-center">
-                    <span className="text-xl font-black tracking-tighter text-[#0F1059]">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-center">
+                    <span className="text-sm font-bold text-slate-900">
                        {g.requests.reduce((acc, r) => acc + r.quantity, 0)}
                     </span>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                     <Badge variant="outline" className={cn(
-                      "rounded-lg text-[8px] font-black uppercase tracking-widest px-2 py-1",
-                      g.requests[0]?.borrow_type === "NEW" ? "text-emerald-600 bg-emerald-50 border-emerald-200" :
-                      g.requests[0]?.borrow_type === "BROKEN" ? "text-rose-600 bg-rose-50 border-rose-200" :
-                      "text-amber-600 bg-amber-50 border-amber-200"
+                      "rounded text-[9px] font-bold uppercase tracking-wider px-2 py-0 border-none",
+                      g.requests[0]?.borrow_type === "NEW" ? "text-emerald-600 bg-emerald-50" :
+                      g.requests[0]?.borrow_type === "BROKEN" ? "text-rose-600 bg-rose-50" :
+                      "text-amber-600 bg-amber-50"
                     )}>
                       {g.requests[0]?.borrow_type || '-'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-[10px] font-bold text-zinc-500">
-                      {g.date_needed ? new Date(g.date_needed).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <span className="text-[12px] text-slate-500 font-medium">
+                      {g.date_needed ? new Date(g.date_needed).toLocaleDateString('en-GB') : '-'}
                     </span>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-center">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-center">
                     <select 
                       value={g.approval_status || "PENDING"}
                       onChange={(e) => updateStatusInline(g.id, 'approval_status', e.target.value)}
                       className={cn(
-                        "rounded-xl px-3 py-1.5 text-[10px] font-black uppercase tracking-widest border border-zinc-100 outline-none cursor-pointer transition-all",
-                        g.approval_status === "APPROVED" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                        g.approval_status === "REJECTED" ? "bg-rose-50 text-rose-600 border-rose-100" : "bg-amber-50 text-amber-600 border-amber-100"
+                        "rounded-lg px-2 py-1 text-[10px] font-bold uppercase border border-slate-100 outline-none cursor-pointer",
+                        g.approval_status === "APPROVED" ? "bg-emerald-50 text-emerald-600" :
+                        g.approval_status === "REJECTED" ? "bg-rose-50 text-rose-600" : "bg-amber-50 text-amber-600"
                       )}
                     >
                       <option value="PENDING">PENDING</option>
@@ -539,14 +549,14 @@ export default function AdminEquipmentRequestsPage() {
                       <option value="REJECTED">REJECTED</option>
                     </select>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-center">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-center">
                     <select 
                       value={g.it_approval_status || "PENDING"}
                       onChange={(e) => updateStatusInline(g.id, 'it_approval_status', e.target.value)}
                       className={cn(
-                        "rounded-xl px-3 py-1.5 text-[10px] font-black uppercase tracking-widest border border-zinc-100 outline-none cursor-pointer transition-all",
-                        g.it_approval_status === "APPROVED" ? "bg-[#0F1059] text-white border-[#0F1059]" :
-                        g.it_approval_status === "REJECTED" ? "bg-rose-500 text-white border-rose-500" : "bg-zinc-100 text-zinc-500 border-zinc-200"
+                        "rounded-lg px-2 py-1 text-[10px] font-bold uppercase border border-slate-100 outline-none cursor-pointer",
+                        g.it_approval_status === "APPROVED" ? "bg-[#0F1059] text-white" :
+                        g.it_approval_status === "REJECTED" ? "bg-rose-500 text-white" : "bg-slate-100 text-slate-500"
                       )}
                     >
                       <option value="PENDING">PENDING</option>
@@ -554,23 +564,23 @@ export default function AdminEquipmentRequestsPage() {
                       <option value="REJECTED">REJECTED</option>
                     </select>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-right">
-                    <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-right">
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
                           onClick={() => {
                             setPreviewData(g);
                             setIsPreviewModalOpen(true);
                           }}
-                          className="p-2.5 rounded-xl bg-white border border-zinc-100 text-[#0F1059] hover:bg-[#0F1059]/5 transition-all shadow-sm"
+                          className="p-2 rounded-lg bg-white border border-slate-200 text-[#0F1059] hover:bg-[#0F1059]/5 transition-all shadow-sm"
                           title="View PDF"
                         >
-                          <Eye className="h-3.5 w-3.5" />
+                          <Eye className="h-4 w-4" />
                         </button>
-                        <button onClick={() => openModal(g)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-[#0F1059] transition-all shadow-sm">
-                          <Edit2 className="h-3.5 w-3.5" />
+                        <button onClick={() => openDrawer(g)} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-[#0F1059] transition-all shadow-sm">
+                          <Edit2 className="h-4 w-4" />
                         </button>
-                        <button onClick={() => handleDelete(g.id)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-rose-600 transition-all shadow-sm">
-                          <Trash2 className="h-3.5 w-3.5" />
+                        <button onClick={() => { setRequestToDelete(g.id); setIsDeleteModalOpen(true); }} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 transition-all shadow-sm">
+                          <Trash2 className="h-4 w-4" />
                         </button>
                     </div>
                   </TableCell>
@@ -579,119 +589,169 @@ export default function AdminEquipmentRequestsPage() {
             </TableBody>
           </Table>
         </div>
-      </Card>
+      </div>
 
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      {/* Mobile View: Cards */}
+      <div className="lg:hidden space-y-3">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-40 bg-slate-50 animate-pulse rounded-xl" />
+          ))
+        ) : filteredRequests.length === 0 ? (
+          <div className="py-10 text-center text-slate-400 italic">{t('borrowing.no_requests_found')}</div>
+        ) : filteredRequests.map((g) => (
+          <Card key={g.id} className="p-4 shadow-sm rounded-xl border border-slate-200 space-y-3 bg-white">
+            <div className="flex justify-between items-start">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                   <Badge variant="outline" className="text-[9px] font-bold uppercase py-0 border-slate-200 bg-slate-50 text-slate-500">{g.group_code}</Badge>
+                   <span className="text-[10px] text-slate-400 font-bold">{new Date(g.createdAt).toLocaleDateString('en-GB')}</span>
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 line-clamp-1">
+                   {g.requests.length === 1 
+                     ? (g.requests[0].equipmentList?.equipmentEntry?.list || g.requests[0].equipmentList?.equipmentEntry?.item_name)
+                     : `${g.requests.length} Items Batch`}
+                </h3>
+              </div>
+              <div className="flex gap-1">
+                <button onClick={() => { setPreviewData(g); setIsPreviewModalOpen(true); }} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-[#0F1059]"><Eye className="h-4 w-4" /></button>
+                <button onClick={() => openDrawer(g)} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-400"><Edit2 className="h-4 w-4" /></button>
+                <button onClick={() => { setRequestToDelete(g.id); setIsDeleteModalOpen(true); }} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-400"><Trash2 className="h-4 w-4" /></button>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-[12px] pt-3 border-t border-slate-100">
+               <div className="space-y-0.5">
+                 <p className="text-[9px] font-bold text-slate-400 uppercase">{t('receiving.recipient')}</p>
+                 <p className="font-bold text-slate-700 truncate">{g.user?.employee?.employee_name_th || g.user?.username}</p>
+               </div>
+               <div className="space-y-0.5 text-right">
+                 <p className="text-[9px] font-bold text-slate-400 uppercase">{t('borrowing.date_needed')}</p>
+                 <p className="font-bold text-slate-700">{g.date_needed ? new Date(g.date_needed).toLocaleDateString('en-GB') : '-'}</p>
+               </div>
+            </div>
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+               <div className="flex gap-2">
+                  <Badge className={cn("text-[8px] font-bold uppercase", g.approval_status === "APPROVED" ? "bg-emerald-500" : g.approval_status === "REJECTED" ? "bg-rose-500" : "bg-amber-500")}>DEPT: {g.approval_status}</Badge>
+                  <Badge className={cn("text-[8px] font-bold uppercase", g.it_approval_status === "APPROVED" ? "bg-[#0F1059]" : g.it_approval_status === "REJECTED" ? "bg-rose-500" : "bg-slate-400")}>IT: {g.it_approval_status}</Badge>
+               </div>
+               <span className="text-sm font-bold text-[#0F1059]">QTY: {g.requests.reduce((acc, r) => acc + r.quantity, 0)}</span>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Drawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
         title={editingId ? t('borrowing.process_approval') : t('borrowing.new_request')}
+        size="2xl"
       >
-        <form onSubmit={handleSave} className="space-y-6 max-h-[80vh] overflow-y-auto pr-2 font-sans">
+        <form onSubmit={handleSave} className="space-y-6">
            {selectedGroup ? (
-              <div className="p-5 rounded-3xl bg-zinc-50 border border-zinc-100 space-y-4 shadow-inner">
-                 <div className="flex items-center justify-between pb-3 border-b border-zinc-200/50">
-                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">{locale === 'th' ? 'ข้อมูลการเบิก' : 'Borrow Info'}</p>
-                    <span className="font-black text-[11px] text-[#0F1059] bg-[#0F1059]/8 px-2.5 py-1 rounded-lg tracking-widest">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
+                 <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{locale === 'th' ? 'ข้อมูลการเบิก' : 'Borrow Info'}</p>
+                    <span className="font-bold text-xs text-[#0F1059] bg-[#0F1059]/5 px-2 py-1 rounded">
                        {selectedGroup.group_code}
                     </span>
                  </div>
 
-                 <div className="grid grid-cols-2 gap-4 pb-3 border-b border-zinc-200/50">
+                 <div className="grid grid-cols-2 gap-4 pb-3 border-b border-slate-200">
                     <div>
-                       <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'ผู้ร้องขอ' : 'Requester'}</p>
-                       <p className="text-[11px] font-bold text-zinc-700">{selectedGroup.user?.employee?.employee_name_th || selectedGroup.user?.username || '-'}</p>
-                       <p className="text-[9px] text-zinc-400 mt-0.5 font-mono">{selectedGroup.user?.employee?.employee_code || selectedGroup.user?.username || '-'}</p>
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{locale === 'th' ? 'ผู้ร้องขอ' : 'Requester'}</p>
+                       <p className="text-xs font-bold text-slate-700">{selectedGroup.user?.employee?.employee_name_th || selectedGroup.user?.username || '-'}</p>
+                       <p className="text-[10px] text-slate-400 mt-0.5 font-mono">{selectedGroup.user?.employee?.employee_code || selectedGroup.user?.username || '-'}</p>
                     </div>
                     <div>
-                       <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'วันที่สร้าง' : 'Created At'}</p>
-                       <p className="text-[11px] font-semibold text-zinc-600">
-                          {new Date(selectedGroup.createdAt).toLocaleString(locale === 'th' ? 'th-TH' : 'en-GB')}
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{locale === 'th' ? 'วันที่สร้าง' : 'Created At'}</p>
+                       <p className="text-xs font-semibold text-slate-600">
+                          {new Date(selectedGroup.createdAt).toLocaleString('en-GB')}
                        </p>
                     </div>
                  </div>
 
-                 <div className="pb-3 border-b border-zinc-200/50 space-y-1">
-                    <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest">{t('po.reason')}</p>
-                    <p className="text-[12px] font-medium text-zinc-600 leading-relaxed max-h-[80px] overflow-y-auto pr-2 custom-scrollbar">
+                 <div className="pb-3 border-b border-slate-200 space-y-1">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('po.reason')}</p>
+                    <p className="text-sm font-medium text-slate-600 leading-relaxed">
                        {selectedGroup.reason || t('common.no_info')}
                     </p>
                  </div>
 
-                 <p className="text-[10px] font-black text-[#0F1059] uppercase tracking-[0.2em]">{t('borrowing.batch_items')}</p>
-                 <div className="space-y-3">
+                 <p className="text-[10px] font-bold text-[#0F1059] uppercase tracking-widest">{t('borrowing.batch_items')}</p>
+                 <div className="space-y-2">
                     {selectedGroup.requests.map(r => (
-                       <div key={r.id} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-zinc-100 shadow-sm">
+                       <div key={r.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200 shadow-sm">
                           <div className="flex-1">
-                             <p className="text-sm font-black text-[#0F1059]">{r.equipmentList?.equipmentEntry?.list || r.equipmentList?.equipmentEntry?.item_name}</p>
-                             <div className="flex items-center gap-3 mt-2">
-                                <Badge variant="secondary" className="text-[9px] font-black uppercase tracking-widest bg-zinc-50 border-zinc-100 text-zinc-500">{r.borrow_type}</Badge>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase">Qty: {r.quantity}</span>
+                             <p className="text-sm font-bold text-slate-900">{r.equipmentList?.equipmentEntry?.list || r.equipmentList?.equipmentEntry?.item_name}</p>
+                             <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="secondary" className="text-[8px] font-bold uppercase tracking-wider bg-slate-50 border-slate-200 text-slate-500">{r.borrow_type}</Badge>
+                                <span className="text-[10px] font-medium text-slate-400 uppercase">Qty: {r.quantity}</span>
                              </div>
-                             {r.remarks && <p className="text-[9px] text-zinc-400 italic mt-2 border-l-2 border-zinc-100 pl-2">Note: {r.remarks}</p>}
+                             {r.remarks && <p className="text-[9px] text-slate-400 italic mt-1 pl-2 border-l border-slate-200">Note: {r.remarks}</p>}
                           </div>
-                          <span className="text-[10px] font-mono text-zinc-300 ml-4">{r.equipment_code}</span>
+                          <span className="text-[10px] font-mono text-slate-300 ml-4">{r.equipment_code}</span>
                        </div>
                     ))}
                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-zinc-200/50">
-                     <p className="text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('borrowing.date_needed')}</p>
-                     <p className="text-xs font-black text-rose-600 bg-rose-50 px-4 py-1.5 rounded-xl shadow-sm">
-                        {selectedGroup.date_needed ? new Date(selectedGroup.date_needed).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-GB') : t('common.no_info')}
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('borrowing.date_needed')}</p>
+                     <p className="text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-lg">
+                        {selectedGroup.date_needed ? new Date(selectedGroup.date_needed).toLocaleDateString('en-GB') : t('common.no_info')}
                      </p>
                   </div>
                </div>
             ) : (
-             <>
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                     <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('receiving.recipient')}</label>
-                     <select 
-                        required
-                        className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 shadow-sm transition-all"
-                        value={formData.userId}
-                        onChange={(e) => setFormData({...formData, userId: e.target.value})}
-                     >
-                        <option value="">-- SELECT USER --</option>
-                        {users.map(u => <option key={u.id} value={u.username}>{u.username}</option>)}
-                     </select>
-                  </div>
-                  <div className="space-y-1.5">
-                     <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('receiving.classification')}</label>
-                     <select 
-                        required
-                        className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 shadow-sm transition-all"
-                        value={formData.equipment_list_id}
-                        onChange={(e) => setFormData({...formData, equipment_list_id: e.target.value})}
-                     >
-                        <option value="">-- SELECT ITEM --</option>
-                        {inventory.map((item: any) => (
-                          <option key={item.id} value={item.id} disabled={item.remaining <= 0}>
-                            {item.equipmentEntry?.list || item.equipmentEntry?.item_name} (Stock: {item.remaining})
-                          </option>
-                        ))}
-                     </select>
-                  </div>
-               </div>
-    
-               <div className="space-y-1.5">
-                  <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('po.reason')}</label>
-                  <textarea 
-                     className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-[80px] focus:border-[#0F1059]/30 shadow-sm transition-all"
-                     value={formData.reason}
-                     onChange={(e) => setFormData({...formData, reason: e.target.value})}
-                  />
-               </div>
-             </>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                   <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('receiving.recipient')}</label>
+                      <select 
+                         required
+                         className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none focus:border-[#0F1059]/30 shadow-sm transition-all"
+                         value={formData.userId}
+                         onChange={(e) => setFormData({...formData, userId: e.target.value})}
+                      >
+                         <option value="">-- SELECT USER --</option>
+                         {users.map(u => <option key={u.id} value={u.username}>{u.username}</option>)}
+                      </select>
+                   </div>
+                   <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('receiving.classification')}</label>
+                      <select 
+                         required
+                         className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none focus:border-[#0F1059]/30 shadow-sm transition-all"
+                         value={formData.equipment_list_id}
+                         onChange={(e) => setFormData({...formData, equipment_list_id: e.target.value})}
+                      >
+                         <option value="">-- SELECT ITEM --</option>
+                         {inventory.map((item: any) => (
+                           <option key={item.id} value={item.id} disabled={item.remaining <= 0}>
+                             {item.equipmentEntry?.list || item.equipmentEntry?.item_name} (Stock: {item.remaining})
+                           </option>
+                         ))}
+                      </select>
+                   </div>
+                </div>
+     
+                <div className="space-y-1 font-sans">
+                   <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('po.reason')}</label>
+                   <textarea 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none min-h-[80px] focus:border-[#0F1059]/30 shadow-sm transition-all"
+                      value={formData.reason}
+                      onChange={(e) => setFormData({...formData, reason: e.target.value})}
+                   />
+                </div>
+              </div>
             )}
 
            {/* Step 1: Department Approval */}
-           <div className="p-5 rounded-3xl bg-amber-50/20 border border-amber-100 space-y-4 shadow-sm">
-              <h3 className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] border-b border-amber-100/50 pb-3">{t('borrowing.dept_step')}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                 <div className="space-y-2">
-                    <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('common.status')}</label>
+           <div className="p-4 rounded-xl bg-amber-50/30 border border-amber-100 space-y-4">
+              <h3 className="text-[10px] font-bold text-amber-600 uppercase tracking-widest border-b border-amber-200/30 pb-2">{t('borrowing.dept_step')}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('common.status')}</label>
                     <select 
-                       className="w-full bg-white border border-amber-100 rounded-xl px-4 py-3 text-xs font-black text-amber-600 uppercase shadow-sm outline-none"
+                       className="w-full bg-white border border-amber-200 rounded-lg px-4 py-2 text-xs font-bold text-amber-600 uppercase shadow-sm outline-none"
                        value={formData.approval_status}
                        onChange={(e) => setFormData({...formData, approval_status: e.target.value})}
                     >
@@ -700,8 +760,8 @@ export default function AdminEquipmentRequestsPage() {
                        <option value="REJECTED">REJECTED</option>
                     </select>
                  </div>
-                  <div className="space-y-2">
-                     <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('borrowing.signed_by')}</label>
+                  <div className="space-y-1">
+                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('borrowing.signed_by')}</label>
                      <EmployeeSearchSelect 
                         value={formData.approval || ""}
                         employees={employees}
@@ -710,10 +770,10 @@ export default function AdminEquipmentRequestsPage() {
                      />
                   </div>
               </div>
-              <div className="space-y-2">
-                 <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('borrowing.dept_comment')}</label>
+              <div className="space-y-1">
+                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('borrowing.dept_comment')}</label>
                  <textarea 
-                    className="w-full bg-white border border-amber-100 rounded-xl px-4 py-3 text-xs font-medium shadow-sm outline-none min-h-[60px]"
+                    className="w-full bg-white border border-amber-200 rounded-lg px-4 py-2 text-xs font-medium shadow-sm outline-none min-h-[60px]"
                     value={formData.approval_comment}
                     onChange={(e) => setFormData({...formData, approval_comment: e.target.value})}
                  />
@@ -721,13 +781,13 @@ export default function AdminEquipmentRequestsPage() {
            </div>
 
            {/* Step 2: IT Approval */}
-           <div className="p-5 rounded-3xl bg-[#0F1059]/5 border border-[#0F1059]/10 space-y-4 shadow-sm">
-              <h3 className="text-[10px] font-black text-[#0F1059] uppercase tracking-[0.2em] border-b border-[#0F1059]/10 pb-3">{t('borrowing.it_step')}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                 <div className="space-y-2">
-                    <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('common.status')}</label>
+           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
+              <h3 className="text-[10px] font-bold text-[#0F1059] uppercase tracking-widest border-b border-slate-200 pb-2">{t('borrowing.it_step')}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('common.status')}</label>
                     <select 
-                       className="w-full bg-white border border-[#0F1059]/10 rounded-xl px-4 py-3 text-xs font-black text-[#0F1059] uppercase shadow-sm outline-none"
+                       className="w-full bg-white border border-[#0F1059]/10 rounded-lg px-4 py-2 text-xs font-bold text-[#0F1059] uppercase shadow-sm outline-none"
                        value={formData.it_approval_status}
                        onChange={(e) => setFormData({...formData, it_approval_status: e.target.value})}
                     >
@@ -736,8 +796,8 @@ export default function AdminEquipmentRequestsPage() {
                        <option value="REJECTED">REJECTED</option>
                     </select>
                  </div>
-                 <div className="space-y-2">
-                    <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('borrowing.it_auditor')}</label>
+                 <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('borrowing.it_auditor')}</label>
                     <EmployeeSearchSelect 
                        value={formData.it_approval || ""}
                        employees={employees}
@@ -746,10 +806,10 @@ export default function AdminEquipmentRequestsPage() {
                     />
                  </div>
               </div>
-              <div className="space-y-2">
-                 <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('borrowing.it_comment')}</label>
+              <div className="space-y-1">
+                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('borrowing.it_comment')}</label>
                  <textarea 
-                    className="w-full bg-white border border-[#0F1059]/10 rounded-xl px-4 py-3 text-xs font-medium shadow-sm outline-none min-h-[60px]"
+                    className="w-full bg-white border border-[#0F1059]/10 rounded-lg px-4 py-2 text-xs font-medium shadow-sm outline-none min-h-[60px]"
                     placeholder="Stock check result..."
                     value={formData.it_approval_comment}
                     onChange={(e) => setFormData({...formData, it_approval_comment: e.target.value})}
@@ -757,8 +817,8 @@ export default function AdminEquipmentRequestsPage() {
               </div>
            </div>
 
-           <div className="flex items-center gap-3 pt-6 border-t border-zinc-100">
-              <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)} className="flex-1 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest">
+           <div className="flex items-center gap-3 pt-6 border-t border-slate-200">
+              <Button type="button" variant="ghost" onClick={() => setIsDrawerOpen(false)} className="flex-1 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest">
                  {t('common.cancel')}
               </Button>
               <Button 
@@ -770,7 +830,7 @@ export default function AdminEquipmentRequestsPage() {
               </Button>
            </div>
         </form>
-      </Modal>
+      </Drawer>
 
       <Modal
         isOpen={isExportModalOpen}
@@ -846,6 +906,46 @@ export default function AdminEquipmentRequestsPage() {
               <BorrowRequisitionPDF data={previewData} locale={locale} />
             </PDFViewer>
           )}
+        </div>
+      </Modal>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title={locale === 'th' ? "ยืนยันการลบคำขอยืม" : "Confirm Delete Borrow Request"}
+        size="sm"
+      >
+        <div className="space-y-6 text-center shadow-none">
+          <div className="mx-auto w-16 h-16 rounded-[24px] bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100 mb-2">
+            <Trash2 className="h-8 w-8" />
+          </div>
+          <div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+               {locale === 'th' ? "ยอมรับการลบข้อมูล?" : "Are you sure?"}
+            </h3>
+            <p className="text-[13px] font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-widest">
+               {locale === 'th' 
+                 ? "ข้อมูลคำขอยืมนี้จะถูกลบลบถาวร" 
+                 : "This action cannot be undone. This borrowing request will be permanently removed."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-rose-500/20"
+            >
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : (locale === 'th' ? "ยืนยันการลบ" : "Delete Permanently")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl text-slate-400 hover:text-slate-900 font-black uppercase tracking-widest text-[11px]"
+            >
+              {t('common.cancel')}
+            </Button>
+          </div>
         </div>
       </Modal>
     </div>

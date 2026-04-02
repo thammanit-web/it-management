@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -363,47 +364,45 @@ export default function TicketsPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="p-4 space-y-4">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-zinc-900 tracking-tight uppercase flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-[#0F1059] flex items-center justify-center text-white border border-[#0F1059]/10">
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight uppercase flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-[#0F1059] flex items-center justify-center text-white border border-slate-200 dark:border-slate-700 shadow-sm">
               <Ticket className="h-5 w-5" />
             </div>
             {t('admin_tickets.title')}
           </h1>
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest mt-1">{t('admin_tickets.subtitle')}</p>
+          <p className="text-sm font-medium text-slate-500 uppercase tracking-widest mt-1">{t('admin_tickets.subtitle')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
             onClick={() => handleExportExcel()}
             variant="outline"
-            className="rounded-2xl border-zinc-100 hover:border-[#0F1059] hover:text-[#0F1059] py-6 px-6 font-black uppercase tracking-widest text-[13px] transition-all hover:scale-105 active:scale-95"
+            className="rounded-lg border-slate-200 dark:border-slate-700 hover:border-[#0F1059] hover:text-[#0F1059] h-10 px-4 font-bold uppercase tracking-widest text-[12px] transition-all"
           >
             <FileSpreadsheet className="mr-2 h-4 w-4 text-emerald-600" /> {t('admin_tickets.export_excel')}
           </Button>
-          <Button onClick={() => openModal()} className="rounded-2xl bg-[#0F1059] hover:bg-black py-6 px-8 font-black uppercase tracking-widest text-[13px] transition-all hover:scale-105 active:scale-95">
+          <Button onClick={() => openModal()} className="rounded-lg bg-[#0F1059] hover:bg-black h-10 px-4 font-bold uppercase tracking-widest text-[12px] transition-all">
             <Ticket className="mr-2 h-4 w-4" /> {t('admin_tickets.create_ticket')}
           </Button>
         </div>
       </header>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-6 gap-3 items-center p-4 rounded-3xl border border-zinc-100 backdrop-blur-xl bg-white/50 shadow-sm">
-        {/* Search */}
-        <div className="xl:col-span-2 flex items-center gap-3 px-4 py-2.5 bg-zinc-50 rounded-2xl border border-zinc-100 shadow-sm group focus-within:border-[#0F1059]/30 transition-all">
-          <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-[#0F1059] shrink-0" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+        <div className="xl:col-span-2 flex items-center gap-3 px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 group focus-within:border-[#0F1059]/30 transition-all">
+          <Search className="h-4 w-4 text-slate-400 group-focus-within:text-[#0F1059] shrink-0" />
           <input
-            className="bg-transparent border-none outline-none text-xs font-bold uppercase w-full placeholder:text-zinc-300"
-            placeholder={locale === 'th' ? 'ค้นหา รหัส, ชื่อ, แผนก, ตำแหน่ง...' : 'Search code, name, dept, position...'}
+            className="bg-transparent border-none outline-none text-sm font-bold uppercase w-full placeholder:text-slate-400"
+            placeholder={t('employees.search_placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        {/* Status */}
         <select
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[11px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 font-sans"
+          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 dark:text-slate-300 focus:border-[#0F1059]/30 transition-all"
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
         >
@@ -414,9 +413,8 @@ export default function TicketsPage() {
           <option value="CLOSED">CLOSED</option>
         </select>
 
-        {/* Priority */}
         <select
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[11px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 font-sans"
+          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 dark:text-slate-300 focus:border-[#0F1059]/30 transition-all"
           value={filterPriority}
           onChange={(e) => setFilterPriority(e.target.value)}
         >
@@ -427,9 +425,8 @@ export default function TicketsPage() {
           <option value="URGENT">{t('priorities.urgent')}</option>
         </select>
 
-        {/* Category */}
         <select
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[11px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 font-sans"
+          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 dark:text-slate-300 focus:border-[#0F1059]/30 transition-all"
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
         >
@@ -440,9 +437,8 @@ export default function TicketsPage() {
           <option value="GENERAL">{t('categories.general')}</option>
         </select>
 
-        {/* Type Request */}
         <select
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[11px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 font-sans"
+          className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 dark:text-slate-300 focus:border-[#0F1059]/30 transition-all"
           value={filterTypeRequest}
           onChange={(e) => setFilterTypeRequest(e.target.value)}
         >
@@ -459,317 +455,133 @@ export default function TicketsPage() {
         </select>
       </div>
 
-      {/* Results summary */}
-      <div className="flex items-center justify-between px-2">
-        <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
+      <div className="flex items-center justify-between px-1">
+        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
           {locale === 'th' ? `แสดง ${filteredTickets.length} จาก ${tickets.length} รายการ` : `Showing ${filteredTickets.length} of ${tickets.length} tickets`}
         </p>
-        {(filterStatus !== 'ALL' || filterPriority !== 'ALL' || filterCategory !== 'ALL' || filterTypeRequest !== 'ALL' || search) && (
-          <button
-            onClick={() => { setFilterStatus('ALL'); setFilterPriority('ALL'); setFilterCategory('ALL'); setFilterTypeRequest('ALL'); setSearch(''); }}
-            className="text-[10px] font-black text-rose-400 hover:text-rose-600 uppercase tracking-widest transition-colors"
-          >
-            {locale === 'th' ? '× ล้างตัวกรอง' : '× Clear Filters'}
-          </button>
-        )}
       </div>
 
-      <Card className="rounded-[32px] border-zinc-100 overflow-hidden bg-white/90 shadow-sm">
+      {/* Desktop View: Table */}
+      <div className="hidden lg:block overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <div className="overflow-x-auto">
           <Table className="w-full text-left min-w-[1400px]">
-            <TableHeader className="bg-zinc-50/80 border-b border-zinc-100">
+            <TableHeader className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
               <TableRow>
-                {/* Request Info */}
-                <TableHead
-                  className="px-5 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[220px]"
-                  onClick={() => handleSort('request_code')}
-                >
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest cursor-pointer" onClick={() => handleSort('request_code')}>
                   <div className="flex items-center gap-1">
                     {t('admin_tickets.request_info')}
                     {sortConfig.key === 'request_code' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
-                {/* Requester / Employee */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[160px]"
-                  onClick={() => handleSort('employeeId')}
-                >
-                  <div className="flex items-center gap-1">
-                    {locale === 'th' ? 'ผู้ร้อง / แผนก' : 'Requester / Dept'}
-                    {sortConfig.key === 'employeeId' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest cursor-pointer" onClick={() => handleSort('employeeId')}>
+                   <div className="flex items-center gap-1">
+                     {locale === 'th' ? 'ผู้ร้อง / แผนก' : 'Requester / Dept'}
+                     {sortConfig.key === 'employeeId' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
+                   </div>
                 </TableHead>
-                {/* Type */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[110px]"
-                  onClick={() => handleSort('type_request')}
-                >
-                  <div className="flex items-center gap-1">
-                    {t('requests.request_type')}
-                    {sortConfig.key === 'type_request' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
-                </TableHead>
-                {/* Category */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[100px]"
-                  onClick={() => handleSort('category')}
-                >
-                  <div className="flex items-center gap-1">
-                    {t('common.category')}
-                    {sortConfig.key === 'category' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
-                </TableHead>
-                {/* Priority */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[90px]"
-                  onClick={() => handleSort('priority')}
-                >
-                  <div className="flex items-center gap-1">
-                    {t('common.priority')}
-                    {sortConfig.key === 'priority' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
-                </TableHead>
-                {/* Dept Approver */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[130px]"
-                  onClick={() => handleSort('approval')}
-                >
-                  <div className="flex items-center gap-1">
-                    {locale === 'th' ? 'ผู้อนุมัติ (แผนก)' : 'Dept Approver'}
-                    {sortConfig.key === 'approval' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
-                </TableHead>
-                {/* Dept Status */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[110px]"
-                  onClick={() => handleSort('approval_status')}
-                >
-                  <div className="flex items-center gap-1">
-                    {t('admin_tickets.dept_status')}
-                    {sortConfig.key === 'approval_status' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
-                </TableHead>
-                {/* IT Approver */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[130px]"
-                  onClick={() => handleSort('it_approval')}
-                >
-                  <div className="flex items-center gap-1">
-                    {locale === 'th' ? 'ผู้อนุมัติ (IT)' : 'IT Approver'}
-                    {sortConfig.key === 'it_approval' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
-                </TableHead>
-                {/* IT Status */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[110px]"
-                  onClick={() => handleSort('it_approval_status')}
-                >
-                  <div className="flex items-center gap-1">
-                    {t('admin_tickets.it_status')}
-                    {sortConfig.key === 'it_approval_status' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
-                </TableHead>
-                {/* Progress */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[120px]"
-                  onClick={() => handleSort('status')}
-                >
-                  <div className="flex items-center gap-1">
-                    {t('admin_tickets.progress')}
-                    {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
-                </TableHead>
-                {/* Updated */}
-                <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[100px]"
-                  onClick={() => handleSort('updatedAt')}
-                >
-                  <div className="flex items-center gap-1">
-                    {locale === 'th' ? 'อัพเดต' : 'Updated'}
-                    {sortConfig.key === 'updatedAt' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                  </div>
-                </TableHead>
-                {/* Actions */}
-                <TableHead className="px-4 py-4 w-[100px]"></TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest">{t('requests.request_type')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest">{t('common.category')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest">{t('common.priority')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest">{locale === 'th' ? 'สถานะ (แผนก)' : 'Dept Status'}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest">{locale === 'th' ? 'สถานะ (IT)' : 'IT Status'}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest">{t('admin_tickets.progress')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-zinc-50">
+            <TableBody className="divide-y divide-slate-100 dark:divide-slate-800">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell colSpan={12} className="h-16 animate-pulse bg-zinc-50/20" />
-                  </TableRow>
+                  <TableRow key={i}><TableCell colSpan={9} className="py-8 animate-pulse bg-slate-50/50" /></TableRow>
                 ))
               ) : filteredTickets.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={12} className="px-6 py-20 text-center text-zinc-400 italic font-bold uppercase tracking-widest">
-                    {t('admin_tickets.no_tickets_found')}
-                  </TableCell>
-                </TableRow>
-              ) : filteredTickets.map((t_item: any) => (
-                <TableRow key={t_item.id} className="hover:bg-blue-50/20 transition-colors group">
-
-                  {/* Request Info */}
-                  <TableCell className="px-5 py-3.5 whitespace-nowrap">
-                    <div className="font-semibold text-zinc-800 line-clamp-1 max-w-[200px] text-[12px]" title={t_item.description}>{t_item.description}</div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="font-black text-[9px] text-[#0F1059] bg-[#0F1059]/8 px-1.5 py-0.5 rounded-md tracking-wide">{t_item.request_code || 'N/A'}</span>
-                      <span className="text-[9px] text-zinc-300">•</span>
-                      <span className="text-[9px] text-zinc-400 font-medium">{new Date(t_item.createdAt).toLocaleDateString('en-GB')}</span>
+                <TableRow><TableCell colSpan={9} className="py-20 text-center text-slate-400 italic font-bold uppercase tracking-widest">{t('admin_tickets.no_tickets_found')}</TableCell></TableRow>
+              ) : filteredTickets.map((t_item) => (
+                <TableRow key={t_item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800 transition-colors group">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <div className="font-bold text-slate-900 dark:text-slate-100 text-sm line-clamp-1 max-w-[250px]">{t_item.description}</div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="font-bold text-[10px] text-primary bg-primary/5 px-1.5 py-0.5 rounded uppercase">{t_item.request_code || 'N/A'}</span>
+                      <span className="text-[10px] text-slate-400">{new Date(t_item.createdAt).toLocaleDateString('en-GB')}</span>
                     </div>
-                    {t_item.reason && (
-                      <div className="text-[9px] text-zinc-400 mt-0.5 italic line-clamp-1 max-w-[190px]" title={t_item.reason}>↪ {t_item.reason}</div>
-                    )}
                   </TableCell>
-
-                  {/* Requester / Dept */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <div className="text-[11px] font-semibold text-zinc-700 line-clamp-1 max-w-[150px]">{t_item.employee?.employee_name_th || t_item.user?.username || '-'}</div>
-                    {t_item.employee?.department && (
-                      <div className="text-[9px] text-zinc-400 font-medium mt-0.5 flex items-center gap-1">
-                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-indigo-300" />
-                        {t_item.employee.department}
-                      </div>
-                    )}
-                    {t_item.employee?.position && (
-                      <div className="text-[9px] text-zinc-300 italic mt-0.5 line-clamp-1 max-w-[150px]">{t_item.employee.position}</div>
-                    )}
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <div className="text-sm font-bold text-slate-800 dark:text-slate-200">{t_item.employee?.employee_name_th || t_item.user?.username || '-'}</div>
+                    <div className="text-[10px] text-slate-400 font-bold uppercase mt-1">{t_item.employee?.department || '-'}</div>
                   </TableCell>
-
-                  {/* Type */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <Badge variant="outline" className="rounded-md text-[8px] font-black uppercase tracking-wide px-2 py-0.5 border-violet-200 text-violet-600 bg-violet-50">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <Badge variant="outline" className="rounded text-[9px] font-bold uppercase tracking-wider py-0.5 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                       {t_item.type_request || '-'}
                     </Badge>
                   </TableCell>
-
-                  {/* Category */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                     <Badge variant="outline" className={cn(
-                      "rounded-md text-[8px] font-black uppercase tracking-wide px-2 py-0.5",
-                      t_item.category === "HARDWARE" ? "text-orange-600 bg-orange-50 border-orange-200" :
-                      t_item.category === "SOFTWARE" ? "text-sky-600 bg-sky-50 border-sky-200" :
-                      t_item.category === "NETWORK" ? "text-teal-600 bg-teal-50 border-teal-200" :
-                      "text-zinc-500 bg-zinc-50 border-zinc-200"
+                      "rounded text-[9px] font-bold uppercase tracking-wider py-0.5 border-none",
+                      t_item.category === "HARDWARE" ? "text-orange-600 bg-orange-50" :
+                      t_item.category === "SOFTWARE" ? "text-sky-600 bg-sky-50" : "text-slate-500 bg-slate-50"
                     )}>
                       {t_item.category}
                     </Badge>
                   </TableCell>
-
-                  {/* Priority */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                     <Badge variant="outline" className={cn(
-                      "rounded-md text-[8px] font-black uppercase tracking-wide px-2 py-0.5",
-                      t_item.priority === "URGENT" ? "text-red-700 bg-red-50 border-red-300" :
-                      t_item.priority === "HIGH" ? "text-rose-600 bg-rose-50 border-rose-200" :
-                      t_item.priority === "MEDIUM" ? "text-amber-600 bg-amber-50 border-amber-200" :
-                      "text-sky-600 bg-sky-50 border-sky-200"
+                      "rounded text-[9px] font-bold uppercase tracking-wider py-0.5 border-none",
+                      t_item.priority === "URGENT" || t_item.priority === "HIGH" ? "text-rose-600 bg-rose-50" :
+                      t_item.priority === "MEDIUM" ? "text-amber-600 bg-amber-50" : "text-sky-600 bg-sky-50"
                     )}>
                       {t_item.priority}
                     </Badge>
                   </TableCell>
-
-                  {/* Dept Approver */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <div className="text-[10px] font-medium text-zinc-600 max-w-[120px] truncate" title={t_item.approval || '-'}>
-                      {t_item.approval || <span className="text-zinc-300 italic">—</span>}
-                    </div>
-                    {t_item.approval_date && (
-                      <div className="text-[9px] text-zinc-300 mt-0.5">{new Date(t_item.approval_date).toLocaleDateString('en-GB')}</div>
-                    )}
-                  </TableCell>
-
-                  {/* Dept Status */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <select
-                      value={t_item.approval_status || "PENDING"}
-                      onChange={(e) => updateStatusInline(t_item.id, 'approval_status', e.target.value)}
-                      className={cn(
-                        "rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-tight border-none outline-none cursor-pointer font-sans",
-                        t_item.approval_status === "APPROVED" ? "bg-emerald-50 text-emerald-600" :
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <select
+                        value={t_item.approval_status || "PENDING"}
+                        onChange={(e) => updateStatusInline(t_item.id, 'approval_status', e.target.value)}
+                        className={cn(
+                          "rounded px-2 py-1 text-[10px] font-black uppercase tracking-tight border-none outline-none cursor-pointer",
+                          t_item.approval_status === "APPROVED" ? "bg-emerald-50 text-emerald-600" :
                           t_item.approval_status === "REJECTED" ? "bg-rose-50 text-rose-600" : "bg-amber-50 text-amber-600"
-                      )}
-                    >
-                      <option value="PENDING">PENDING</option>
-                      <option value="APPROVED">APPROVED</option>
-                      <option value="REJECTED">REJECTED</option>
-                    </select>
-                  </TableCell>
-
-                  {/* IT Approver */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <div className="text-[10px] font-medium text-zinc-600 max-w-[120px] truncate" title={t_item.it_approval || '-'}>
-                      {t_item.it_approval || <span className="text-zinc-300 italic">—</span>}
-                    </div>
-                    {t_item.it_approval_date && (
-                      <div className="text-[9px] text-zinc-300 mt-0.5">{new Date(t_item.it_approval_date).toLocaleDateString('en-GB')}</div>
-                    )}
-                  </TableCell>
-
-                  {/* IT Status */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <select
-                      value={t_item.it_approval_status || "PENDING"}
-                      onChange={(e) => updateStatusInline(t_item.id, 'it_approval_status', e.target.value)}
-                      className={cn(
-                        "rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-tight border-none outline-none cursor-pointer font-sans",
-                        t_item.it_approval_status === "APPROVED" ? "bg-[#0F1059] text-white" :
-                          t_item.it_approval_status === "REJECTED" ? "bg-rose-500 text-white" : "bg-zinc-100 text-zinc-500"
-                      )}
-                    >
-                      <option value="PENDING">PENDING</option>
-                      <option value="APPROVED">APPROVED</option>
-                      <option value="REJECTED">REJECTED</option>
-                    </select>
-                  </TableCell>
-
-                  {/* Progress/Status */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <select
-                      value={t_item.status || "OPEN"}
-                      onChange={(e) => updateStatusInline(t_item.id, 'status', e.target.value)}
-                      className={cn(
-                        "rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-widest border-none outline-none cursor-pointer font-sans",
-                        t_item.status === "RESOLVED" || t_item.status === "CLOSED" ? "bg-emerald-50 text-emerald-600" :
-                        t_item.status === "IN_PROGRESS" ? "bg-amber-50 text-amber-600" : "bg-blue-50 text-blue-600"
-                      )}
-                    >
-                      <option value="OPEN">OPEN</option>
-                      <option value="IN_PROGRESS">IN PROGRESS</option>
-                      <option value="RESOLVED">RESOLVED</option>
-                      <option value="CLOSED">CLOSED</option>
-                    </select>
-                  </TableCell>
-
-                  {/* Updated At */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <div className="text-[10px] font-medium text-zinc-500">
-                      {new Date(t_item.updatedAt).toLocaleDateString('en-GB')}
-                    </div>
-                    <div className="text-[9px] text-zinc-300 mt-0.5">
-                      {new Date(t_item.updatedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                  </TableCell>
-
-                  {/* Actions */}
-                  <TableCell className="px-4 py-3.5 whitespace-nowrap text-right">
-                    <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => {
-                          setPreviewData(t_item);
-                          setIsPreviewModalOpen(true);
-                        }}
-                        className="p-2 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-[#0F1059] hover:border-[#0F1059]/20 transition-all"
-                        title="View PDF"
+                        )}
                       >
-                        <Eye className="h-3.5 w-3.5" />
-                      </button>
-                      <button onClick={() => openModal(t_item)} className="p-2 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-[#0F1059] hover:border-[#0F1059]/20 transition-all">
-                        <Edit2 className="h-3.5 w-3.5" />
-                      </button>
-                      <button onClick={() => handleDelete(t_item.id)} className="p-2 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-rose-600 hover:border-rose-200 transition-all">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+                        <option value="PENDING">PENDING</option>
+                        <option value="APPROVED">APPROVED</option>
+                        <option value="REJECTED">REJECTED</option>
+                      </select>
+                  </TableCell>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <select
+                        value={t_item.it_approval_status || "PENDING"}
+                        onChange={(e) => updateStatusInline(t_item.id, 'it_approval_status', e.target.value)}
+                        className={cn(
+                          "rounded px-2 py-1 text-[10px] font-black uppercase tracking-tight border-none outline-none cursor-pointer",
+                          t_item.it_approval_status === "APPROVED" ? "bg-primary text-white" :
+                          t_item.it_approval_status === "REJECTED" ? "bg-rose-500 text-white" : "bg-slate-100 text-slate-500"
+                        )}
+                      >
+                        <option value="PENDING">PENDING</option>
+                        <option value="APPROVED">APPROVED</option>
+                        <option value="REJECTED">REJECTED</option>
+                      </select>
+                  </TableCell>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <select
+                        value={t_item.status || "OPEN"}
+                        onChange={(e) => updateStatusInline(t_item.id, 'status', e.target.value)}
+                        className={cn(
+                          "rounded px-2 py-1 text-[10px] font-black uppercase tracking-widest border-none outline-none cursor-pointer",
+                          t_item.status === "RESOLVED" || t_item.status === "CLOSED" ? "bg-emerald-50 text-emerald-600" :
+                          t_item.status === "IN_PROGRESS" ? "bg-amber-50 text-amber-600" : "bg-blue-50 text-blue-600"
+                        )}
+                      >
+                        <option value="OPEN">OPEN</option>
+                        <option value="IN_PROGRESS">IN PROGRESS</option>
+                        <option value="RESOLVED">RESOLVED</option>
+                        <option value="CLOSED">CLOSED</option>
+                      </select>
+                  </TableCell>
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-right">
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => { setPreviewData(t_item); setIsPreviewModalOpen(true); }} className="p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary transition-all"><Eye className="h-4 w-4" /></button>
+                      <button onClick={() => openModal(t_item)} className="p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary transition-all"><Edit2 className="h-4 w-4" /></button>
+                      <button onClick={() => handleDelete(t_item.id)} className="p-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-rose-600 transition-all"><Trash2 className="h-4 w-4" /></button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -777,13 +589,59 @@ export default function TicketsPage() {
             </TableBody>
           </Table>
         </div>
-      </Card>
+      </div>
 
-      <Modal
+      {/* Mobile View: Cards */}
+      <div className="lg:hidden space-y-3">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-32 bg-slate-50 dark:bg-slate-800 animate-pulse rounded-xl" />
+          ))
+        ) : filteredTickets.length === 0 ? (
+          <div className="py-10 text-center text-slate-400 italic">{t('admin_tickets.no_tickets_found')}</div>
+        ) : filteredTickets.map((t_item) => (
+          <Card key={t_item.id} className="p-4 shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 space-y-3 bg-white dark:bg-slate-900">
+             <div className="flex justify-between items-start">
+               <div className="space-y-1">
+                 <p className="text-[10px] font-black text-primary uppercase tracking-widest">{t_item.request_code || 'N/A'}</p>
+                 <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 line-clamp-1">{t_item.description}</h3>
+               </div>
+               <Badge className={cn(
+                  "rounded text-[9px] font-bold uppercase px-2 py-0.5",
+                  t_item.status === "RESOLVED" || t_item.status === "CLOSED" ? "bg-emerald-50 text-emerald-600" :
+                  t_item.status === "IN_PROGRESS" ? "bg-amber-50 text-amber-600" : "bg-blue-50 text-blue-600"
+               )}>
+                 {t_item.status}
+               </Badge>
+             </div>
+             <div className="grid grid-cols-2 gap-3 text-[12px] pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="space-y-0.5">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase">{locale === 'th' ? 'ผู้ส่ง' : 'Requester'}</p>
+                  <p className="font-bold text-slate-700 dark:text-slate-300 truncate">{t_item.employee?.employee_name_th || '-'}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase">{t('common.category')}</p>
+                  <p className="font-bold text-slate-700 dark:text-slate-300 truncate">{t_item.category}</p>
+                </div>
+             </div>
+             <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
+               <span className="text-[10px] text-slate-400 font-bold">{new Date(t_item.createdAt).toLocaleDateString('en-GB')}</span>
+               <div className="flex gap-1">
+                 <button onClick={() => { setPreviewData(t_item); setIsPreviewModalOpen(true); }} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400"><Eye className="h-4 w-4" /></button>
+                 <button onClick={() => openModal(t_item)} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400"><Edit2 className="h-4 w-4" /></button>
+                 <button onClick={() => handleDelete(t_item.id)} className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400"><Trash2 className="h-4 w-4" /></button>
+               </div>
+             </div>
+          </Card>
+        ))}
+      </div>
+
+
+      <Drawer
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingId ? t('admin_tickets.process_ticket_title') : t('admin_tickets.create_ticket_title')}
-        size="xl"
+        size="2xl"
       >
         <form onSubmit={handleSave} className="space-y-5">
 
@@ -949,7 +807,7 @@ export default function TicketsPage() {
           <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-100/60 space-y-4">
             <h3 className="text-[11px] font-black text-amber-600 uppercase tracking-[0.2em] border-b border-amber-100 pb-2 flex items-center justify-between">
               {t('admin_tickets.dept_approval_step')}
-              {editingTicket?.approval_date && (
+              {editingTicket && editingTicket.approval_date && (
                 <span className="text-[9px] font-bold text-amber-400 normal-case tracking-normal">
                   {locale === 'th' ? 'อนุมัติเมื่อ: ' : 'Approved: '}
                   {new Date(editingTicket.approval_date).toLocaleDateString('en-GB')}
@@ -999,7 +857,7 @@ export default function TicketsPage() {
           <div className="p-4 rounded-2xl bg-[#0F1059]/5 border border-[#0F1059]/10 space-y-4">
             <h3 className="text-[11px] font-black text-[#0F1059] uppercase tracking-[0.2em] border-b border-[#0F1059]/10 pb-2 flex items-center justify-between">
               {t('admin_tickets.it_approval_step')}
-              {editingTicket?.it_approval_date && (
+              {editingTicket && editingTicket.it_approval_date && (
                 <span className="text-[9px] font-bold text-[#0F1059]/40 normal-case tracking-normal">
                   {locale === 'th' ? 'อนุมัติเมื่อ: ' : 'Approved: '}
                   {new Date(editingTicket.it_approval_date).toLocaleDateString('en-GB')}
@@ -1083,7 +941,7 @@ export default function TicketsPage() {
             </Button>
           </div>
         </form>
-      </Modal>
+      </Drawer>
 
       <Modal
         isOpen={isExportModalOpen}

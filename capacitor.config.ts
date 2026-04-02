@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'it-system',
   webDir: 'out',
   server: {
-    url: "https://your-app-name.vercel.app",
+    url: "https://ndc-it.vercel.app",
     cleartext: true
   }
 };

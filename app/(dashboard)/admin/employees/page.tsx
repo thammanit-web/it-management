@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -37,9 +38,14 @@ export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState<string | null>(null);
+  
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Filters & Sorting logic states
   const [filterStatus, setFilterStatus] = useState("ALL");
@@ -110,7 +116,7 @@ export default function EmployeesPage() {
       return 0;
     });
 
-  const openModal = (employee: Employee | null = null) => {
+  const openDrawer = (employee: Employee | null = null) => {
     if (employee) {
       setSelectedEmployee(employee);
       setFormData({
@@ -142,7 +148,7 @@ export default function EmployeesPage() {
         status: "ACTIVE"
       });
     }
-    setIsModalOpen(true);
+    setIsDrawerOpen(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -161,7 +167,7 @@ export default function EmployeesPage() {
       });
 
       if (res.ok) {
-        setIsModalOpen(false);
+        setIsDrawerOpen(false);
         fetchEmployees();
       }
     } catch (error) {
@@ -171,41 +177,46 @@ export default function EmployeesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('common.confirm_delete'))) return;
+  const confirmDelete = async () => {
+    if (!employeeToDelete) return;
+    setIsDeleting(true);
     try {
-      await fetch(`/api/employees/${id}`, { method: "DELETE" });
+      await fetch(`/api/employees/${employeeToDelete}`, { method: "DELETE" });
       fetchEmployees();
+      setIsDeleteModalOpen(false);
+      setEmployeeToDelete(null);
     } catch (error) {
       console.error("Delete error:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const departments = Array.from(new Set(employees.map(e => e.department).filter(Boolean)));
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="p-4 space-y-4">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-black text-[#0F1059] tracking-tighter uppercase leading-none flex items-center gap-3">
-             <div className="h-12 w-12 rounded-2xl bg-[#0F1059] flex items-center justify-center text-white border border-[#0F1059]/10 shadow-sm">
-                <User className="h-6 w-6" />
+        <div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight uppercase flex items-center gap-3">
+             <div className="h-10 w-10 rounded-lg bg-[#0F1059] flex items-center justify-center text-white border border-slate-200 shadow-sm">
+                <User className="h-5 w-5" />
              </div>
              {t('employees.title')}
           </h1>
-          <p className="text-[12px] font-medium text-zinc-500 uppercase tracking-widest mt-2">{t('employees.subtitle')}</p>
+          <p className="text-sm font-medium text-slate-500 uppercase tracking-widest mt-1">{t('employees.subtitle')}</p>
         </div>
-        <Button onClick={() => openModal()} className="rounded-2xl bg-[#0F1059] hover:bg-black h-14 px-8 font-black uppercase tracking-widest text-[11px] transition-all shadow-xl shadow-[#0F1059]/10">
+        <Button onClick={() => openDrawer()} className="rounded-lg bg-[#0F1059] hover:bg-black h-10 px-4 font-bold uppercase tracking-widest text-[12px] transition-all shadow-sm">
           <Plus className="mr-2 h-4 w-4" /> {t('employees.add_employee')}
         </Button>
       </header>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center p-4 rounded-3xl border border-zinc-100 bg-white/50 shadow-sm font-sans uppercase">
-        <div className="flex items-center gap-3 px-4 py-2 bg-zinc-50 rounded-2xl border border-zinc-100 group focus-within:border-[#0F1059]/30 transition-all col-span-1 lg:col-span-2">
-             <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-[#0F1059]" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg border border-slate-200 group focus-within:border-[#0F1059]/30 transition-all md:col-span-2">
+             <Search className="h-4 w-4 text-slate-400 group-focus-within:text-[#0F1059]" />
              <input 
-                className="bg-transparent border-none outline-none text-[10px] font-black uppercase w-full"
+                className="bg-transparent border-none outline-none text-sm font-bold uppercase w-full placeholder:text-slate-400"
                 placeholder={t('employees.search_placeholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -213,7 +224,7 @@ export default function EmployeesPage() {
         </div>
         
         <select 
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 cursor-pointer transition-all"
+          className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 focus:border-[#0F1059]/30 transition-all cursor-pointer"
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
         >
@@ -223,7 +234,7 @@ export default function EmployeesPage() {
         </select>
 
         <select 
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 cursor-pointer transition-all"
+          className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 focus:border-[#0F1059]/30 transition-all cursor-pointer"
           value={filterDepartment}
           onChange={(e) => setFilterDepartment(e.target.value)}
         >
@@ -234,13 +245,20 @@ export default function EmployeesPage() {
         </select>
       </div>
 
-      <Card className="rounded-[40px] border-zinc-100 overflow-hidden bg-white/90">
+      <div className="flex items-center justify-between px-1">
+        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
+          {locale === 'th' ? `แสดง ${filteredEmployees.length} จาก ${employees.length} รายการ` : `Showing ${filteredEmployees.length} of ${employees.length} employees`}
+        </p>
+      </div>
+
+      {/* Desktop View: Table */}
+      <div className="hidden lg:block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <Table className="w-full text-left font-sans">
-            <TableHeader className="bg-zinc-50/50">
-              <TableRow className="border-none">
+          <Table className="w-full text-left">
+            <TableHeader className="bg-slate-50 border-b border-slate-200">
+              <TableRow>
                 <TableHead 
-                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('employee_name_th')}
                 >
                   <div className="flex items-center gap-1">
@@ -249,7 +267,7 @@ export default function EmployeesPage() {
                   </div>
                 </TableHead>
                 <TableHead 
-                   className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('department')}
                 >
                   <div className="flex items-center gap-1">
@@ -257,11 +275,10 @@ export default function EmployeesPage() {
                     {sortConfig.key === 'department' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('employees.position')}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('employees.gender')}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('employees.supervisor')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('employees.position')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('employees.supervisor')}</TableHead>
                 <TableHead 
-                   className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('start_date')}
                 >
                   <div className="flex items-center gap-1">
@@ -269,70 +286,65 @@ export default function EmployeesPage() {
                     {sortConfig.key === 'start_date' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('common.status')}</TableHead>
-                <TableHead className="p-0"></TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('common.status')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-zinc-100">
+            <TableBody className="divide-y divide-slate-100">
               {isLoading ? (
                  Array.from({ length: 5 }).map((_, i) => (
                    <TableRow key={i}>
-                     <TableCell colSpan={8} className="h-20 animate-pulse bg-zinc-50/10" />
+                     <TableCell colSpan={7} className="py-8 animate-pulse bg-slate-50/50" />
                    </TableRow>
                  ))
               ) : filteredEmployees.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="px-6 py-20 text-center text-zinc-400 italic font-bold uppercase tracking-widest">
+                  <TableCell colSpan={7} className="py-20 text-center text-slate-400 italic font-bold uppercase tracking-widest">
                       {t('employees.no_employees_found')}
                   </TableCell>
                 </TableRow>
               ) : filteredEmployees.map((emp) => (
-                <TableRow key={emp.id} className="hover:bg-zinc-50/50 transition-colors group">
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
-                     <div className="font-bold text-[#0F1059] uppercase text-sm">{emp.employee_name_th}</div>
-                     <div className="text-[10px] text-zinc-400 font-bold uppercase tracking-tighter mt-0.5">
-                       <span className="font-black text-[#0F1059]/60">{emp.employee_code}</span>
-                       {emp.employee_name_en && <span className="ml-2 text-zinc-300">• {emp.employee_name_en}</span>}
+                <TableRow key={emp.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <div className="font-bold text-slate-900 text-sm">{emp.employee_name_th}</div>
+                     <div className="flex items-center gap-2 mt-1">
+                       <span className="font-bold text-[10px] text-[#0F1059] bg-[#0F1059]/5 px-1.5 py-0.5 rounded uppercase tracking-wide">{emp.employee_code}</span>
+                       {emp.employee_name_en && <span className="text-[10px] text-slate-400 uppercase font-medium">{emp.employee_name_en}</span>}
                      </div>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                     <div className="text-[11px] font-black text-zinc-700 uppercase tracking-tight">{emp.department || '-'}</div>
-                     <div className="text-[9px] text-zinc-400 font-medium uppercase">{emp.work_location || '-'}</div>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <div className="text-sm font-bold text-slate-800">{emp.department || '-'}</div>
+                     <div className="text-[10px] text-slate-400 font-bold uppercase mt-1">{emp.work_location || '-'}</div>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                     <Badge variant="secondary" className="rounded-lg text-[9px] font-black uppercase bg-zinc-100 border-none px-2.5 py-1 shadow-none text-zinc-500">{emp.position || '-'}</Badge>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <Badge variant="outline" className="rounded text-[9px] font-bold uppercase tracking-wider py-0.5 border-slate-200 bg-slate-50 text-slate-500">
+                       {emp.position || '-'}
+                     </Badge>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                     <span className={cn("text-[10px] font-black uppercase tracking-widest", 
-                       emp.gender === "MALE" ? "text-blue-500" : emp.gender === "FEMALE" ? "text-pink-500" : "text-zinc-400"
-                     )}>
-                       {emp.gender === "MALE" ? (locale === 'th' ? 'ชาย' : 'M') : emp.gender === "FEMALE" ? (locale === 'th' ? 'หญิง' : 'F') : '-'}
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <span className="text-sm font-medium text-slate-600">{emp.supervisor_name || '-'}</span>
+                  </TableCell>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <span className="text-sm font-medium text-slate-600">
+                       {emp.start_date ? new Date(emp.start_date).toLocaleDateString('en-GB') : '-'}
                      </span>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                     <span className="text-[10px] font-bold text-zinc-500 uppercase">{emp.supervisor_name || '-'}</span>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                     <span className="text-[10px] font-bold text-zinc-500">
-                       {emp.start_date ? new Date(emp.start_date).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}
-                     </span>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                     <Badge className={cn("rounded-lg text-[9px] font-black uppercase tracking-widest border-none shadow-none px-3 py-1", emp.status === "ACTIVE" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-500")}>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <Badge className={cn("rounded text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 border-none", emp.status === "ACTIVE" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
                         {emp.status === "ACTIVE" ? t('employees.status_active') : t('employees.status_resigned')}
                      </Badge>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap text-right">
-                     <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-right">
+                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button 
-                           onClick={() => openModal(emp)}
-                           className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-[#0F1059] transition-all shadow-sm"
+                           onClick={() => openDrawer(emp)}
+                           className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-[#0F1059] transition-all"
                         >
                             <Edit2 className="w-4 h-4" />
                         </button>
                         <button 
-                           onClick={() => handleDelete(emp.id)}
-                           className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-rose-600 transition-all shadow-sm"
+                           onClick={() => { setEmployeeToDelete(emp.id); setIsDeleteModalOpen(true); }}
+                           className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 transition-all"
                         >
                             <Trash2 className="w-4 h-4" />
                         </button>
@@ -343,28 +355,69 @@ export default function EmployeesPage() {
             </TableBody>
           </Table>
         </div>
-      </Card>
+      </div>
 
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      {/* Mobile View: Cards */}
+      <div className="lg:hidden space-y-3">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-28 bg-slate-50 animate-pulse rounded-xl" />
+          ))
+        ) : filteredEmployees.length === 0 ? (
+          <div className="py-10 text-center text-slate-400 italic">{t('employees.no_employees_found')}</div>
+        ) : filteredEmployees.map((emp) => (
+          <Card key={emp.id} className="p-4 shadow-sm rounded-xl border border-slate-200 space-y-3 bg-white">
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{emp.employee_code}</p>
+                <h3 className="text-sm font-bold text-slate-900">{emp.employee_name_th}</h3>
+              </div>
+              <Badge className={cn("rounded text-[9px] font-bold uppercase px-2 py-0.5", emp.status === "ACTIVE" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
+                {emp.status === "ACTIVE" ? t('employees.status_active') : t('employees.status_resigned')}
+              </Badge>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-[12px] pt-3 border-t border-slate-100">
+               <div className="space-y-0.5">
+                 <p className="text-[9px] font-bold text-slate-400 uppercase">{t('employees.department')}</p>
+                 <p className="font-bold text-slate-700 truncate">{emp.department || '-'}</p>
+               </div>
+               <div className="space-y-0.5">
+                 <p className="text-[9px] font-bold text-slate-400 uppercase">{t('employees.position')}</p>
+                 <p className="font-bold text-slate-700 truncate">{emp.position || '-'}</p>
+               </div>
+            </div>
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <span className="text-[10px] text-slate-400 font-bold">{emp.start_date ? new Date(emp.start_date).toLocaleDateString('en-GB') : '-'}</span>
+              <div className="flex gap-1">
+                <button onClick={() => openDrawer(emp)} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-400"><Edit2 className="h-4 w-4" /></button>
+                <button onClick={() => { setEmployeeToDelete(emp.id); setIsDeleteModalOpen(true); }} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-400"><Trash2 className="h-4 w-4" /></button>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Drawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
         title={selectedEmployee ? t('employees.edit_title') : t('employees.new_title')}
+        size="xl"
       >
-        <form onSubmit={handleSave} className="space-y-6 max-h-[80vh] overflow-y-auto pr-2 font-sans">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 px-1">
-            <div className="space-y-1.5 focus-within:text-[#0F1059] transition-colors">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.employee_code')}</label>
+        <form onSubmit={handleSave} className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="space-y-1.5 col-span-2 sm:col-span-1">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.employee_code')}</label>
               <input 
                 required
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-black text-[#0F1059] outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-[#0F1059] outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.employee_code}
                 onChange={(e) => setFormData({...formData, employee_code: e.target.value})}
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.gender')}</label>
+            <div className="space-y-1.5 col-span-2 sm:col-span-1">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.gender')}</label>
               <select 
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-[#0F1059]/30 shadow-sm cursor-pointer transition-all"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-[#0F1059]/30 shadow-sm cursor-pointer transition-all"
                 value={formData.gender}
                 onChange={(e) => setFormData({...formData, gender: e.target.value})}
               >
@@ -373,79 +426,79 @@ export default function EmployeesPage() {
                 <option value="OTHER">{t('employees.gender_other')}</option>
               </select>
             </div>
-            <div className="space-y-1.5 focus-within:text-[#0F1059] transition-colors col-span-2">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.name_th')}</label>
+            <div className="space-y-1.5 col-span-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.name_th')}</label>
               <input 
                 required
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.employee_name_th}
                 onChange={(e) => setFormData({...formData, employee_name_th: e.target.value})}
               />
             </div>
-            <div className="space-y-1.5 focus-within:text-[#0F1059] transition-colors col-span-2">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.name_en')}</label>
+            <div className="space-y-1.5 col-span-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.name_en')}</label>
               <input 
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.employee_name_en}
                 onChange={(e) => setFormData({...formData, employee_name_en: e.target.value})}
               />
             </div>
-            <div className="space-y-1.5 focus-within:text-[#0F1059] transition-colors">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.department')}</label>
+            <div className="space-y-1.5 col-span-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.department')}</label>
               <input 
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.department}
                 onChange={(e) => setFormData({...formData, department: e.target.value})}
               />
             </div>
-            <div className="space-y-1.5 focus-within:text-[#0F1059] transition-colors">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.position')}</label>
+            <div className="space-y-1.5 col-span-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.position')}</label>
               <input 
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.position}
                 onChange={(e) => setFormData({...formData, position: e.target.value})}
               />
             </div>
-            <div className="space-y-1.5 focus-within:text-[#0F1059] transition-colors">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.location')}</label>
+            <div className="space-y-1.5 col-span-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.location')}</label>
               <input 
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.work_location}
                 onChange={(e) => setFormData({...formData, work_location: e.target.value})}
               />
             </div>
-            <div className="space-y-1.5 focus-within:text-[#0F1059] transition-colors">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.supervisor')}</label>
+            <div className="space-y-1.5 col-span-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.supervisor')}</label>
               <input 
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.supervisor_name}
                 onChange={(e) => setFormData({...formData, supervisor_name: e.target.value})}
               />
             </div>
-            <div className="space-y-1.5 focus-within:text-[#0F1059] transition-colors">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.start_date')}</label>
+            <div className="space-y-1.5 col-span-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.start_date')}</label>
               <input 
                 type="date"
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.start_date}
                 onChange={(e) => setFormData({...formData, start_date: e.target.value})}
               />
             </div>
-            <div className="space-y-1.5 focus-within:text-[#0F1059] transition-colors">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.end_date')}</label>
+            <div className="space-y-1.5 col-span-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.end_date')}</label>
               <input 
                 type="date"
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:bg-white focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.end_date}
                 onChange={(e) => setFormData({...formData, end_date: e.target.value})}
               />
             </div>
           </div>
 
-          <div className="space-y-2 px-1">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('employees.employment_status')}</label>
+          <div className="space-y-2">
+              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('employees.employment_status')}</label>
               <select 
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-black text-[#0F1059] uppercase outline-none shadow-sm cursor-pointer transition-all"
+                className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-black text-[#0F1059] uppercase outline-none shadow-sm cursor-pointer transition-all"
                 value={formData.status}
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
               >
@@ -454,19 +507,60 @@ export default function EmployeesPage() {
               </select>
           </div>
           
-          <div className="flex items-center gap-3 pt-4 border-t border-zinc-100">
-            <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)} className="flex-1 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest">
+          <div className="flex items-center gap-3 pt-6 border-t border-slate-100">
+            <Button type="button" variant="ghost" onClick={() => setIsDrawerOpen(false)} className="flex-1 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest">
               {t('common.cancel')}
             </Button>
             <Button 
               type="submit" 
               disabled={isSaving}
-              className="flex-1 h-12 rounded-xl bg-[#0F1059] hover:bg-black text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-xl shadow-[#0F1059]/20"
+              className="flex-1 h-12 rounded-xl bg-[#0F1059] hover:bg-black text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-[#0F1059]/10"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : t('common.save')}
             </Button>
           </div>
         </form>
+      </Drawer>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title={locale === 'th' ? "ยืนยันการลบข้อมูลพนักงาน" : "Confirm Delete Employee"}
+        size="sm"
+      >
+        <div className="space-y-6 text-center">
+          <div className="mx-auto w-16 h-16 rounded-[24px] bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100 mb-2">
+            <Trash2 className="h-8 w-8" />
+          </div>
+          <div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+              {locale === 'th' ? "ยอมรับการลบข้อมูล?" : "Are you sure?"}
+            </h3>
+            <p className="text-[13px] font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-widest">
+              {locale === 'th' 
+                ? "ข้อมูลนี้จะถูกลบถาวร ไม่สามารถกู้คืนได้" 
+                : "This action cannot be undone. All data for this employee will be permanently removed."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-rose-500/20"
+            >
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : (locale === 'th' ? "ยืนยันการลบ" : "Delete Permanently")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl text-slate-400 hover:text-slate-900 font-black uppercase tracking-widest text-[11px]"
+            >
+              {t('common.cancel')}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

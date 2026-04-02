@@ -263,28 +263,33 @@ export function useDashboardData(isAdmin: boolean, session: any) {
   const typeRequestData = useMemo(() => {
     // Standard IT Task Types in Thai
     const TASK_TYPE_MAP: Record<string, string> = {
-      'repair': 'งานซ่อมแซมและแก้ไข',
+      'repair': 'งานซ่อมแซ็มและแก้ไข',
       'access': 'จัดการสิทธิ์เข้าใช้งาน',
-      'account': 'จัดการสิทธิ์เข้าใช้งาน',
+      'account': 'รีเซ็ตรหัสผ่าน/จัดการบัญชี',
+      'password_account': 'รีเซ็ตรหัสผ่าน/จัดการบัญชี',
       'purchase': 'จัดซื้ออุปกรณ์ IT',
       'software': 'งานด้านซอฟต์แวร์',
       'hardware': 'งานด้านฮาร์ดแวร์',
       'network': 'แก้ปัญหาเครือข่าย',
-      'consulting': 'ให้คำปรึกษาด้าน IT',
+      'consulting': 'ให้คำแนะนำด้าน IT',
+      'borrow_acc': 'ขอยืมอุปกรณ์ไอที',
+      'support': 'งานสนับสนุนผู้ใช้',
+      'license': 'จัดการไลเซนส์ซอฟต์แวร์',
+      'change': 'ขอดำเนินการเปลี่ยนแปลง',
       'other': 'งานบริการอื่นๆ',
       'None': 'ไม่ระบุประเภท',
       'unknown': 'ไม่ระบุประเภท'
     };
 
     // Initialize with common tasks to ensure they appear in the graph even if count is 0
-    // "ใส่เข้าไปในกราฟทั้งหมด" interpretation: Show these standard categories
     const counts: Record<string, number> = {
-      'งานซ่อมแซมและแก้ไข': 0,
+      'งานซ่อมแซ็มและแก้ไข': 0,
       'จัดการสิทธิ์เข้าใช้งาน': 0,
+      'รีเซ็ตรหัสผ่าน/จัดการบัญชี': 0,
       'จัดซื้ออุปกรณ์ IT': 0,
-      'งานด้านซอฟต์แวร์': 0,
-      'งานด้านฮาร์ดแวร์': 0,
       'แก้ปัญหาเครือข่าย': 0,
+      'ขอยืมอุปกรณ์ไอที': 0,
+      'งานสนับสนุนผู้ใช้': 0,
       'งานบริการอื่นๆ': 0
     };
 

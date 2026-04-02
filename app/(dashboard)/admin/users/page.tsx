@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -39,9 +40,13 @@ export default function UsersPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Filters & Sorting logic states
   const [filterRole, setFilterRole] = useState("ALL");
@@ -121,7 +126,7 @@ export default function UsersPage() {
       return 0;
     });
 
-  const openModal = (user?: User) => {
+  const openDrawer = (user?: User) => {
     if (user) {
       setEditingId(user.id);
       setFormData({
@@ -139,7 +144,7 @@ export default function UsersPage() {
         employeeId: ""
       });
     }
-    setIsModalOpen(true);
+    setIsDrawerOpen(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -156,7 +161,7 @@ export default function UsersPage() {
       });
 
       if (res.ok) {
-        setIsModalOpen(false);
+        setIsDrawerOpen(false);
         fetchUsers();
       } else {
         const errorData = await res.json();
@@ -169,39 +174,44 @@ export default function UsersPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('common.confirm_delete'))) return;
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/users/${userToDelete}`, { method: "DELETE" });
       if (res.ok) fetchUsers();
+      setIsDeleteModalOpen(false);
+      setUserToDelete(null);
     } catch (error) {
       console.error("Delete error:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="p-4 space-y-4">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-black text-[#0F1059] tracking-tighter uppercase leading-none flex items-center gap-3">
-             <div className="h-12 w-12 rounded-2xl bg-[#0F1059] flex items-center justify-center text-white border border-[#0F1059]/10 shadow-sm">
-                <Users className="h-6 w-6" />
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight uppercase leading-none flex items-center gap-3">
+             <div className="h-10 w-10 rounded-lg bg-[#0F1059] flex items-center justify-center text-white border border-slate-200 shadow-sm">
+                <Users className="h-5 w-5" />
              </div>
              {t('users.title')}
           </h1>
-          <p className="text-[12px] font-medium text-zinc-500 uppercase tracking-widest mt-2">{t('users.subtitle')}</p>
+          <p className="text-[12px] font-medium text-slate-500 uppercase tracking-widest mt-1">{t('users.subtitle')}</p>
         </div>
-        <Button onClick={() => openModal()} className="rounded-2xl bg-[#0F1059] hover:bg-black h-14 px-8 font-black uppercase tracking-widest text-[13px] transition-all shadow-xl shadow-[#0F1059]/10">
+        <Button onClick={() => openDrawer()} className="rounded-lg bg-[#0F1059] hover:bg-black h-10 px-4 font-bold uppercase tracking-widest text-[11px] transition-all shadow-sm">
           <Plus className="mr-2 h-4 w-4" /> {t('users.create_user')}
         </Button>
       </header>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center p-4 rounded-3xl border border-zinc-100 bg-white/50 shadow-sm font-sans uppercase">
-        <div className="flex items-center gap-3 px-4 py-2 bg-zinc-50 rounded-2xl border border-zinc-100 group focus-within:border-[#0F1059]/30 transition-all lg:col-span-3">
-             <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-[#0F1059]" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4 rounded-xl border border-slate-200 bg-white shadow-sm font-sans uppercase">
+        <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg border border-slate-200 group focus-within:border-[#0F1059]/30 transition-all md:col-span-3">
+             <Search className="h-4 w-4 text-slate-400 group-focus-within:text-[#0F1059]" />
              <input 
-                className="bg-transparent border-none outline-none text-[10px] font-black uppercase w-full"
+                className="bg-transparent border-none outline-none text-sm font-bold uppercase w-full placeholder:text-slate-400"
                 placeholder={t('users.search_placeholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -209,7 +219,7 @@ export default function UsersPage() {
         </div>
         
         <select 
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[12px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 font-sans cursor-pointer transition-all"
+          className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 focus:border-[#0F1059]/30 cursor-pointer transition-all"
           value={filterRole}
           onChange={(e) => setFilterRole(e.target.value)}
         >
@@ -219,13 +229,13 @@ export default function UsersPage() {
         </select>
       </div>
 
-      <Card className="rounded-[40px] border-zinc-100 overflow-hidden bg-white/90">
+      <div className="hidden lg:block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <Table className="w-full text-left font-sans">
-            <TableHeader className="bg-zinc-50/50">
-              <TableRow className="border-none">
+          <Table className="w-full text-left">
+            <TableHeader className="bg-slate-50 border-b border-slate-200">
+              <TableRow>
                 <TableHead 
-                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('username')}
                 >
                   <div className="flex items-center gap-1">
@@ -233,10 +243,10 @@ export default function UsersPage() {
                     {sortConfig.key === 'username' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('users.linked_identity')}</TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{locale === 'th' ? 'รหัสพนักงาน' : 'EMP CODE'}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('users.linked_identity')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('employees.code')}</TableHead>
                 <TableHead 
-                   className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('role')}
                 >
                   <div className="flex items-center gap-1">
@@ -244,65 +254,57 @@ export default function UsersPage() {
                     {sortConfig.key === 'role' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
-                <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{locale === 'th' ? 'วันที่สร้าง' : 'CREATED'}</TableHead>
-                <TableHead className="p-0"></TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-zinc-100">
+            <TableBody className="divide-y divide-slate-100">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell colSpan={6} className="h-24 animate-pulse bg-zinc-50/20" />
+                    <TableCell colSpan={5} className="py-8 animate-pulse bg-slate-50/50" />
                   </TableRow>
                 ))
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="px-6 py-20 text-center text-zinc-400 italic font-bold uppercase tracking-widest">
+                  <TableCell colSpan={5} className="py-20 text-center text-slate-400 italic font-bold uppercase tracking-widest">
                       {t('users.no_users_found')}
                   </TableCell>
                 </TableRow>
               ) : filteredUsers.map((user) => (
-                <TableRow key={user.id} className="hover:bg-zinc-50/50 transition-colors group">
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
-                     <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-white transition-colors shadow-sm">
-                           <UserIcon className="h-5 w-5 text-zinc-400" />
+                <TableRow key={user.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200">
+                           <UserIcon className="h-4 w-4 text-slate-400" />
                         </div>
                         <div className="flex flex-col">
-                           <span className="font-black text-[#0F1059] uppercase tracking-tight text-sm">{user.username}</span>
-                           <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest leading-none mt-1">UID: {user.id.slice(-8).toUpperCase()}</span>
+                           <span className="font-bold text-slate-900 text-sm">{user.username}</span>
+                           <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-none">UID: {user.id.slice(-8).toUpperCase()}</span>
                         </div>
                      </div>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-[11px] font-black text-zinc-700 uppercase">{user.employee?.employee_name_th || t('users.no_linked_identity')}</div>
-                    <div className="text-[9px] text-zinc-400 font-medium uppercase mt-0.5">{user.employee?.employee_name_en || '-'}</div>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                    <div className="text-[11px] font-bold text-slate-700 uppercase">{user.employee?.employee_name_th || t('users.no_linked_identity')}</div>
+                    <div className="text-[9px] text-slate-400 font-medium uppercase">{user.employee?.employee_name_en || '-'}</div>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-[10px] font-bold text-[#0F1059]/60 bg-[#0F1059]/5 px-2 py-0.5 rounded uppercase">
-                      {user.employee?.employee_code || '-'}
-                    </span>
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-[11px] font-bold text-slate-500">
+                    {user.employee?.employee_code || '-'}
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                      <Badge 
-                       className={cn("rounded-lg text-[10px] font-black uppercase tracking-widest px-3 py-1 border-none shadow-none", 
+                       className={cn("rounded text-[9px] font-bold uppercase tracking-wider px-2 py-0 border-none shadow-none", 
                          user.role === "admin" ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"
                        )}
                      >
                         {user.role === 'admin' ? t('users.role_admin') : t('users.role_user')}
                      </Badge>
                   </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-[10px] font-bold text-zinc-400">
-                      {(user as any).createdAt ? new Date((user as any).createdAt).toLocaleDateString('en-GB') : '-'}
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-4 py-4 whitespace-nowrap text-right">
-                    <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-                        <button onClick={() => openModal(user)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-[#0F1059] transition-all shadow-sm">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-right">
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openDrawer(user)} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-[#0F1059] transition-all shadow-sm">
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDelete(user.id)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-rose-600 transition-all shadow-sm">
+                        <button onClick={() => { setUserToDelete(user.id); setIsDeleteModalOpen(true); }} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 transition-all shadow-sm">
                           <Trash2 className="w-4 h-4" />
                         </button>
                     </div>
@@ -312,32 +314,67 @@ export default function UsersPage() {
             </TableBody>
           </Table>
         </div>
-      </Card>
+      </div>
 
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      {/* Mobile View: Cards */}
+      <div className="lg:hidden space-y-3">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-28 bg-slate-50 animate-pulse rounded-xl" />
+          ))
+        ) : filteredUsers.length === 0 ? (
+          <div className="py-10 text-center text-slate-400 italic">{t('users.no_users_found')}</div>
+        ) : filteredUsers.map((user) => (
+          <Card key={user.id} className="p-4 shadow-sm rounded-xl border border-slate-200 bg-white space-y-3">
+            <div className="flex items-center gap-3">
+               <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-200 shrink-0">
+                  <UserIcon className="h-5 w-5 text-slate-400" />
+               </div>
+               <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                     <h3 className="text-sm font-bold text-slate-900 truncate">{user.username}</h3>
+                     <Badge className={cn("text-[8px] font-bold uppercase py-0 border-none", 
+                        user.role === "admin" ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"
+                     )}>
+                        {user.role}
+                     </Badge>
+                  </div>
+                  <p className="text-[10px] font-medium text-slate-500 truncate">{user.employee?.employee_name_th || t('users.no_linked_identity')}</p>
+               </div>
+               <div className="flex gap-1 shrink-0">
+                  <button onClick={() => openDrawer(user)} className="p-1.5 text-slate-400 hover:text-[#0F1059]"><Edit2 className="w-4 h-4" /></button>
+                  <button onClick={() => { setUserToDelete(user.id); setIsDeleteModalOpen(true); }} className="p-1.5 text-slate-400 hover:text-rose-600"><Trash2 className="w-4 h-4" /></button>
+               </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Drawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
         title={editingId ? t('users.update_title') : t('users.new_title')}
+        size="md"
       >
-        <form onSubmit={handleSave} className="space-y-6 font-sans">
+        <form onSubmit={handleSave} className="space-y-6">
            <div className="space-y-1.5">
-              <label className="text-[13px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('users.username')}</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">{t('users.username')}</label>
               <input 
                  required
-                 className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
+                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-smplaceholder:text-slate-400"
                  value={formData.username}
                  onChange={(e) => setFormData({...formData, username: e.target.value})}
               />
            </div>
            
            <div className="space-y-1.5">
-              <label className="text-[13px] font-black text-zinc-400 uppercase tracking-widest px-1">
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">
                  {editingId ? t('users.password_reset') : t('users.password_default')}
               </label>
               <input 
                  required={!editingId}
                  type="password"
-                 className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
+                 className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
                  placeholder={editingId ? t('users.password_placeholder') : "••••••••"}
                  value={formData.password}
                  onChange={(e) => setFormData({...formData, password: e.target.value})}
@@ -346,9 +383,9 @@ export default function UsersPage() {
 
            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                 <label className="text-[13px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('users.system_authority')}</label>
+                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">{t('users.system_authority')}</label>
                  <select 
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-black text-[#0F1059] uppercase outline-none focus:border-[#0F1059]/30 shadow-sm transition-all cursor-pointer"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold text-[#0F1059] uppercase outline-none focus:border-[#0F1059]/30 shadow-sm transition-all cursor-pointer"
                     value={formData.role}
                     onChange={(e) => setFormData({...formData, role: e.target.value})}
                  >
@@ -357,9 +394,9 @@ export default function UsersPage() {
                  </select>
               </div>
               <div className="space-y-1.5">
-                 <label className="text-[13px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('users.linked_identity')}</label>
+                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">{t('users.linked_identity')}</label>
                  <select 
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-[#0F1059]/30 shadow-sm transition-all cursor-pointer"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold outline-none focus:border-[#0F1059]/30 shadow-sm transition-all cursor-pointer"
                     value={formData.employeeId}
                     onChange={(e) => setFormData({...formData, employeeId: e.target.value})}
                  >
@@ -369,19 +406,59 @@ export default function UsersPage() {
               </div>
            </div>
 
-           <div className="flex items-center gap-3 pt-4 border-t border-zinc-50">
-              <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)} className="flex-1 h-12 rounded-xl text-[13px] font-black uppercase tracking-widest">
+           <div className="flex items-center gap-3 pt-6 border-t border-slate-100">
+              <Button type="button" variant="ghost" onClick={() => setIsDrawerOpen(false)} className="flex-1 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest">
                  {t('common.cancel')}
               </Button>
               <Button 
                 type="submit" 
                 disabled={isSaving}
-                className="flex-1 h-12 rounded-xl bg-[#0F1059] hover:bg-black text-white text-[13px] font-black uppercase tracking-widest transition-all shadow-xl shadow-[#0F1059]/20"
+                className="flex-1 h-12 rounded-xl bg-[#0F1059] hover:bg-black text-white text-[11px] font-black uppercase tracking-widest transition-all shadow-lg shadow-[#0F1059]/10"
               >
                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : t('common.save')}
               </Button>
            </div>
         </form>
+      </Drawer>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title={locale === 'th' ? "ยืนยันการลบผู้ใช้งาน" : "Confirm Delete User"}
+        size="sm"
+      >
+        <div className="space-y-6 text-center shadow-none">
+          <div className="mx-auto w-16 h-16 rounded-[24px] bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100 mb-2">
+            <Trash2 className="h-8 w-8" />
+          </div>
+          <div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+               {locale === 'th' ? "ยอมรับการลบข้อมูล?" : "Are you sure?"}
+            </h3>
+            <p className="text-[13px] font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-widest">
+               {locale === 'th' 
+                 ? "ข้อมูลบัญชีผู้ใช้งานนี้จะถูกลบลบถาวร" 
+                 : "This action cannot be undone. This user account will be permanently removed from the system."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-rose-500/20"
+            >
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : (locale === 'th' ? "ยืนยันการลบ" : "Delete Permanently")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl text-slate-400 hover:text-slate-900 font-black uppercase tracking-widest text-[11px]"
+            >
+              {t('common.cancel')}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

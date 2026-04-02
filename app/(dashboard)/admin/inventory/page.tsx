@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { Drawer } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -47,9 +48,13 @@ export default function InventoryPage() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Filters & Sorting logic states
   const [filterStatus, setFilterStatus] = useState("ALL");
@@ -175,14 +180,14 @@ export default function InventoryPage() {
     setIsExportModalOpen(false);
   };
 
-  const openModal = (item: InventoryItem) => {
+  const openDrawer = (item: InventoryItem) => {
     setSelectedItem(item);
     setFormData({
       remaining: item.remaining || 0,
       status: item.status || "AVAILABLE",
       payout_amount: item.payout_amount || 0
     });
-    setIsModalOpen(true);
+    setIsDrawerOpen(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -197,7 +202,7 @@ export default function InventoryPage() {
       });
 
       if (res.ok) {
-        setIsModalOpen(false);
+        setIsDrawerOpen(false);
         fetchInventory();
       }
     } catch (error) {
@@ -207,43 +212,48 @@ export default function InventoryPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('common.confirm_delete'))) return;
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    setIsDeleting(true);
     try {
-      const res = await fetch(`/api/equipment-lists/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/equipment-lists/${itemToDelete}`, { method: "DELETE" });
       if (res.ok) fetchInventory();
+      setIsDeleteModalOpen(false);
+      setItemToDelete(null);
     } catch (error) {
       console.error("Delete error:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6">
+    <div className="p-4 space-y-4">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-zinc-900 tracking-tight uppercase flex items-center gap-3">
-             <div className="h-10 w-10 rounded-2xl bg-[#0F1059] flex items-center justify-center text-white shadow-sm border border-[#0F1059]/10">
+        <div className="space-y-1">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight uppercase flex items-center gap-3">
+             <div className="h-10 w-10 rounded-lg bg-[#0F1059] flex items-center justify-center text-white border border-slate-200 shadow-sm">
                 <Box className="h-5 w-5" />
              </div>
              {t('inventory.title')}
           </h1>
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-widest mt-1">{t('inventory.subtitle')}</p>
+          <p className="text-[12px] font-medium text-slate-500 uppercase tracking-widest mt-1">{t('inventory.subtitle')}</p>
         </div>
         <Button 
              onClick={() => handleExportExcel()} 
              variant="outline"
-             className="rounded-2xl border-zinc-200 hover:border-[#0F1059] hover:text-[#0F1059] py-6 px-6 font-black uppercase tracking-widest text-[11px] transition-all"
+             className="rounded-lg border-slate-200 hover:border-[#0F1059] hover:text-[#0F1059] h-10 px-4 font-bold uppercase tracking-widest text-[11px] transition-all"
           >
             <FileSpreadsheet className="mr-2 h-4 w-4 text-emerald-600" /> {t('admin_tickets.export_excel')}
           </Button>
       </header>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center p-4 rounded-3xl border border-zinc-100 bg-white/50 shadow-sm font-sans uppercase">
-        <div className="flex items-center gap-3 px-4 py-2 bg-zinc-50 rounded-2xl border border-zinc-100 group focus-within:border-[#0F1059]/30 transition-all col-span-1 lg:col-span-2">
-             <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-[#0F1059]" />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4 rounded-xl border border-slate-200 bg-white shadow-sm font-sans uppercase">
+        <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg border border-slate-200 group focus-within:border-[#0F1059]/30 transition-all md:col-span-2">
+             <Search className="h-4 w-4 text-slate-400 group-focus-within:text-[#0F1059]" />
              <input 
-                className="bg-transparent border-none outline-none text-xs font-black uppercase w-full"
+                className="bg-transparent border-none outline-none text-sm font-bold uppercase w-full placeholder:text-slate-400"
                 placeholder={t('inventory.search_placeholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -251,7 +261,7 @@ export default function InventoryPage() {
         </div>
         
         <select 
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30"
+          className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 focus:border-[#0F1059]/30 cursor-pointer"
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
         >
@@ -263,7 +273,7 @@ export default function InventoryPage() {
         </select>
 
         <select 
-          className="bg-zinc-50 border border-zinc-100 rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30"
+          className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-bold uppercase outline-none text-slate-600 focus:border-[#0F1059]/30 cursor-pointer"
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
         >
@@ -276,14 +286,14 @@ export default function InventoryPage() {
         </select>
       </div>
 
-      <Card className="rounded-[40px] border-zinc-100 overflow-hidden bg-white/90">
+      <div className="hidden lg:block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <Table className="w-full text-left font-sans">
-            <TableHeader className="bg-zinc-50/50">
-              <TableRow className="border-none">
-                <TableHead className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest w-24">{t('inventory.asset')}</TableHead>
+          <Table className="w-full text-left">
+            <TableHeader className="bg-slate-50 border-b border-slate-200">
+              <TableRow>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest w-24">{t('inventory.asset')}</TableHead>
                 <TableHead 
-                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('eq_code')}
                 >
                   <div className="flex items-center gap-1">
@@ -292,7 +302,7 @@ export default function InventoryPage() {
                   </div>
                 </TableHead>
                 <TableHead 
-                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('item_name')}
                 >
                   <div className="flex items-center gap-1">
@@ -301,7 +311,7 @@ export default function InventoryPage() {
                   </div>
                 </TableHead>
                 <TableHead 
-                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('item_type')}
                 >
                   <div className="flex items-center gap-1">
@@ -310,7 +320,7 @@ export default function InventoryPage() {
                   </div>
                 </TableHead>
                 <TableHead 
-                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
+                   className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest cursor-pointer hover:bg-slate-100 transition-colors"
                    onClick={() => handleSort('remaining')}
                 >
                   <div className="flex items-center gap-1">
@@ -318,73 +328,62 @@ export default function InventoryPage() {
                     {sortConfig.key === 'remaining' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
-                <TableHead className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('common.status')}</TableHead>
-                <TableHead className="p-0"></TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest">{t('common.status')}</TableHead>
+                <TableHead className="py-3 px-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-zinc-100">
+            <TableBody className="divide-y divide-slate-100">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell colSpan={7} className="h-24 animate-pulse bg-zinc-50/20" />
+                    <TableCell colSpan={7} className="py-8 animate-pulse bg-slate-50/50" />
                   </TableRow>
                 ))
               ) : filteredInventory.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="px-6 py-20 text-center text-zinc-400 italic font-bold uppercase tracking-widest">
+                  <TableCell colSpan={7} className="py-20 text-center text-slate-400 italic font-bold uppercase tracking-widest">
                       {t('inventory.empty_warehouse')}
                   </TableCell>
                 </TableRow>
               ) : filteredInventory.map((item) => (
-                <TableRow key={item.id} className="hover:bg-zinc-50/50 transition-colors group">
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors group">
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
                       {item.equipmentEntry?.purchaseOrder?.picture ? (
-                         <div className="w-14 h-14 rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200 shadow-sm">
-                            <img src={item.equipmentEntry.purchaseOrder.picture} alt="" className="w-full h-full object-cover hover:scale-125 transition-transform duration-700" />
+                         <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
+                            <img src={item.equipmentEntry.purchaseOrder.picture} alt="" className="w-full h-full object-cover" />
                          </div>
                       ) : (
-                         <div className="w-14 h-14 rounded-2xl bg-zinc-50 flex items-center justify-center border border-dashed border-zinc-200 text-zinc-300"><ImageIcon className="w-6 h-6" /></div>
+                         <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center border border-dashed border-slate-200 text-slate-300"><ImageIcon className="w-5 h-5" /></div>
                       )}
                     </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 text-[9px] font-black text-[#0F1059] uppercase bg-[#0F1059]/5 px-2 py-1 rounded-md w-fit border border-[#0F1059]/10 shadow-sm">
-                         <Box className="h-2.5 w-2.5" /> {item.eq_code || 'NO-CODE'}
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 text-[9px] font-bold text-[#0F1059] uppercase bg-[#0F1059]/5 px-2 py-0.5 rounded border border-[#0F1059]/10">
+                          {item.eq_code || 'NO-CODE'}
                       </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 min-w-[300px]">
-                     <div className="space-y-1">
-                        <div className="space-y-0.5">
-                           <span className="text-[10px] font-black text-[#0F1059] uppercase tracking-wider">{item.equipmentEntry?.purchaseOrder?.list || 'General'}</span>
-                           <div className="font-black text-zinc-900 uppercase tracking-tight text-sm leading-none">
-                              {item.equipmentEntry?.item_name}
-                           </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-[9px] font-bold text-zinc-400 uppercase mt-2">
-                           <span>PO: {item.equipmentEntry?.purchaseOrder?.po_number}</span>
-                           {item.equipmentEntry?.date_received && (
-                              <div className="flex items-center gap-1">
-                                 <Clock className="h-2.5 w-2.5" /> {new Date(item.equipmentEntry.date_received).toLocaleDateString('en-GB')}
-                              </div>
-                           )}
-                        </div>
+                  <TableCell className="py-3 px-4 min-w-[250px]">
+                     <div className="space-y-0.5">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase">{item.equipmentEntry?.purchaseOrder?.list || 'General'}</span>
+                        <div className="font-bold text-slate-900 text-sm">{item.equipmentEntry?.item_name || '-'}</div>
+                        <div className="text-[9px] text-slate-400 font-medium">PO: {item.equipmentEntry?.purchaseOrder?.po_number || '-'}</div>
                      </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-[10px] font-black text-zinc-500 uppercase">
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-[11px] font-medium text-slate-500 uppercase">
                       {item.equipmentEntry?.item_type}
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
-                     <div className="space-y-1">
-                        <div className="flex items-baseline gap-2">
-                           <span className={cn("text-xl font-black tracking-tighter", item.remaining > 5 ? "text-emerald-600" : item.remaining > 0 ? "text-amber-500" : "text-rose-500")}>
-                              {item.remaining}
-                           </span>
-                           <span className="text-[9px] font-black text-zinc-300 uppercase">/ {item.equipmentEntry?.unit || 'UNIT'}</span>
-                        </div>
-                        <div className="text-[8px] font-bold text-blue-500/60 uppercase">{t('inventory.issued')}: {item.payout_amount || 0}</div>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <div className="flex items-baseline gap-1">
+                        <span className={cn("text-lg font-bold", item.remaining > 5 ? "text-slate-900" : item.remaining > 0 ? "text-amber-600" : "text-rose-600")}>
+                           {item.remaining}
+                        </span>
+                        <span className="text-[9px] font-bold text-slate-300 uppercase">/ {item.equipmentEntry?.unit || 'UNIT'}</span>
                      </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
-                     <Badge variant="outline" className={cn("rounded-lg px-2.5 py-1 text-[8px] font-black uppercase tracking-widest border-zinc-200", item.remaining > 0 ? "text-emerald-600" : "text-rose-500")}>
+                  <TableCell className="py-3 px-4 whitespace-nowrap">
+                     <Badge variant="outline" className={cn(
+                       "rounded text-[9px] font-bold uppercase tracking-wider px-2 py-0 border-none",
+                       item.remaining > 0 ? "text-emerald-600 bg-emerald-50" : "text-rose-600 bg-rose-50"
+                     )}>
                         {item.status === 'AVAILABLE' ? t('inventory.available') : 
                          item.status === 'LOW_STOCK' ? t('inventory.low_stock') :
                          item.status === 'OUT_OF_STOCK' ? t('inventory.out_of_stock') :
@@ -392,10 +391,10 @@ export default function InventoryPage() {
                          item.status === 'RESERVED' ? t('inventory.reserved') : (item.remaining > 0 ? t('inventory.available') : t('inventory.out_of_stock'))}
                      </Badge>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-right">
-                     <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-                        <button onClick={() => openModal(item)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-[#0F1059] transition-all"><Edit2 className="w-4 h-4" /></button>
-                        <button onClick={() => handleDelete(item.id)} className="p-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 hover:text-rose-600 transition-all"><Trash2 className="w-4 h-4" /></button>
+                  <TableCell className="py-3 px-4 whitespace-nowrap text-right">
+                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openDrawer(item)} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-[#0F1059] transition-all shadow-sm"><Edit2 className="w-4 h-4" /></button>
+                        <button onClick={() => { setItemToDelete(item.id); setIsDeleteModalOpen(true); }} className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 transition-all shadow-sm"><Trash2 className="w-4 h-4" /></button>
                      </div>
                   </TableCell>
                 </TableRow>
@@ -403,55 +402,103 @@ export default function InventoryPage() {
             </TableBody>
           </Table>
         </div>
-      </Card>
+      </div>
 
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      {/* Mobile View: Cards */}
+      <div className="lg:hidden space-y-3">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-32 bg-slate-50 animate-pulse rounded-xl" />
+          ))
+        ) : filteredInventory.length === 0 ? (
+          <div className="py-10 text-center text-slate-400 italic">{t('inventory.empty_warehouse')}</div>
+        ) : filteredInventory.map((item) => (
+          <Card key={item.id} className="p-4 shadow-sm rounded-xl border border-slate-200 space-y-3 bg-white">
+            <div className="flex gap-4">
+              {item.equipmentEntry?.purchaseOrder?.picture ? (
+                 <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-50 shrink-0 border border-slate-100">
+                    <img src={item.equipmentEntry.purchaseOrder.picture} alt="" className="w-full h-full object-cover" />
+                 </div>
+              ) : (
+                 <div className="w-20 h-20 rounded-lg bg-slate-50 flex items-center justify-center shrink-0 border border-dashed border-slate-200 text-slate-300"><ImageIcon className="w-8 h-8" /></div>
+              )}
+              <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                 <div className="space-y-0.5">
+                    <div className="flex items-center justify-between">
+                       <Badge variant="outline" className="text-[8px] font-bold uppercase py-0 border-slate-200 bg-slate-50 text-slate-500">{item.eq_code || 'NO-CODE'}</Badge>
+                       <div className="flex gap-1">
+                          <button onClick={() => openDrawer(item)} className="p-1.5 text-slate-400 hover:text-[#0F1059]"><Edit2 className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => { setItemToDelete(item.id); setIsDeleteModalOpen(true); }} className="p-1.5 text-slate-400 hover:text-rose-600"><Trash2 className="w-3.5 h-3.5" /></button>
+                       </div>
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900 leading-snug line-clamp-2">{item.equipmentEntry?.item_name || '-'}</h3>
+                 </div>
+                 <div className="flex items-end justify-between">
+                    <div className="flex flex-col gap-1">
+                       <span className="text-[10px] font-medium text-slate-400 uppercase">{item.equipmentEntry?.item_type}</span>
+                       <Badge className={cn("text-[8px] font-bold uppercase w-fit", item.remaining > 0 ? "bg-emerald-500" : "bg-rose-500")}>
+                          {item.status === 'AVAILABLE' ? t('inventory.available') : item.status}
+                       </Badge>
+                    </div>
+                    <div className="text-right">
+                       <p className="text-[9px] font-bold text-slate-400 uppercase leading-none">{t('inventory.remaining_stock')}</p>
+                       <p className="text-lg font-black text-[#0F1059] leading-none mt-1">{item.remaining} <span className="text-[9px] font-bold text-slate-300">/ {item.equipmentEntry?.unit || 'UNIT'}</span></p>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Drawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
         title={t('inventory.adjust_stock_title')}
+        size="md"
       >
-        <form onSubmit={handleSave} className="space-y-6 font-sans">
-           <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-100 shadow-sm">
-              <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">{t('inventory.stock_item')}</p>
+        <form onSubmit={handleSave} className="space-y-6">
+           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-sm">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('inventory.stock_item')}</p>
               <p className="text-sm font-bold text-[#0F1059]">{selectedItem?.equipmentEntry?.item_name}</p>
               
               {selectedItem && (
-                 <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-zinc-200/50">
+                 <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-slate-200">
                     <div>
-                       <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'วันที่สร้าง' : 'Created At'}</p>
-                       <p className="text-[10px] font-bold text-zinc-600">{selectedItem.createdAt ? new Date(selectedItem.createdAt).toLocaleString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}</p>
+                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'วันที่สร้าง' : 'Created At'}</p>
+                       <p className="text-[10px] font-bold text-slate-600">{selectedItem.createdAt ? new Date(selectedItem.createdAt).toLocaleDateString('en-GB') : '-'}</p>
                     </div>
                     <div>
-                       <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'อัพเดตล่าสุด' : 'Updated At'}</p>
-                       <p className="text-[10px] font-bold text-zinc-600">{selectedItem.updatedAt ? new Date(selectedItem.updatedAt).toLocaleString(locale === 'th' ? 'th-TH' : 'en-GB') : '-'}</p>
+                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'อัพเดตล่าสุด' : 'Updated At'}</p>
+                       <p className="text-[10px] font-bold text-slate-600">{selectedItem.updatedAt ? new Date(selectedItem.updatedAt).toLocaleDateString('en-GB') : '-'}</p>
                     </div>
                  </div>
               )}
            </div>
            
-           <div className="grid grid-cols-2 gap-4">
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                 <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('inventory.remaining_stock')}</label>
+                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('inventory.remaining_stock')}</label>
                  <input 
                     type="number" 
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all"
                      value={formData.remaining}
                      onChange={(e) => setFormData({...formData, remaining: parseInt(e.target.value) || 0})}
                   />
               </div>
                <div className="space-y-1.5">
-                  <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('inventory.amount_issued')}</label>
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('inventory.amount_issued')}</label>
                   <input 
                      type="number" 
-                     className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all"
+                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all"
                      value={formData.payout_amount}
                      onChange={(e) => setFormData({...formData, payout_amount: parseInt(e.target.value) || 0})}
                   />
                </div>
-              <div className="space-y-1.5 col-span-2">
-                 <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('inventory.status_override')}</label>
+              <div className="space-y-1.5 col-span-1 sm:col-span-2">
+                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('inventory.status_override')}</label>
                  <select 
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none cursor-pointer focus:border-[#0F1059]/30 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm font-medium outline-none cursor-pointer focus:border-[#0F1059]/30 transition-all"
                     value={formData.status}
                     onChange={(e) => setFormData({...formData, status: e.target.value})}
                  >
@@ -464,11 +511,11 @@ export default function InventoryPage() {
               </div>
            </div>
 
-           <div className="flex items-center gap-3 pt-4 border-t border-zinc-50">
+           <div className="flex items-center gap-3 pt-6 border-t border-slate-100">
               <Button 
                  type="button" 
                  variant="ghost" 
-                 onClick={() => setIsModalOpen(false)}
+                 onClick={() => setIsDrawerOpen(false)}
                  className="flex-1 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest"
               >
                  {t('common.cancel')}
@@ -482,7 +529,7 @@ export default function InventoryPage() {
               </Button>
            </div>
         </form>
-      </Modal>
+      </Drawer>
 
       <Modal
         isOpen={isExportModalOpen}
@@ -542,6 +589,46 @@ export default function InventoryPage() {
              >
                 {t('admin_tickets.download_excel')}
              </Button>
+          </div>
+        </div>
+      </Modal>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title={locale === 'th' ? "ยืนยันการลบสินค้า" : "Confirm Delete Stock Item"}
+        size="sm"
+      >
+        <div className="space-y-6 text-center shadow-none">
+          <div className="mx-auto w-16 h-16 rounded-[24px] bg-rose-50 flex items-center justify-center text-rose-500 border border-rose-100 mb-2">
+            <Trash2 className="h-8 w-8" />
+          </div>
+          <div>
+            <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">
+               {locale === 'th' ? "ยอมรับการลบข้อมูล?" : "Are you sure?"}
+            </h3>
+            <p className="text-[13px] font-bold text-slate-400 mt-2 leading-relaxed uppercase tracking-widest">
+               {locale === 'th' 
+                 ? "ข้อมูลสินค้าในสต็อกนี้จะถูกลบลบถาวร" 
+                 : "This action cannot be undone. This stock item will be permanently removed from inventory."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 pt-2">
+            <Button
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-rose-500/20"
+            >
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : (locale === 'th' ? "ยืนยันการลบ" : "Delete Permanently")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+              className="w-full h-12 rounded-xl text-slate-400 hover:text-slate-900 font-black uppercase tracking-widest text-[11px]"
+            >
+              {t('common.cancel')}
+            </Button>
           </div>
         </div>
       </Modal>

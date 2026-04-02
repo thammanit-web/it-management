@@ -190,13 +190,7 @@ export default function ImportPage() {
             <div className="grid sm:flex items-start gap-4">
 
               <div className="space-y-1 min-w-0">
-                <h3 className={cn(
-                  "text-[6px] font-black uppercase tracking-widest sm:text-[10px]",
-                  selectedType === option.id ? "text-white/70" : "text-accent"
-                )}>
-                  {option.thTitle}
-                </h3>
-                <p className="text-[16px] font-black tracking-tight uppercase leading-none truncate sm:block hidden">
+                <p className="text-[10px] font-black uppercase sm:text-[16px]">
                   {option.title}
                 </p>
               </div>

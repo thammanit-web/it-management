@@ -43,3 +43,12 @@ next-env.d.ts
 /app/generated/prisma
 
 
+# Android สากลที่ห้ามเอาขึ้น Git
+**/android/.gradle
+**/android/build
+**/android/app/build
+**/android/local.properties
+**/android/.idea
+
+# ไฟล์ชั่วคราวของ Capacitor
+**/android/capacitor-cordova-android-plugins

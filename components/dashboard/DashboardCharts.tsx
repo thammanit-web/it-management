@@ -319,7 +319,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                 onClick={(data) => handleChartClick('category', data.name || 'Unknown')}
                 cursor="pointer"
               >
-                {categoryData.map((index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} className="hover:opacity-80 transition-opacity outline-none" />)}
+                {categoryData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} className="hover:opacity-80 transition-opacity outline-none" />)}
               </Pie>
               <Tooltip
                 content={({ active, payload }: any) => {
