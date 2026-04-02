@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { Status } from "@prisma/client";
 import { logAudit } from "@/lib/audit";
 import { headers } from "next/headers";
 import { generateNewCode } from "@/lib/code-generator";
