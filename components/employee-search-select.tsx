@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Search, ChevronDown, Check, User, X, Hash } from "lucide-react";
+import { Search, ChevronDown, Check, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface Employee {

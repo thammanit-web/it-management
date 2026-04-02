@@ -7,9 +7,7 @@ import {
   Inbox, 
   Package, 
   Ticket, 
-  Users, 
   Clock, 
-  Activity, 
   Loader2, 
   X,
   FileDown

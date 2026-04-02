@@ -2,7 +2,7 @@
 import { useSearchParams } from "next/navigation";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { Search, Loader2, Ticket, MessageSquare, Clock, Plus, BarChart2, ClipboardCheck, Link as LinkIcon, Check, User, FileDown, Eye, X } from "lucide-react";
+import { Search, Loader2, Ticket,  Clock, Plus, ClipboardCheck, Link as LinkIcon, Check, FileDown, Eye, X } from "lucide-react";
 import {
    Table,
    TableHeader,
@@ -16,9 +16,8 @@ import { Modal } from "@/components/ui/modal";
 import { Drawer } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Skeleton, TableSkeleton, CardSkeleton } from "@/components/ui/skeleton";
+import {  TableSkeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
-import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
@@ -71,7 +70,7 @@ function RequestsContent() {
    const [employees, setEmployees] = useState<Employee[]>([]);
    const [showSuccess, setShowSuccess] = useState<{ id: string, approvalNeeded: boolean } | null>(null);
    const [isCopied, setIsCopied] = useState(false);
-   const [isExportingPDF, setIsExportingPDF] = useState(false);
+   const [isExportingPDF] = useState(false);
    const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
    const [filterType, setFilterType] = useState<'ME' | 'ALL'>('ME');
    const [formError, setFormError] = useState<string | null>(null);
@@ -214,27 +213,6 @@ function RequestsContent() {
       }
    };
 
-   const handleRegenerate = async (id: string) => {
-      if (!confirm(t('requests.regen_confirm'))) return;
-      try {
-         const res = await fetch(`/api/requests/${id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-               approval_status: "PENDING",
-               approval_comment: "",
-            })
-         });
-         if (res.ok) {
-            setViewRequest(null);
-            fetchMyRequests();
-            alert(t('requests.regen_success'));
-         }
-      } catch (error) {
-         console.error("Regenerate error:", error);
-      }
-   };
-
    const handleExportPDF = () => {
       if (!viewRequest) return;
       setIsPreviewModalOpen(true);
@@ -243,13 +221,6 @@ function RequestsContent() {
    const isStandard = ["SUPPORT", "PASSWORD_ACCOUNT", "BORROW_ACC", "REPAIR"].includes(formData.type_request);
 
    const filteredRequests = requests.filter(r => filterType === 'ALL' || r.userId === (session?.user as any)?.id);
-
-   const stats = {
-      total: filteredRequests.length,
-      pending: filteredRequests.filter(r => r.status === 'OPEN' || r.status === 'PENDING').length,
-      resolved: filteredRequests.filter(r => r.status === 'RESOLVED' || r.status === 'CLOSED').length,
-      reject: filteredRequests.filter(r => r.approval_status === "REJECTED").length
-   };
 
    return (
       <div className="p-4 sm:p-6 space-y-4">
@@ -934,14 +905,6 @@ function RequestsContent() {
    );
 }
 
-function TickPlus({ className }: { className?: string }) {
-   return (
-      <div className={cn("relative", className)}>
-         <Ticket className="h-4 w-4" />
-         <Plus className="h-2.5 w-2.5 absolute -top-1 -right-1" />
-      </div>
-   )
-}
 export default function MyRequestsPage() {
    return (
       <Suspense fallback={<div className="flex items-center justify-center min-h-[400px]"><Loader2 className="h-8 w-8 animate-spin text-[#0F1059]" /></div>}>

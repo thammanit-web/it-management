@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Loader2, Users, Plus, Edit2, Trash2, Shield, User as UserIcon, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, Loader2, Users, Plus, Edit2, Trash2, User as UserIcon, ChevronUp, ChevronDown } from "lucide-react";
 import { 
   Table, 
   TableHeader, 

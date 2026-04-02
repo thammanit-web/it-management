@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
 export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  _request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const comments = await prisma.comment.findMany({
       where: { requestId: id },
       include: {
@@ -28,14 +28,14 @@ export async function GET(
 }
 
 export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const { content, parentId } = await req.json();
     if (!content) return NextResponse.json({ error: "Content is required" }, { status: 400 });
 

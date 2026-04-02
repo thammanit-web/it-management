@@ -8,11 +8,9 @@ import {
   Bell, 
   User, 
   ChevronRight,
-  LogOut,
-  Globe
+  LogOut
 } from "lucide-react";
 import { Dropdown, DropdownItem } from "@/components/ui/dropdown";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";

@@ -1,8 +1,8 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import React, { useState, useEffect } from "react";
-import { Search, Loader2, Package, Plus, ClipboardCheck, AlertCircle, ShoppingBag, Link as LinkIcon, Check, User, Eye, FileDown, Clock, Minus, X, FileText } from "lucide-react";
+import { Search, Loader2, Plus, ClipboardCheck, ShoppingBag, Link as LinkIcon, Check, Eye, FileDown, X, FileText } from "lucide-react";
 import { 
   Table, 
   TableHeader, 
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Drawer } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { EmployeeSearchSelect } from "@/components/employee-search-select";
@@ -83,7 +83,6 @@ interface Employee {
 }
 
 function BorrowContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const action = searchParams.get('action');
   const { data: session } = useSession();
@@ -95,13 +94,12 @@ function BorrowContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [viewingItem, setViewingItem] = useState<InventoryItem | null>(null);
   const [viewGroup, setViewGroup] = useState<BorrowGroup | null>(null);
   const [showSuccess, setShowSuccess] = useState<{ id: string, approvalNeeded: boolean } | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-  const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [isExportingPDF] = useState(false);
   const [invSearch, setInvSearch] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
 

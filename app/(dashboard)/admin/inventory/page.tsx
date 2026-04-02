@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Loader2, Plus, Edit2, Trash2, Box, Image as ImageIcon, ChevronUp, ChevronDown, FileSpreadsheet, Clock } from "lucide-react";
+import { Search, Loader2, Edit2, Trash2, Box, Image as ImageIcon, ChevronUp, ChevronDown, FileSpreadsheet, Clock } from "lucide-react";
 import { 
   Table, 
   TableHeader, 

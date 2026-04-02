@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -8,7 +8,6 @@ import {
   LogOut, 
   X,
   ChevronRight,
-  ShieldAlert,
   LayoutDashboard,
   CheckCircle2,
   Ticket,
@@ -21,7 +20,6 @@ import {
   FileJson,
   History,
   ChevronLeft,
-  Search,
   PlusCircle,
   Laptop
 } from "lucide-react";

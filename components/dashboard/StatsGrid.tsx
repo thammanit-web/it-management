@@ -9,7 +9,6 @@ import {
   Activity, 
   AlertCircle,
   Clock,
-  ArrowUpRight
 } from "lucide-react";
 
 interface StatsGridProps {

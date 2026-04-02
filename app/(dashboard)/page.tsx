@@ -55,7 +55,7 @@ export default function DashboardPage() {
     }
   }, [error]);
 
-  const handleChartClick = (type: string, value: string) => {
+  const handleChartClick = (_type: string, value: string) => {
     if (isAdmin) {
       router.push(`/admin/tickets?q=${encodeURIComponent(value)}`);
     }

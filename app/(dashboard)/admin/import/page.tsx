@@ -13,9 +13,6 @@ import {
   ArrowRight,
   ShieldCheck,
   Box,
-  LayoutGrid,
-  FileSpreadsheet,
-  Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -33,7 +30,7 @@ interface ImportStatus {
 }
 
 export default function ImportPage() {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const [selectedType, setSelectedType] = useState<ImportType | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);

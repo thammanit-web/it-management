@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { LogIn, User, Lock, AlertCircle } from "lucide-react";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { User, Lock, AlertCircle } from "lucide-react";
 
 export function LoginForm() {
   const [username, setUsername] = useState("");

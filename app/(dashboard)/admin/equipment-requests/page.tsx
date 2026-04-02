@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Loader2, Package, CheckCircle, XCircle, Clock, User2, Edit2, Trash2, ChevronUp, ChevronDown, FileSpreadsheet } from "lucide-react";
+import { Search, Loader2, Package, User2, Edit2, Trash2, ChevronUp, ChevronDown, FileSpreadsheet } from "lucide-react";
 import { 
   Table, 
   TableHeader, 
@@ -19,7 +19,7 @@ import { useSession } from "next-auth/react";
 import { exportToExcel } from "@/lib/export-utils";
 import { PDFViewer } from "@react-pdf/renderer";
 import { BorrowRequisitionPDF } from "@/lib/pdf/BorrowRequisitionPDF";
-import { FileDown, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { EmployeeSearchSelect } from "@/components/employee-search-select";
 

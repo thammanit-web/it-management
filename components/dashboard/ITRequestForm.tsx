@@ -17,10 +17,8 @@ export const ITRequestForm: React.FC<ITRequestFormProps> = ({ id, data }) => {
     reason,
     priority,
     approval_status,
-    approval_comment,
     approval_date,
     it_approval_status,
-    it_approval_comment,
     it_approval_date,
   } = data;
 

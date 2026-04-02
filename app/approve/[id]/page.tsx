@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import {
   CheckCircle2,
@@ -15,16 +15,12 @@ import {
   Package,
   ShieldAlert,
   Lock,
-  ArrowRight,
   Ticket,
-  ImageIcon,
-  CheckCircle,
   Info
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 
 export default function ApprovalPage() {

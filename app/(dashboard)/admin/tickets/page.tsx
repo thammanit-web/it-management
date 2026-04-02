@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Loader2, Ticket, Edit2, Clock, Trash2, ChevronUp, ChevronDown, FileSpreadsheet, Eye } from "lucide-react";
+import { Search, Loader2, Ticket, Edit2, Trash2, ChevronUp, ChevronDown, FileSpreadsheet, Eye } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -78,7 +78,6 @@ export default function TicketsPage() {
   const [filterPriority, setFilterPriority] = useState("ALL");
   const [filterCategory, setFilterCategory] = useState("ALL");
   const [filterTypeRequest, setFilterTypeRequest] = useState("ALL");
-  const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState<{ key: keyof RequestTicket; direction: 'asc' | 'desc' }>({
     key: 'createdAt',
@@ -1070,10 +1069,9 @@ export default function TicketsPage() {
               <Button
                 type="button"
                 onClick={handleExportPDF}
-                disabled={isExportingPDF}
                 className="flex-1 min-w-[120px] h-12 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 text-[11px] font-black uppercase tracking-widest"
               >
-                {isExportingPDF ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Eye className="mr-2 h-4 w-4" /> {t('admin_tickets.view_pdf')}</>}
+                <Eye className="mr-2 h-4 w-4" /> {t('admin_tickets.view_pdf')}
               </Button>
             )}
             <Button

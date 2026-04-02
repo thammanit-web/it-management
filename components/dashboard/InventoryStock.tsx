@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
-import { Package, ImageIcon, ShoppingBag, X } from "lucide-react";
+import { Package, ImageIcon, ShoppingBag } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

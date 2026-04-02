@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { SearchIcon, PlusCircle, PackageOpen } from "lucide-react";
+import { SearchIcon, PackageOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EmptyStateProps {

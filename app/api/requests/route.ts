@@ -5,7 +5,7 @@ import { logAudit } from "@/lib/audit";
 import { headers } from "next/headers";
 import { generateNewCode } from "@/lib/code-generator";
 
-export async function GET(request: Request) {
+export async function GET() {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
