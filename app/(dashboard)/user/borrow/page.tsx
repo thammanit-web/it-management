@@ -17,11 +17,26 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-import { PDFPreview } from "@/components/pdf/PDFPreview";
 import { BorrowRequisitionPDF } from "@/lib/pdf/BorrowRequisitionPDF";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { NewBorrowDrawer } from "@/components/borrow/NewBorrowDrawer";
+import PDFPreview from "@/components/pdf/PDFPreview";
 
+interface InventoryItem {
+  id: string;
+  remaining: number;
+  equipmentEntry?: {
+    item_name: string;
+    item_type: string;
+    brand_name?: string;
+    unit?: string;
+    list?: string;
+    purchaseOrder?: {
+       picture?: string;
+       detail?: string;
+    }
+  }
+}
 
 interface BorrowGroup {
   id: string;
@@ -517,11 +532,11 @@ function BorrowContent() {
         title={t('common.preview_pdf')}
         size="xl"
       >
-        <div className="h-[75vh] w-full rounded-2xl overflow-hidden border border-border bg-secondary/20 shadow-inner">
+        <div className="h-[75vh] w-full rounded-2xl overflow-hidden border border-border bg-surface shadow-inner">
           {viewGroup && (
             <PDFPreview 
               document={<BorrowRequisitionPDF data={viewGroup} />} 
-              fileName={`${viewGroup.group_code || 'BORROW'}.pdf`}
+              filename={`BORROW_${viewGroup.group_code}`}
             />
           )}
         </div>

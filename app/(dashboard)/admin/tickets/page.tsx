@@ -20,7 +20,7 @@ import { useSession } from "next-auth/react";
 import { exportToExcel } from "@/lib/export-utils";
 import { ITRequestPDF } from "@/lib/pdf/ITRequestPDF";
 import { EmployeeSearchSelect } from "@/components/employee-search-select";
-import { PDFPreview } from "@/components/pdf/PDFPreview";
+import { PDFViewer } from "@react-pdf/renderer";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 
 interface RequestTicket {
@@ -1014,10 +1014,9 @@ export default function TicketsPage() {
       >
         <div className="h-[75vh] w-full rounded-2xl overflow-hidden border border-zinc-100">
           {previewData && (
-            <PDFPreview 
-              document={<ITRequestPDF data={previewData} locale={locale} />} 
-              fileName={`${previewData.request_code || 'RQ'}.pdf`}
-            />
+            <PDFViewer width="100%" height="100%" showToolbar={true}>
+              <ITRequestPDF data={previewData} locale={locale} />
+            </PDFViewer>
           )}
         </div>
         <div className="mt-4 flex justify-end">

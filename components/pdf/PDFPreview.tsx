@@ -1,157 +1,127 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { usePDF, DocumentProps, pdf } from "@react-pdf/renderer";
-import { Loader2, AlertCircle, FileDown, ExternalLink, Smartphone } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React, { useEffect, useState } from "react";
+import { PDFViewer, pdf } from "@react-pdf/renderer";
 import { Capacitor } from "@capacitor/core";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { FileOpener } from "@capacitor-community/file-opener";
+import { Loader2, Eye, FileDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 
 interface PDFPreviewProps {
-  document: React.ReactElement<DocumentProps>;
-  fileName?: string;
+  document: React.ReactElement<any>;
+  filename: string;
 }
 
-export function PDFPreview({ document, fileName = "document.pdf" }: PDFPreviewProps) {
-  const [instance, updateInstance] = usePDF({ document });
-  const isNative = Capacitor.isNativePlatform();
+export default function PDFPreview({ document, filename }: PDFPreviewProps) {
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    updateInstance(document);
-  }, [document, updateInstance]);
+    // Detect environment on mount
+    setIsMobile(Capacitor.isNativePlatform());
+    setIsReady(true);
+  }, []);
 
-  const handleNativeOpen = async () => {
+  const handleMobilePreview = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
     try {
+      // 1. Convert doc to Blob
       const blob = await pdf(document).toBlob();
+      
+      // 2. Convert Blob to Base64
       const reader = new FileReader();
-      
-      reader.onloadend = async () => {
-        const base64data = reader.result as string;
-        const base64 = base64data.split(',')[1];
-        
-        const savedFile = await Filesystem.writeFile({
-          path: fileName,
-          data: base64,
-          directory: Directory.Cache,
-        });
-
-        await FileOpener.open({
-          filePath: savedFile.uri,
-          contentType: 'application/pdf',
-        });
-      };
-      
       reader.readAsDataURL(blob);
+      reader.onloadend = async () => {
+        const base64Data = (reader.result as string).split(",")[1];
+        const fileNameWithExt = `${filename || "document"}.pdf`;
+        
+        try {
+          // 3. Write to File System
+          const result = await Filesystem.writeFile({
+            path: fileNameWithExt,
+            data: base64Data,
+            directory: Directory.Cache,
+            recursive: true
+          });
+
+          // 4. Open with FileOpener
+          await FileOpener.open({
+            filePath: result.uri,
+            contentType: "application/pdf"
+          });
+          
+          toast({
+            variant: "success",
+            title: "เปิดเอกสารสำเร็จ",
+            message: "กำลังเปิดไฟล์ PDF ด้วยโปรแกรมในเครื่อง"
+          });
+        } catch (fileError) {
+          console.error("FileSystem/FileOpener Error:", fileError);
+          toast({
+            variant: "error",
+            title: "ไม่สามารถเปิดไฟล์ได้",
+            message: "โปรดตรวจสอบสิทธิ์การเข้าถึงไฟล์ในมือถือของคุณ"
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
     } catch (error) {
-      console.error("Error opening PDF in native viewer:", error);
-      alert("Failed to open PDF in native viewer. Please try the standard preview.");
+      console.error("PDF generation failed:", error);
+      toast({
+        variant: "error",
+        title: "เกิดข้อผิดพลาด",
+        message: "ไม่สามารถสร้างเอกสาร PDF ได้ในขณะนี้"
+      });
+      setIsLoading(false);
     }
   };
 
-  if (instance.loading) {
+  if (!isReady) {
     return (
-      <div className="flex flex-col items-center justify-center h-full w-full bg-secondary/10 rounded-2xl border border-dashed border-border gap-3">
+      <div className="flex items-center justify-center h-full w-full bg-secondary/10">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-[10px] font-black text-accent uppercase tracking-widest">Generating PDF...</p>
       </div>
     );
   }
 
-  if (instance.error) {
+  // Mobile View: Shows a button to open PDF natively
+  if (isMobile) {
     return (
-      <div className="flex flex-col items-center justify-center h-full w-full bg-danger/5 rounded-2xl border border-dashed border-danger/20 gap-3 p-6 text-center">
-        <AlertCircle className="h-8 w-8 text-danger" />
-        <div className="space-y-1">
-          <p className="text-[12px] font-black text-danger uppercase tracking-tight">Failed to generate PDF</p>
-          <p className="text-[10px] font-medium text-danger/60 leading-relaxed max-w-[200px]">
-            There was an error generating the document preview.
-          </p>
+      <div className="flex flex-col items-center justify-center p-10 h-full w-full bg-secondary/20 rounded-2xl border border-dashed border-border/50">
+        <div className="h-24 w-24 rounded-3xl bg-primary/10 flex items-center justify-center text-primary mb-6 ring-8 ring-primary/5">
+          <FileDown className="h-10 w-10" />
         </div>
+        <div className="text-center space-y-2 mb-8">
+          <h3 className="text-lg font-black text-primary uppercase tracking-tight">แสดงตัวอย่างสำหรับมือถือ</h3>
+          <p className="text-[12px] font-bold text-accent uppercase tracking-widest leading-relaxed">คลิกปุ่มเพื่อเปิดเอกสารในโปรแกรมอ่านไฟล์</p>
+        </div>
+        <Button 
+          onClick={handleMobilePreview} 
+          disabled={isLoading}
+          className="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-primary/20 flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <><Loader2 className="h-4 w-4 animate-spin" /> กำลังประมวลผล...</>
+          ) : (
+            <><Eye className="h-4 w-4" /> เปิดดูเอกสาร PDF</>
+          )}
+        </Button>
       </div>
     );
   }
 
-  if (!instance.url) return null;
-
+  // Desktop View: Uses the standard iframe viewer
   return (
-    <div className="relative h-full w-full flex flex-col">
-      <div className="flex-1 rounded-xl overflow-hidden bg-zinc-800/5 border border-border relative">
-        {!isNative ? (
-          <iframe
-            src={instance.url}
-            className="w-full h-full border-none"
-            title="PDF Preview"
-          />
-        ) : (
-          <div className="flex flex-col items-center justify-center h-full w-full bg-primary/5 gap-6 p-8">
-            <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-              <Smartphone className="h-12 w-12" />
-            </div>
-            <div className="text-center space-y-2">
-              <p className="text-[14px] font-black text-primary uppercase tracking-tight">Native Mobile View</p>
-              <p className="text-[10px] font-medium text-accent leading-relaxed max-w-[250px]">
-                PDF optimization is ready. Click the button below to open the document with your phone's native viewer.
-              </p>
-            </div>
-            <Button 
-               onClick={handleNativeOpen}
-               className="h-12 px-8 rounded-xl bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-lg shadow-primary/20"
-            >
-              <ExternalLink className="h-4 w-4 mr-2" /> Open in Native Viewer
-            </Button>
-          </div>
-        )}
-        
-        <div className="absolute bottom-4 right-4 flex flex-col gap-2">
-          {!isNative && (
-            <Button
-              size="sm"
-              className="rounded-full shadow-xl bg-primary text-white hover:bg-primary/90 h-10 w-10 p-0"
-              onClick={() => window.open(instance.url!, '_blank')}
-              title="Open in new tab"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </Button>
-          )}
-          <a 
-            href={instance.url} 
-            download={fileName}
-            className="flex items-center justify-center rounded-full shadow-xl bg-emerald-500 text-white hover:bg-emerald-600 h-10 w-10 transition-all active:scale-95"
-            title="Download PDF"
-          >
-            <FileDown className="h-4 w-4" />
-          </a>
-        </div>
-      </div>
-      
-      {/* Fallback for mobile if needed or just additional buttons */}
-      <div className="mt-4 lg:hidden">
-        <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-between gap-4">
-          <div className="space-y-0.5">
-            <p className="text-[11px] font-black text-primary uppercase tracking-tight">PDF Options</p>
-            <p className="text-[10px] text-accent font-medium leading-none">Choose how you want to view the document.</p>
-          </div>
-          <div className="flex gap-2">
-            {isNative && (
-              <Button
-                size="sm"
-                className="h-9 px-4 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest"
-                onClick={handleNativeOpen}
-              >
-                Open Native
-              </Button>
-            )}
-            <a 
-              href={instance.url} 
-              download={fileName}
-              className="h-9 px-4 flex items-center justify-center rounded-lg bg-emerald-500 text-white text-[9px] font-black uppercase tracking-widest"
-            >
-              Download
-            </a>
-          </div>
-        </div>
-      </div>
+    <div className="h-full w-full rounded-2xl overflow-hidden shadow-inner border border-border">
+      <PDFViewer width="100%" height="100%" showToolbar={true} className="border-none">
+        {document}
+      </PDFViewer>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 
-import  { useState, useEffect, Suspense } from "react";
-import { Loader2, Ticket, Plus, ClipboardCheck, Link as LinkIcon, Check, FileDown, Eye, X } from "lucide-react";
+import React, { useState, useEffect, Suspense } from "react";
+import { Loader2, Ticket,  Clock, Plus, ClipboardCheck, Link as LinkIcon, Check, FileDown, Eye, X } from "lucide-react";
 import {
    Table,
    TableHeader,
@@ -21,8 +21,8 @@ import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { ITRequestPDF } from "@/lib/pdf/ITRequestPDF";
-import { Employee } from "@/components/employee-search-select";
-import { PDFPreview } from "@/components/pdf/PDFPreview";
+import { Employee, EmployeeSearchSelect } from "@/components/employee-search-select";
+import { PDFViewer } from "@react-pdf/renderer";
 import { NewRequestDrawer } from "@/components/requests/NewRequestDrawer";
 
 interface UserRequest {
@@ -66,7 +66,7 @@ function RequestsContent() {
    const [isLoading, setIsLoading] = useState(true);
    const [isModalOpen, setIsModalOpen] = useState(false);
    const [viewRequest, setViewRequest] = useState<UserRequest | null>(null);
-   const [_, setEmployees] = useState<Employee[]>([]);
+   const [employees, setEmployees] = useState<Employee[]>([]);
    const [showSuccess, setShowSuccess] = useState<{ id: string, approvalNeeded: boolean } | null>(null);
    const [isCopied, setIsCopied] = useState(false);
    const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -570,10 +570,9 @@ function RequestsContent() {
          >
             <div className="h-[75vh] w-full rounded-2xl overflow-hidden border border-zinc-100">
                {viewRequest && (
-                  <PDFPreview 
-                     document={<ITRequestPDF data={viewRequest} locale={locale} />} 
-                     fileName={`${viewRequest.request_code || 'RQ'}.pdf`}
-                  />
+                  <PDFViewer width="100%" height="100%" showToolbar={true}>
+                     <ITRequestPDF data={viewRequest} locale={locale} />
+                  </PDFViewer>
                )}
             </div>
             <div className="mt-4 flex justify-end">
