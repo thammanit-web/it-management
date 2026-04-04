@@ -30,54 +30,58 @@ export default function PDFPreview({ document, filename }: PDFPreviewProps) {
     if (isLoading) return;
     setIsLoading(true);
     try {
-      // 1. Convert doc to Blob
-      const blob = await pdf(document).toBlob();
+      // 1. Generate PDF as Uint8Array (More stable on Android APK than toBlob)
+      const instance = pdf(document);
+      const uint8Array = await (instance as any).toUint8Array();
       
-      // 2. Convert Blob to Base64
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = async () => {
-        const base64Data = (reader.result as string).split(",")[1];
-        const fileNameWithExt = `${filename || "document"}.pdf`;
-        
-        try {
-          // 3. Write to File System
-          const result = await Filesystem.writeFile({
-            path: fileNameWithExt,
-            data: base64Data,
-            directory: Directory.Cache,
-            recursive: true
-          });
+      // 2. Convert Uint8Array to Base64 (Faster and avoids DOM/FileReader unreliability)
+      let binary = '';
+      const len = uint8Array.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(uint8Array[i]);
+      }
+      const base64Data = window.btoa(binary);
+      
+      const fileNameWithExt = `${filename || "document"}.pdf`;
+      
+      try {
+        // 3. Write to File System Cache (No permission needed on Android)
+        const result = await Filesystem.writeFile({
+          path: fileNameWithExt,
+          data: base64Data,
+          directory: Directory.Cache,
+          recursive: true
+        });
 
-          // 4. Open with FileOpener
-          await FileOpener.open({
-            filePath: result.uri,
-            contentType: "application/pdf"
-          });
-          
-          toast({
-            variant: "success",
-            title: "เปิดเอกสารสำเร็จ",
-            message: "กำลังเปิดไฟล์ PDF ด้วยโปรแกรมในเครื่อง"
-          });
-        } catch (fileError) {
-          console.error("FileSystem/FileOpener Error:", fileError);
-          toast({
-            variant: "error",
-            title: "ไม่สามารถเปิดไฟล์ได้",
-            message: "โปรดตรวจสอบสิทธิ์การเข้าถึงไฟล์ในมือถือของคุณ"
-          });
-        } finally {
-          setIsLoading(false);
-        }
-      };
-    } catch (error) {
+        // 4. Open with FileOpener
+        await FileOpener.open({
+          filePath: result.uri,
+          contentType: "application/pdf"
+        });
+        
+        toast({
+          variant: "success",
+          title: "เปิดเอกสารสำเร็จ",
+          message: "กำลังเปิดไฟล์ PDF ด้วยโปรแกรมในเครื่อง"
+        });
+      } catch (fileError: any) {
+        console.error("FileSystem/FileOpener Error:", fileError);
+        alert(`Error opening file: ${fileError.message || fileError} (Android Path: ${fileNameWithExt})`); // For APK debugging
+        toast({
+          variant: "error",
+          title: "ไม่สามารถเปิดไฟล์ได้",
+          message: "โปรดตรวจสอบสิทธิ์การเข้าถึงไฟล์ในมือถือของคุณ"
+        });
+      }
+    } catch (error: any) {
       console.error("PDF generation failed:", error);
+      alert(`PDF core error: ${error.message || error}`); // Serious error in APK
       toast({
         variant: "error",
         title: "เกิดข้อผิดพลาด",
         message: "ไม่สามารถสร้างเอกสาร PDF ได้ในขณะนี้"
       });
+    } finally {
       setIsLoading(false);
     }
   };

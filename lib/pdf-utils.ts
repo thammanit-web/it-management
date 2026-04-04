@@ -9,26 +9,33 @@ import { FileOpener } from "@capacitor-community/file-opener";
  */
 export async function downloadPDF(document: any, filename: string) {
   try {
-    const blob = await pdf(document).toBlob();
-    
     if (Capacitor.isNativePlatform()) {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = async () => {
-        const base64Data = (reader.result as string).split(",")[1];
-        const res = await Filesystem.writeFile({
-          path: `${filename}.pdf`,
-          data: base64Data,
-          directory: Directory.Documents,
-          recursive: true
-        });
-        alert(`ดาวน์โหลดสำเร็จ: ${res.uri}`);
-      };
+      const instance = pdf(document);
+      const uint8Array = await (instance as any).toUint8Array();
+      
+      let binary = '';
+      const len = uint8Array.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(uint8Array[i]);
+      }
+      const base64Data = window.btoa(binary);
+
+      const res = await Filesystem.writeFile({
+        path: `${filename}.pdf`,
+        data: base64Data,
+        directory: Directory.Documents,
+        recursive: true
+      });
+      alert(`ดาวน์โหลดสำเร็จ: ${res.uri}`);
     } else {
+      const blob = await pdf(document).toBlob();
       saveAs(blob, `${filename}.pdf`);
     }
-  } catch (error) {
-    console.error("PDF generation error with @react-pdf/renderer:", error);
+  } catch (error: any) {
+    console.error("PDF generation/download error:", error);
+    if (Capacitor.isNativePlatform()) {
+      alert(`Download Error: ${error.message || error}`);
+    }
   }
 }
 
@@ -37,29 +44,36 @@ export async function downloadPDF(document: any, filename: string) {
  */
 export async function previewPDF(document: any, filename: string = "document") {
   try {
-    const blob = await pdf(document).toBlob();
-    
     if (Capacitor.isNativePlatform()) {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = async () => {
-        const base64Data = (reader.result as string).split(",")[1];
-        const res = await Filesystem.writeFile({
-          path: `${filename}.pdf`,
-          data: base64Data,
-          directory: Directory.Cache,
-          recursive: true
-        });
-        await FileOpener.open({
-          filePath: res.uri,
-          contentType: "application/pdf"
-        });
-      };
+      const instance = pdf(document);
+      const uint8Array = await (instance as any).toUint8Array();
+      
+      let binary = '';
+      const len = uint8Array.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(uint8Array[i]);
+      }
+      const base64Data = window.btoa(binary);
+
+      const res = await Filesystem.writeFile({
+        path: `${filename}.pdf`,
+        data: base64Data,
+        directory: Directory.Cache,
+        recursive: true
+      });
+      await FileOpener.open({
+        filePath: res.uri,
+        contentType: "application/pdf"
+      });
     } else {
+      const blob = await pdf(document).toBlob();
       const url = URL.createObjectURL(blob);
       window.open(url, "_blank");
     }
-  } catch (error) {
-    console.error("PDF preview error with @react-pdf/renderer:", error);
+  } catch (error: any) {
+    console.error("PDF preview error:", error);
+    if (Capacitor.isNativePlatform()) {
+      alert(`Preview Error: ${error.message || error}`);
+    }
   }
 }
