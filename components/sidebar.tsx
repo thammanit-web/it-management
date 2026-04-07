@@ -93,6 +93,7 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
     { name: t('sidebar.dashboard'), href: "/", icon: LayoutDashboard },
     { name: t('sidebar.my_requests'), href: "/user/my-requests", icon: Ticket },
     { name: t('sidebar.borrow_equipment'), href: "/user/borrow", icon: PlusCircle },
+    { name: t('sidebar.inventory'), href: "/user/inventory", icon: Warehouse },
     { name: t('sidebar.it_vault'), href: "/user/notes", icon: ShieldCheck },
   ];
 

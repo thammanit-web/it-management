@@ -218,7 +218,7 @@ function RequestsContent() {
       setIsPreviewModalOpen(true);
    };
 
-   const isStandard = ["SUPPORT", "PASSWORD_ACCOUNT", "BORROW_ACC", "REPAIR"].includes(formData.type_request);
+   const isStandard = ["SUPPORT", "PASSWORD_ACCOUNT", "BORROW_ACC", "REPAIR", "INSTALLATION"].includes(formData.type_request);
 
    const filteredRequests = requests.filter(r => filterType === 'ALL' || r.userId === (session?.user as any)?.id);
 
@@ -599,6 +599,7 @@ function RequestsContent() {
                            <option value="PASSWORD_ACCOUNT">{t('types.password_reset')}</option>
                            <option value="BORROW_ACC">{t('types.borrow_acc')}</option>
                            <option value="REPAIR">{t('types.repair')}</option>
+                           <option value="INSTALLATION">{t('types.installation')}</option>
                         </optgroup>
                         <optgroup label={t('requests.requires_approval_group')}>
                            <option value="PURCHASE">{t('types.purchase')}</option>

@@ -97,6 +97,7 @@ export default function DashboardPage() {
           {isAdmin && (
             <Suspense fallback={<LoadingFallback />}>
               <DashboardCharts
+                dateFilter={dateFilter}
                 trendData={trendData}
                 urgencyData={urgencyData}
                 categoryData={categoryData}

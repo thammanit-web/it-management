@@ -24,7 +24,7 @@ export function useDashboardData(isAdmin: boolean, session: any) {
     proportion: { sort: 'value', order: 'desc', limit: 10 },
     priority: { months: 6 },
     department: { months: 6, selected: [] as string[] },
-    type: { sort: 'value', order: 'desc', limit: 7 }
+    type: { sort: 'value', order: 'desc', limit: 'ALL' }
   });
 
   const updateChartConfig = useCallback((chart: string, updates: any) => {
@@ -157,59 +157,118 @@ export function useDashboardData(isAdmin: boolean, session: any) {
   }, [filteredRequests, chartConfig.proportion]);
 
   const trendData = useMemo(() => {
-    const refDate = dateFilter === "ALL" ? new Date() : new Date(dateFilter + "-01T00:00:00");
     const result: any[] = [];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const count = chartConfig.trend.months;
-    for (let i = count - 1; i >= 0; i--) {
-       const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
-       result.push({
-         month: `${months[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`,
-         yearMonth: `${d.getFullYear()}-${d.getMonth()}`,
-         new: 0, resolved: 0, pending: 0, total: 0
-       });
-    }
-
-    requests.forEach(r => {
-      const d = new Date(r.createdAt);
-      if (isNaN(d.getTime())) return;
-      const ym = `${d.getFullYear()}-${d.getMonth()}`;
-      const idx = result.findIndex(item => item.yearMonth === ym);
-      if (idx !== -1) {
-        result[idx].new += 1;
-        result[idx].total += 1;
-        if (r.status === 'RESOLVED' || r.status === 'CLOSED') result[idx].resolved += 1;
-        else result[idx].pending += 1;
+    
+    if (dateFilter === "ALL") {
+      const refDate = new Date();
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const count = chartConfig.trend.months;
+      for (let i = count - 1; i >= 0; i--) {
+         const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
+         result.push({
+           month: `${months[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`,
+           yearMonth: `${d.getFullYear()}-${d.getMonth()}`,
+           new: 0, resolved: 0, pending: 0, total: 0
+         });
       }
-    });
+
+      requests.forEach(r => {
+        const d = new Date(r.createdAt);
+        if (isNaN(d.getTime())) return;
+        const ym = `${d.getFullYear()}-${d.getMonth()}`;
+        const idx = result.findIndex(item => item.yearMonth === ym);
+        if (idx !== -1) {
+          result[idx].new += 1;
+          result[idx].total += 1;
+          if (r.status === 'RESOLVED' || r.status === 'CLOSED') result[idx].resolved += 1;
+          else result[idx].pending += 1;
+        }
+      });
+    } else {
+      const [year, month] = dateFilter.split('-').map(Number);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      
+      for (let i = 1; i <= daysInMonth; i++) {
+        result.push({
+          month: `${i}`,
+          day: i,
+          new: 0, resolved: 0, pending: 0, total: 0
+        });
+      }
+
+      requests.forEach(r => {
+        const d = new Date(r.createdAt);
+        if (isNaN(d.getTime())) return;
+        const rYear = d.getFullYear();
+        const rMonth = d.getMonth() + 1;
+        if (rYear === year && rMonth === month) {
+          const rDay = d.getDate();
+          const idx = rDay - 1;
+          if (result[idx]) {
+            result[idx].new += 1;
+            result[idx].total += 1;
+            if (r.status === 'RESOLVED' || r.status === 'CLOSED') result[idx].resolved += 1;
+            else result[idx].pending += 1;
+          }
+        }
+      });
+    }
     return result.map(({ yearMonth, ...rest }) => rest);
   }, [requests, dateFilter, chartConfig.trend.months]);
 
   const urgencyData = useMemo(() => {
-    const refDate = dateFilter === "ALL" ? new Date() : new Date(dateFilter + "-01T00:00:00");
     const result: any[] = [];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const count = chartConfig.priority.months;
-    for (let i = count - 1; i >= 0; i--) {
-       const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
-       result.push({
-         month: `${months[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`,
-         yearMonth: `${d.getFullYear()}-${d.getMonth()}`,
-         high: 0, medium: 0, low: 0
-       });
-    }
-    requests.forEach(r => {
-      const d = new Date(r.createdAt);
-      if (isNaN(d.getTime())) return;
-      const ym = `${d.getFullYear()}-${d.getMonth()}`;
-      const idx = result.findIndex(item => item.yearMonth === ym);
-      if (idx !== -1) {
-        const p = r.priority || 'LOW';
-        if (p === 'HIGH') result[idx].high += 1;
-        else if (p === 'MEDIUM') result[idx].medium += 1;
-        else result[idx].low += 1;
+    
+    if (dateFilter === "ALL") {
+      const refDate = new Date();
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const count = chartConfig.priority.months;
+      for (let i = count - 1; i >= 0; i--) {
+         const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
+         result.push({
+           month: `${months[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`,
+           yearMonth: `${d.getFullYear()}-${d.getMonth()}`,
+           high: 0, medium: 0, low: 0
+         });
       }
-    });
+      requests.forEach(r => {
+        const d = new Date(r.createdAt);
+        if (isNaN(d.getTime())) return;
+        const ym = `${d.getFullYear()}-${d.getMonth()}`;
+        const idx = result.findIndex(item => item.yearMonth === ym);
+        if (idx !== -1) {
+          const p = r.priority || 'LOW';
+          if (p === 'HIGH') result[idx].high += 1;
+          else if (p === 'MEDIUM') result[idx].medium += 1;
+          else result[idx].low += 1;
+        }
+      });
+    } else {
+      const [year, month] = dateFilter.split('-').map(Number);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      for (let i = 1; i <= daysInMonth; i++) {
+        result.push({
+          month: `${i}`,
+          high: 0, medium: 0, low: 0
+        });
+      }
+      requests.forEach(r => {
+        const d = new Date(r.createdAt);
+        if (isNaN(d.getTime())) return;
+        const rYear = d.getFullYear();
+        const rMonth = d.getMonth() + 1;
+        if (rYear === year && rMonth === month) {
+          const rDay = d.getDate();
+          const idx = rDay - 1;
+          if (result[idx]) {
+            const p = r.priority || 'LOW';
+            if (p === 'HIGH') result[idx].high += 1;
+            else if (p === 'MEDIUM') result[idx].medium += 1;
+            else result[idx].low += 1;
+          }
+        }
+      });
+    }
     return result.map(({ yearMonth, ...rest }) => rest);
   }, [requests, dateFilter, chartConfig.priority.months]);
 
@@ -231,40 +290,77 @@ export function useDashboardData(isAdmin: boolean, session: any) {
     const deptSet = new Set<string>();
     requests.forEach(r => deptSet.add(r.employee?.department || 'ไม่ระบุ (Unknown)'));
 
-    const refDate = dateFilter === "ALL" ? new Date() : new Date(dateFilter + "-01T00:00:00");
     const result: any[] = [];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const count = chartConfig.department.months;
-    for (let i = count - 1; i >= 0; i--) {
-       const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
-       const obj: any = { 
-         month: `${months[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`,
-         yearMonth: `${d.getFullYear()}-${d.getMonth()}`, 
-         total: 0 
-       };
-       deptSet.forEach(dept => {
-         if (chartConfig.department.selected.length === 0 || chartConfig.department.selected.includes(dept)) {
-           obj[dept] = 0;
-         }
-       });
-       result.push(obj);
-    }
+    const selectedDepts = chartConfig.department.selected;
 
-    requests.forEach(r => {
-      const d = new Date(r.createdAt);
-      if (isNaN(d.getTime())) return;
-      const ym = `${d.getFullYear()}-${d.getMonth()}`;
-      const idx = result.findIndex(item => item.yearMonth === ym);
-      if (idx !== -1) {
-        const dept = r.employee?.department || 'ไม่ระบุ (Unknown)';
-        result[idx][dept] = (result[idx][dept] || 0) + 1;
-        result[idx].total += 1;
+    if (dateFilter === "ALL") {
+      const refDate = new Date();
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const count = chartConfig.department.months;
+      for (let i = count - 1; i >= 0; i--) {
+         const d = new Date(refDate.getFullYear(), refDate.getMonth() - i, 1);
+         const obj: any = { 
+           month: `${months[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`,
+           yearMonth: `${d.getFullYear()}-${d.getMonth()}`, 
+           total: 0 
+         };
+         deptSet.forEach(dept => {
+           if (selectedDepts.length === 0 || selectedDepts.includes(dept)) {
+             obj[dept] = 0;
+           }
+         });
+         result.push(obj);
       }
-    });
+
+      requests.forEach(r => {
+        const d = new Date(r.createdAt);
+        if (isNaN(d.getTime())) return;
+        const ym = `${d.getFullYear()}-${d.getMonth()}`;
+        const idx = result.findIndex(item => item.yearMonth === ym);
+        if (idx !== -1) {
+          const dept = r.employee?.department || 'ไม่ระบุ (Unknown)';
+          if (result[idx][dept] !== undefined) {
+             result[idx][dept] += 1;
+             result[idx].total += 1;
+          }
+        }
+      });
+    } else {
+      const [year, month] = dateFilter.split('-').map(Number);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      
+      for (let i = 1; i <= daysInMonth; i++) {
+        const obj: any = { month: `${i}`, total: 0 };
+        deptSet.forEach(dept => {
+          if (selectedDepts.length === 0 || selectedDepts.includes(dept)) {
+            obj[dept] = 0;
+          }
+        });
+        result.push(obj);
+      }
+
+      requests.forEach(r => {
+        const d = new Date(r.createdAt);
+        if (isNaN(d.getTime())) return;
+        const rYear = d.getFullYear();
+        const rMonth = d.getMonth() + 1;
+        if (rYear === year && rMonth === month) {
+          const rDay = d.getDate();
+          const idx = rDay - 1;
+          if (result[idx]) {
+            const dept = r.employee?.department || 'ไม่ระบุ (Unknown)';
+            if (result[idx][dept] !== undefined) {
+               result[idx][dept] += 1;
+               result[idx].total += 1;
+            }
+          }
+        }
+      });
+    }
 
     return {
       data: result.map(({ yearMonth, ...rest }) => rest),
-      departments: Array.from(deptSet).filter(dept => chartConfig.department.selected.length === 0 || chartConfig.department.selected.includes(dept))
+      departments: Array.from(deptSet).filter(dept => selectedDepts.length === 0 || selectedDepts.includes(dept))
     };
   }, [requests, dateFilter, chartConfig.department]);
 
@@ -283,6 +379,7 @@ export function useDashboardData(isAdmin: boolean, session: any) {
       'change': 'เปลี่ยนแปลงโครงสร้าง',
       'borrow_acc': 'การยืมอุปกรณ์',
       'consulting': 'ให้คำปรึกษาด้าน IT',
+      'installation': 'ติดตั้ง / เซ็ตอัพ',
       'other': 'งานบริการอื่นๆ',
       'None': 'ไม่ระบุประเภท',
       'unknown': 'ไม่ระบุประเภท'

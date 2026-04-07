@@ -2,12 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Search, ChevronDown, Check, User, X } from "lucide-react";
+import { Search, ChevronDown, Check, User, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface Employee {
   id: string;
   employee_name_th: string;
+  employee_name_en?: string | null;
   employee_code: string;
   department?: string | null;
   position?: string | null;
@@ -16,33 +17,80 @@ export interface Employee {
 export interface EmployeeSearchSelectProps {
   value: string;
   onChange: (value: string) => void;
-  employees: Employee[];
+  employees?: Employee[];
   placeholder?: string;
   className?: string;
+  valueType?: 'name' | 'id' | 'code';
 }
 
 export function EmployeeSearchSelect({ 
   value, 
   onChange, 
-  employees, 
+  employees: externalEmployees, 
   placeholder = "เลือกพนักงาน... / Select Employee...",
-  className
+  className,
+  valueType = 'name'
 }: EmployeeSearchSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [employees, setEmployees] = useState<Employee[]>(externalEmployees || []);
+  const [isLoading, setIsLoading] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0, placement: 'bottom' as 'top' | 'bottom' });
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Find current selected name
-  const selectedEmployee = employees.find(emp => emp.employee_name_th === value || emp.id === value || emp.employee_code === value);
-  const displayValue = selectedEmployee ? `${selectedEmployee.employee_name_th}` : (value || "");
+  // Sync with external employees if provided
+  useEffect(() => {
+    if (externalEmployees) {
+      setEmployees(externalEmployees);
+    }
+  }, [externalEmployees]);
 
-  const filteredEmployees = employees.filter(emp => 
-    emp.employee_name_th.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (emp.employee_code && emp.employee_code.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    emp.department?.toLowerCase().includes(searchTerm.toLowerCase())
+  // Fetch employees if not provided externally
+  useEffect(() => {
+    if (!externalEmployees || externalEmployees.length === 0) {
+      const fetchInternalEmployees = async () => {
+        setIsLoading(true);
+        try {
+          // Add limit=1000 to get a more complete list for selection
+          const res = await fetch("/api/employees?limit=1000");
+          const result = await res.json();
+          
+          // API might return an array or an object { data: [] }
+          if (Array.isArray(result)) {
+            setEmployees(result);
+          } else if (result && Array.isArray(result.data)) {
+            setEmployees(result.data);
+          }
+        } catch (error) {
+          console.error("Error fetching employees in select:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchInternalEmployees();
+    }
+  }, [externalEmployees]);
+
+  // Find current selected name
+  const selectedEmployee = employees.find(emp => 
+    emp.employee_name_th === value || 
+    emp.employee_name_en === value ||
+    emp.id === value || 
+    emp.employee_code === value
   );
+  const displayValue = selectedEmployee ? (selectedEmployee.employee_name_en || selectedEmployee.employee_name_th) : (value || "");
+
+  const filteredEmployees = employees.filter(emp => {
+    const search = searchTerm.toLowerCase();
+    return (
+      emp.employee_name_th.toLowerCase().includes(search) ||
+      (emp.employee_name_en && emp.employee_name_en.toLowerCase().includes(search)) ||
+      (emp.employee_code && emp.employee_code.toLowerCase().includes(search)) ||
+      (emp.department && emp.department.toLowerCase().includes(search)) ||
+      (emp.position && emp.position.toLowerCase().includes(search))
+    );
+  });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -120,19 +168,25 @@ export function EmployeeSearchSelect({
         )}
       </div>
       <div className="max-h-[250px] overflow-y-auto pt-1">
-        {filteredEmployees.length === 0 ? (
+        {isLoading ? (
+          <div className="px-4 py-8 text-center flex flex-col items-center gap-2">
+             <Loader2 className="h-5 w-5 animate-spin text-[#0F1059]" />
+             <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest animate-pulse">กำลังโหลดข้อมูล... / Loading...</span>
+          </div>
+        ) : filteredEmployees.length === 0 ? (
           <div className="px-4 py-8 text-center text-xs font-bold text-zinc-400 uppercase tracking-widest italic">
             ไม่พบข้อมูล / No results found
           </div>
         ) : (
           filteredEmployees.map((emp) => {
-            const isSelected = value === emp.employee_name_th || value === emp.employee_code;
+            const isSelected = value === emp.employee_name_th || value === emp.employee_code || value === emp.id;
             return (
               <div 
                 key={emp.id}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onChange(emp.employee_name_th);
+                  const val = valueType === 'id' ? emp.id : (valueType === 'code' ? emp.employee_code : (emp.employee_name_en || emp.employee_name_th));
+                  onChange(val);
                   setIsOpen(false);
                   setSearchTerm("");
                 }}
@@ -144,7 +198,10 @@ export function EmployeeSearchSelect({
                 <div className="flex flex-col min-w-0">
                    <div className="flex items-center gap-2">
                        <span className={cn("font-medium truncate transition-colors", isSelected ? "text-[#0F1059]" : "text-zinc-700")}>
-                          {emp.employee_name_th}
+                          {emp.employee_name_en || emp.employee_name_th}
+                          {emp.employee_name_en && emp.employee_name_en !== emp.employee_name_th && (
+                            <span className="text-[10px] font-normal text-zinc-400 ml-1.5 font-sans">({emp.employee_name_th})</span>
+                          )}
                        </span>
                        <Badge2 text={emp.employee_code} />
                    </div>

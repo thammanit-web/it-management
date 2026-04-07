@@ -98,7 +98,8 @@ export default function ApprovalsPage() {
       const ticketData = await ticketRes.json();
 
       const typedEq = (Array.isArray(eqData) ? eqData : []).map(r => ({ ...r, __type: "EQUIPMENT" as const }));
-      const typedTickets = (Array.isArray(ticketData) ? ticketData : []).map(r => ({ ...r, __type: "TICKETS" as const }));
+      const ticketArray = Array.isArray(ticketData) ? ticketData : (ticketData?.data || []);
+      const typedTickets = ticketArray.map((r: any) => ({ ...r, __type: "TICKETS" as const }));
       
       setAllRequests([...typedEq, ...typedTickets]);
     } catch (error) {

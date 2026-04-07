@@ -661,7 +661,7 @@ function BorrowContent() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         title={t('borrow.request_equipment')}
-        size="lg"
+        size="4xl"
       >
         <form onSubmit={handleBorrow} className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full pb-6">
              <div className="space-y-4">
@@ -680,6 +680,7 @@ function BorrowContent() {
                       <div className="space-y-2 flex-1 overflow-y-auto pr-1 custom-scrollbar">
                         {inventory
                           .filter(item => {
+                             if (item.remaining <= 0) return false;
                              const searchLow = invSearch.toLowerCase();
                              return (item.equipmentEntry?.list || "").toLowerCase().includes(searchLow) ||
                                     (item.equipmentEntry?.brand_name || "").toLowerCase().includes(searchLow);

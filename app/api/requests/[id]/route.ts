@@ -61,7 +61,8 @@ export async function PATCH(
       approval_comment,
       it_approval,
       it_approval_status,
-      it_approval_comment
+      it_approval_comment,
+      createdAt
     } = body;
 
     const requestUpdate = await prisma.request.update({
@@ -83,6 +84,7 @@ export async function PATCH(
         it_approval_status,
         it_approval_comment,
         it_approval_date: (it_approval_status === "APPROVED" || it_approval_status === "REJECTED") ? new Date() : undefined,
+        createdAt: createdAt ? new Date(createdAt) : undefined,
       },
       include: {
         employee: true,

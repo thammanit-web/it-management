@@ -9,8 +9,8 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "50");
     const search = searchParams.get("search") || "";
     const filterType = searchParams.get("filterType") || "ALL";
-    const sortField = searchParams.get("sortField") || "date_received";
-    const sortOrder = searchParams.get("sortOrder") || "desc";
+    const sortField = searchParams.get("sortField") || "po_code";
+    const sortOrder = searchParams.get("sortOrder") || "asc";
 
     const skip = (page - 1) * limit;
 
@@ -36,8 +36,10 @@ export async function GET(request: Request) {
       orderBy = { list: sortOrder };
     } else if (sortField === 'quantity') {
       orderBy = { quantity: sortOrder };
+    } else if (sortField === 'po_code') {
+      orderBy = { purchaseOrder: { po_code: sortOrder } };
     } else {
-      orderBy = { createdAt: 'desc' };
+      orderBy = { createdAt: 'asc' };
     }
 
     const [entries, total] = await Promise.all([

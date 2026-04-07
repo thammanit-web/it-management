@@ -17,8 +17,8 @@ export async function GET(request: Request) {
   const priority = searchParams.get("priority") || "ALL";
   const category = searchParams.get("category") || "ALL";
   const type_request = searchParams.get("type_request") || "ALL";
-  const sortField = searchParams.get("sortField") || "createdAt";
-  const sortOrder = (searchParams.get("sortOrder") as "asc" | "desc") || "desc";
+  const sortField = searchParams.get("sortField") || "request_code";
+  const sortOrder = (searchParams.get("sortOrder") as "asc" | "desc") || "asc";
 
   const skip = (page - 1) * limit;
 
@@ -91,12 +91,22 @@ export async function POST(request: Request) {
         approval_comment,
         it_approval,
         it_approval_status,
-        it_approval_comment
+        it_approval_comment,
+        createdAt
       } = body;
   
       // Use authUserId instead of relying on client-provided id
-      if (!employeeId || !authUserId || !description || !category || !priority) {
-        return NextResponse.json({ error: "Required fields are missing" }, { status: 400 });
+      const missingFields = [];
+      if (!employeeId) missingFields.push("employeeId");
+      if (!authUserId) missingFields.push("authUserId");
+      if (!description) missingFields.push("description");
+      if (!category) missingFields.push("category");
+      if (!priority) missingFields.push("priority");
+      if (!type_request) missingFields.push("type_request");
+
+      if (missingFields.length > 0) {
+        console.error(`[API/REQUESTS] POST 400 - Missing Fields:`, missingFields, `Payload:`, body);
+        return NextResponse.json({ error: `Required fields are missing: ${missingFields.join(", ")}` }, { status: 400 });
       }
   
       const employee = await prisma.employee.findUnique({
@@ -104,6 +114,7 @@ export async function POST(request: Request) {
       });
   
       if (!employee) {
+        console.error(`[API/REQUESTS] POST 404 - Employee profile not found for employeeId:`, employeeId);
         return NextResponse.json({ error: "Employee profile not found" }, { status: 404 });
       }
 
@@ -116,11 +127,12 @@ export async function POST(request: Request) {
         PASSWORD_ACCOUNT: "แก้รหัสผ่าน / บัญชี",
         BORROW_ACC: "ขอยืมอุปกรณ์เสริม-อุปกรณ์ไอทีพื้นฐาน",
         REPAIR: "แจ้งซ่อมอุปกรณ์ตามมาตรฐาน",
-        ACCESS: "ขอสิทธิ์เข้าใช้งานระบบมาตรฐาน"
+        ACCESS: "ขอสิทธิ์เข้าใช้งานระบบมาตรฐาน",
+        INSTALLATION: "ติดตั้ง / เซ็ตอัพ"
       };  
 
       const typeName = typeLabels[type_request] || type_request;
-      const standardTypes = ["SUPPORT", "PASSWORD_ACCOUNT", "BORROW_ACC", "REPAIR"];
+      const standardTypes = ["SUPPORT", "PASSWORD_ACCOUNT", "BORROW_ACC", "REPAIR", "INSTALLATION"];
       const finalApprovalStatus = standardTypes.includes(type_request) ? "APPROVED" : (approval_status || "PENDING");
   
       const newRequest = await prisma.request.create({
@@ -142,6 +154,7 @@ export async function POST(request: Request) {
           it_approval,
           it_approval_status: it_approval_status || "PENDING",
           it_approval_comment,
+          createdAt: createdAt ? new Date(createdAt) : undefined,
         },
       include: {
         employee: true,

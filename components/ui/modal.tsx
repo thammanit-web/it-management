@@ -52,7 +52,7 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
                size === 'md' && "sm:max-w-lg",
                size === 'lg' && "sm:max-w-2xl",
                size === 'xl' && "sm:max-w-4xl",
-               size === 'full' && "sm:max-w-[95vw]",
+               size === 'full' && "sm:max-w-6xl",
                "rounded-t-xl sm:rounded-xl",
                "bg-surface border-t sm:border border-border shadow-2xl",
                className

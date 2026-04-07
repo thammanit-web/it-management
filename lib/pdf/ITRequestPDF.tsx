@@ -280,7 +280,8 @@ export const ITRequestPDF: React.FC<ITRequestPDFProps> = ({ data, locale = 'th' 
       PURCHASE: "จัดซื้ออุปกรณ์",
       BORROW_ACC: "ยืมอุปกรณ์",
       CHANGE:"การเปลี่ยนแปลงระบบ",
-      LICENSE:"การขอใช้งาน License"
+      LICENSE:"การขอใช้งาน License",
+      INSTALLATION:"ติดตั้ง / เซ็ตอัพ"
     };
     return map[type] || type;
   };

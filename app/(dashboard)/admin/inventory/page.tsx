@@ -62,7 +62,7 @@ export default function InventoryPage() {
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [filterCategory, setFilterCategory] = useState("ALL");
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({
-    key: 'item_name',
+    key: 'eq_code',
     direction: 'asc'
   });
 
@@ -120,7 +120,10 @@ export default function InventoryPage() {
       let aValue: any = "";
       let bValue: any = "";
 
-      if (sortConfig.key === 'item_name') {
+      if (sortConfig.key === 'eq_code') {
+        aValue = a.eq_code || "";
+        bValue = b.eq_code || "";
+      } else if (sortConfig.key === 'item_name') {
         aValue = a.equipmentEntry?.item_name || "";
         bValue = b.equipmentEntry?.item_name || "";
       } else if (sortConfig.key === 'remaining') {

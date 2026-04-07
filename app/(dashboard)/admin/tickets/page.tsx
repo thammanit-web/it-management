@@ -65,7 +65,6 @@ export default function TicketsPage() {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const [tickets, setTickets] = useState<RequestTicket[]>([]);
-  const [employees, setEmployees] = useState<Employee[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,8 +79,8 @@ export default function TicketsPage() {
   const [filterTypeRequest, setFilterTypeRequest] = useState("ALL");
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState<{ key: keyof RequestTicket; direction: 'asc' | 'desc' }>({
-    key: 'createdAt',
-    direction: 'desc'
+    key: 'request_code',
+    direction: 'asc'
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -110,15 +109,14 @@ export default function TicketsPage() {
     approval_comment: "",
     it_approval: "",
     it_approval_status: "PENDING",
-    it_approval_comment: ""
+    it_approval_comment: "",
+    createdAt: ""
   });
 
   // Store the full ticket being edited for read-only info display
   const [editingTicket, setEditingTicket] = useState<RequestTicket | null>(null);
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -159,15 +157,7 @@ export default function TicketsPage() {
       setIsLoading(false);
     }
   };
-  const fetchEmployees = async () => {
-    try {
-      const res = await fetch("/api/employees");
-      const data = await res.json();
-      if (Array.isArray(data)) setEmployees(data);
-    } catch (error) {
-      console.error("Fetch employees error:", error);
-    }
-  };
+
 
   const handleSort = (key: keyof RequestTicket) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -222,7 +212,7 @@ export default function TicketsPage() {
 
   const openModal = (ticket?: any) => {
     if (ticket) {
-      const isPredefined = ["SUPPORT", "PASSWORD_ACCOUNT", "BORROW_ACC", "REPAIR", "PURCHASE", "LICENSE", "ACCESS", "CHANGE"].includes(ticket.type_request);
+      const isPredefined = ["SUPPORT", "PASSWORD_ACCOUNT", "BORROW_ACC", "REPAIR", "INSTALLATION", "PURCHASE", "LICENSE", "ACCESS", "CHANGE"].includes(ticket.type_request);
       setEditingId(ticket.id);
       setEditingTicket(ticket);
       setFormData({
@@ -239,7 +229,8 @@ export default function TicketsPage() {
         approval_comment: ticket.approval_comment || "",
         it_approval: ticket.it_approval || "",
         it_approval_status: ticket.it_approval_status || "PENDING",
-        it_approval_comment: ticket.it_approval_comment || ""
+        it_approval_comment: ticket.it_approval_comment || "",
+        createdAt: ticket.createdAt ? new Date(ticket.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
       });
     } else {
       setEditingId(null);
@@ -258,7 +249,8 @@ export default function TicketsPage() {
         approval_comment: "",
         it_approval: "",
         it_approval_status: "PENDING",
-        it_approval_comment: ""
+        it_approval_comment: "",
+        createdAt: new Date().toISOString().split('T')[0]
       });
     }
     setIsModalOpen(true);
@@ -867,6 +859,21 @@ export default function TicketsPage() {
             </div>
           )}
 
+          {/* ── REQUEST DATE (Admin Edit) ── */}
+          <div className="space-y-1.5 p-4 rounded-xl bg-blue-50/20 border border-blue-100/40">
+            <label className="text-[11px] font-black text-[#0F1059] uppercase tracking-widest flex items-center gap-2">
+              {locale === 'th' ? 'วันที่ร้องขอ / แจ้งงาน' : 'Request Date'}
+              <span className="text-[9px] font-bold text-zinc-400 normal-case tracking-normal">(Admin usage)</span>
+            </label>
+            <input
+              type="date"
+              required
+              className="w-full bg-white border border-blue-100 rounded-lg px-4 py-2.5 text-sm font-semibold outline-none focus:border-[#0F1059]/40 transition-all font-sans text-blue-900"
+              value={formData.createdAt}
+              onChange={(e) => setFormData({ ...formData, createdAt: e.target.value })}
+            />
+          </div>
+
           {/* ── REQUEST TYPE ── */}
           <div className="space-y-4">
             <div className="space-y-1.5">
@@ -881,6 +888,7 @@ export default function TicketsPage() {
                   <option value="PASSWORD_ACCOUNT">{t('types.password_reset')}</option>
                   <option value="BORROW_ACC">{t('types.borrow_acc')}</option>
                   <option value="REPAIR">{t('types.repair')}</option>
+                  <option value="INSTALLATION">{t('types.installation')}</option>
                 </optgroup>
                 <optgroup label={t('requests.requires_approval_group')}>
                   <option value="PURCHASE">{t('types.purchase')}</option>
@@ -950,16 +958,13 @@ export default function TicketsPage() {
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('requests.requestor')}</label>
-              <select
-                required
-                disabled={!!editingId}
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none disabled:opacity-60"
+              <EmployeeSearchSelect
                 value={formData.employeeId}
-                onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
-              >
-                <option value="">{t('requests.select_employee')}</option>
-                {employees.map(emp => <option key={emp.id} value={emp.id}>{emp.employee_name_th}</option>)}
-              </select>
+                valueType="id"
+                onChange={(val) => setFormData({ ...formData, employeeId: val })}
+                placeholder={t('requests.select_employee')}
+                className={cn(!!editingId && "opacity-60 pointer-events-none")}
+              />
             </div>
             <div className="space-y-1.5">
               <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('common.priority')}</label>
@@ -1009,7 +1014,6 @@ export default function TicketsPage() {
                 <label className="text-[9px] font-black text-zinc-400 uppercase">{t('requests.approved_by')}</label>
                 <EmployeeSearchSelect
                   value={formData.approval || ""}
-                  employees={employees}
                   onChange={(val) => setFormData({ ...formData, approval: val })}
                   placeholder={t('borrow.search_approver')}
                 />
@@ -1059,7 +1063,6 @@ export default function TicketsPage() {
                 <label className="text-[9px] font-black text-zinc-400 uppercase">{locale === 'th' ? 'ผู้อนุมัติ IT' : 'IT Approver'}</label>
                 <EmployeeSearchSelect
                   value={formData.it_approval || ""}
-                  employees={employees}
                   onChange={(val: string) => setFormData({ ...formData, it_approval: val })}
                   placeholder={t('borrow.search_approver')}
                 />

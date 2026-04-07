@@ -5,13 +5,29 @@ import { logAudit } from "@/lib/audit";
 import { headers } from "next/headers";
 import { generateNewCode } from "@/lib/code-generator";
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get("search") || "";
+    const sortField = searchParams.get("sortField") || "group_code";
+    const sortOrder = (searchParams.get("sortOrder") as "asc" | "desc") || "asc";
+
+    const where: any = {};
+    if (search) {
+       where.OR = [
+          { group_code: { contains: search, mode: 'insensitive' } },
+          { user: { username: { contains: search, mode: 'insensitive' } } },
+          { user: { employee: { employee_name_th: { contains: search, mode: 'insensitive' } } } },
+          { reason: { contains: search, mode: 'insensitive' } },
+       ];
+    }
+
     // Return groups (batches) instead of solo requests if possible
     const groups = await prisma.equipmentBorrowGroup.findMany({
+      where,
       include: {
         user: { include: { employee: true } },
         requests: {
@@ -28,7 +44,7 @@ export async function GET() {
           }
         }
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { [sortField]: sortOrder },
     });
     return NextResponse.json(groups);
   } catch (error) {

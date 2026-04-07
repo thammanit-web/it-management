@@ -10,14 +10,27 @@ export async function getPendingTicketsCount() {
   }
 
   try {
-    const count = await prisma.request.count({
-      where: {
-        status: {
-          in: ["OPEN", "IN_PROGRESS"], // Using Status enum values from schema
+    const [ticketCount, eqCount] = await Promise.all([
+      prisma.request.count({
+        where: {
+          OR: [
+            { it_approval_status: "PENDING" },
+            { it_approval_status: null },
+            { it_approval_status: "" }
+          ]
         },
-      },
-    });
-    return count;
+      }),
+      prisma.equipmentBorrowGroup.count({
+        where: {
+          OR: [
+            { it_approval_status: "PENDING" },
+            { it_approval_status: null },
+            { it_approval_status: "" }
+          ]
+        }
+      })
+    ]);
+    return ticketCount + eqCount;
   } catch (error) {
     console.error("Error fetching pending count:", error);
     return 0;

@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/components/theme-provider';
 
 interface DashboardChartsProps {
+  dateFilter: string;
   trendData: any[];
   urgencyData: any[];
   categoryData: any[];
@@ -41,6 +42,7 @@ const EXTENDED_COLORS = [
 const COLORS = ['#0F1059', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
 export const DashboardCharts: React.FC<DashboardChartsProps> = ({
+  dateFilter,
   trendData,
   urgencyData,
   categoryData,
@@ -95,7 +97,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               <Activity className="h-4 w-4 text-blue-500" /> สรุปสมดุลภาระงาน (Workload Balance)
             </h3>
             <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">
-              เปรียบเทียบรายการเปิดใหม่ VS แก้ไขเสร็จสิ้น (ย้อนหลัง {chartConfig.trend.months} เดือน)
+              เปรียบเทียบรายการเปิดใหม่ VS แก้ไขเสร็จสิ้น {dateFilter === "ALL" ? `(ย้อนหลัง ${chartConfig.trend.months} เดือน)` : `(รายวัน ประจำเดือน ${dateFilter})`}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -133,7 +135,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
               <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: textColor }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: textColor }} dx={-10} />
+              <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: textColor }} dx={-10} />
               <Tooltip
                 content={({ active, payload, label }: any) => {
                   if (active && payload && payload.length) {
@@ -191,7 +193,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
             <h3 className="text-[13px] font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-rose-500" /> วิเคราะห์ระดับความสำคัญ
             </h3>
-            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">ระดับความเร่งด่วน (ย้อนหลัง {chartConfig.priority.months} เดือน)</p>
+            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">ระดับความเร่งด่วน {dateFilter === "ALL" ? `(ย้อนหลัง ${chartConfig.priority.months} เดือน)` : `(รายวัน ประจำเดือน ${dateFilter})`}</p>
           </div>
           <div className="flex items-center gap-2">
             <Button 
@@ -218,7 +220,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
             <BarChart data={urgencyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
               <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: textColor }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: textColor }} dx={-10} />
+              <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: textColor }} dx={-10} />
               <Tooltip
                 content={({ active, payload, label }: any) => {
                   if (active && payload && payload.length) {
@@ -371,7 +373,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
               <Users className="h-4 w-4 text-indigo-500" /> จำนวนคำร้องแยกตามแผนก
             </h3>
             <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">
-              สถิติการร้องแยกตามแผนก (ย้อนหลัง {chartConfig.department.months} เดือน)
+              สถิติการร้องแยกตามแผนก {dateFilter === "ALL" ? `(ย้อนหลัง ${chartConfig.department.months} เดือน)` : `(รายวัน ประจำเดือน ${dateFilter})`}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -400,7 +402,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
             <BarChart data={departmentMonthData.data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
               <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: textColor }} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: textColor }} dx={-10} />
+              <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: textColor }} dx={-10} />
               <Tooltip
                 content={({ active, payload, label }: any) => {
                   if (active && payload && payload.length) {
@@ -461,16 +463,16 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
         </div>
       </Card>
 
-      {/* Chart 5: Top Type Requests */}
+      {/* Chart 5: All Type Requests */}
       <Card ref={typeRef} className="rounded-xl border-zinc-100 shadow-sm p-4 sm:p-5 bg-white min-h-[350px] flex flex-col lg:col-span-2 xl:col-span-2 relative overflow-hidden mt-2 lg:mt-0">
         <div className="absolute -right-10 top-10 w-40 h-40 bg-purple-50 rounded-full opacity-50 pointer-events-none" />
         <div className="mb-6 flex items-start justify-between">
           <div className="flex-1">
             <h3 className="text-[13px] font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-              <LayoutDashboard className="h-4 w-4 text-purple-500" /> ลักษณะงานที่พบบ่อย
+              <LayoutDashboard className="h-4 w-4 text-purple-500" /> สรุปประเภทคำร้อง (All Type Requests)
             </h3>
             <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">
-              {chartConfig.type.limit === 'ALL' ? 'ประเภทงานทั้งหมด' : `ยอดนิยม ${chartConfig.type.limit} ประเภทงานที่พบบ่อย`}
+              สถิติประเภทคำร้องทั้งหมด
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -493,11 +495,11 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
             />
           </div>
         </div>
-        <div className="flex-1 w-full min-h-[250px] -ml-2 sm:ml-0 mt-4 pr-4">
+        <div className="flex-1 w-full min-h-[300px] -ml-2 sm:ml-0 mt-4 pr-4" style={{ height: Math.max(300, typeRequestData.length * 36) }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart layout="vertical" data={typeRequestData} margin={{ top: 0, right: 20, left: 10, bottom: 0 }}>
               <XAxis type="number" hide />
-              <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 9, fontWeight: 700, fill: textColor }} axisLine={false} tickLine={false} allowDataOverflow={false} />
+              <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 9, fontWeight: 700, fill: textColor }} axisLine={false} tickLine={false} allowDataOverflow={false} />
               <Tooltip
                 content={({ active, payload }: any) => {
                   if (active && payload && payload.length) {
@@ -505,7 +507,7 @@ export const DashboardCharts: React.FC<DashboardChartsProps> = ({
                       <div className="bg-[#0F1059] text-white p-3 shadow-xl rounded-xl flex items-center gap-3 border border-white/10">
                         <div className="w-2 h-8 rounded-full bg-purple-500" />
                         <div>
-                          <p className="text-[11px] font-black uppercase truncate max-w-[150px]">{payload[0].payload.name}</p>
+                          <p className="text-[11px] font-black uppercase">{payload[0].payload.name}</p>
                           <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider mt-0.5"><span className="text-white text-sm font-black mr-1">{payload[0].value}</span> รายการ</p>
                         </div>
                       </div>

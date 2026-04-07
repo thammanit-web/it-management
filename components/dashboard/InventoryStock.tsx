@@ -35,7 +35,7 @@ export const InventoryStock: React.FC<InventoryStockProps> = ({ inventory }) => 
           </h2>
         </div>
         <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 bg-slate-50/30 dark:bg-slate-800/20">
-          {inventory.map((item, idx) => (
+          {inventory.filter(item => item.remaining > 0).map((item, idx) => (
             <div 
               key={idx} 
               onClick={() => setViewingItem(item)}
@@ -61,7 +61,7 @@ export const InventoryStock: React.FC<InventoryStockProps> = ({ inventory }) => 
               </div>
             </div>
           ))}
-          {inventory.length === 0 && (
+          {inventory.filter(item => item.remaining > 0).length === 0 && (
             <div className="col-span-full py-10 text-center flex flex-col items-center gap-2">
               <Package className="h-8 w-8 text-zinc-300" />
               <p className="text-zinc-400 text-[11px] font-bold uppercase tracking-wider">ไม่พบอุปกรณ์ในคลัง / No stock found</p>

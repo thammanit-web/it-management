@@ -111,11 +111,13 @@ export const translations = {
       password_reset: "Account / Password Reset",
       borrow_acc: "Borrowed Accessory",
       repair: "Repair (Incident)",
+      installation: "Installation / Setup",
       purchase: "Purchase New Equipment",
       license: "Software License",
       access: "Access Rights",
       change: "Structural Change",
       other: "Other",
+      INSTALLATION: "Installation / Setup"
     },
     sidebar: {
       overview: "Overview",
@@ -656,11 +658,13 @@ export const translations = {
       password_reset: "แก้รหัสผ่าน / บัญชี",
       borrow_acc: "ยืมอุปกรณ์",
       repair: "แจ้งซ่อม",
+      installation: "ติดตั้ง / เซ็ตอัพ",
       purchase: "จัดซื้ออุปกรณ์ใหม่",
       license: "ลิขสิทธิ์ซอฟต์แวร์",
       access: "ขอสิทธิ์เข้าถึงระบบ",
       change: "เปลี่ยนแปลงโครงสร้าง",
       other: "อื่นๆ",
+      INSTALLATION: "ติดตั้ง / เซ็ตอัพ"
     },
     sidebar: {
       overview: "ภาพรวม",

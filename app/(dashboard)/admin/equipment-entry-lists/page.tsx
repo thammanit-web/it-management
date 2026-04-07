@@ -22,14 +22,6 @@ import { EmployeeSearchSelect } from "@/components/employee-search-select";
 import { bulkDeleteEntryLists, bulkUpdateEntryType } from "@/lib/actions/bulk-actions";
 import { useToast } from "@/components/ui/toast";
 
-interface Employee {
-  id: string;
-  employee_name_th: string;
-  employee_code: string;
-  department?: string;
-  position?: string;
-}
-
 interface Entry {
   id: string;
   purchase_id: string;
@@ -64,7 +56,6 @@ export default function EquipmentEntriesPage() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [pos, setPos] = useState<PO[]>([]);
   const [search, setSearch] = useState("");
-  const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -83,8 +74,8 @@ export default function EquipmentEntriesPage() {
   const [total, setTotal] = useState(0);
   const limit = 50;
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({
-    key: 'date_received',
-    direction: 'desc'
+    key: 'po_code',
+    direction: 'asc'
   });
 
   // Export states
@@ -106,7 +97,6 @@ export default function EquipmentEntriesPage() {
 
   useEffect(() => {
     fetchPOs();
-    fetchEmployees();
   }, []);
 
   useEffect(() => {
@@ -121,15 +111,7 @@ export default function EquipmentEntriesPage() {
     setPage(1);
   }, [search, filterType, sortConfig]);
 
-  const fetchEmployees = async () => {
-    try {
-      const res = await fetch("/api/employees");
-      const data = await res.json();
-      if (Array.isArray(data)) setEmployees(data);
-    } catch (error) {
-      console.error("Fetch employees error:", error);
-    }
-  };
+
 
   const fetchEntries = async () => {
     setIsLoading(true);
@@ -341,6 +323,7 @@ export default function EquipmentEntriesPage() {
       if (res.ok) {
         setIsModalOpen(false);
         fetchEntries();
+        fetchPOs();
       } else {
         const err = await res.json();
         alert(err.error || "Failed to save entry");
@@ -356,7 +339,10 @@ export default function EquipmentEntriesPage() {
     if (!confirm(t('common.confirm_delete'))) return;
     try {
       const res = await fetch(`/api/equipment-entry-lists/${id}`, { method: "DELETE" });
-      if (res.ok) fetchEntries();
+      if (res.ok) {
+        fetchEntries();
+        fetchPOs();
+      }
     } catch (error) {
       console.error("Delete error:", error);
     }
@@ -434,7 +420,15 @@ export default function EquipmentEntriesPage() {
                      )}
                    </button>
                 </TableHead>
-                <TableHead className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest w-24">{t('po.media')}</TableHead>
+                <TableHead 
+                  className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors w-32"
+                  onClick={() => handleSort('po_code')}
+                >
+                  <div className="flex items-center gap-1">
+                    {locale === 'th' ? 'รหัส PO' : 'PO CODE'}
+                    {sortConfig.key === 'po_code' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
+                  </div>
+                </TableHead>
                 <TableHead
                   className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
                   onClick={() => handleSort('list')}
@@ -489,20 +483,25 @@ export default function EquipmentEntriesPage() {
                      </button>
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap">
-                    {entry.purchaseOrder?.picture ? (
-                      <div className="w-14 h-14 rounded-lg overflow-hidden bg-white border border-zinc-100 shadow-sm transition-transform duration-700 hover:scale-125">
-                        <img
-                          src={entry.purchaseOrder.picture}
-                          alt={entry.list || entry.purchaseOrder.list}
-                          className="w-full h-full object-cover cursor-pointer"
-                          onClick={() => window.open(entry.purchaseOrder?.picture, '_blank')}
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-14 h-14 rounded-lg bg-zinc-50 flex items-center justify-center border border-dashed border-zinc-200 text-zinc-300">
-                        <ImageIcon className="w-6 h-6" />
-                      </div>
-                    )}
+                    <div className="flex flex-col gap-2">
+                       <div className="text-[10px] font-black text-[#0F1059] bg-[#0F1059]/5 px-2 py-1 rounded-md border border-[#0F1059]/10 w-fit">
+                          {entry.purchaseOrder?.po_code || 'N/A'}
+                       </div>
+                       {entry.purchaseOrder?.picture ? (
+                        <div className="w-14 h-14 rounded-lg overflow-hidden bg-white border border-zinc-100 shadow-sm transition-transform duration-700 hover:scale-125">
+                          <img
+                            src={entry.purchaseOrder.picture}
+                            alt={entry.list || entry.purchaseOrder.list}
+                            className="w-full h-full object-cover cursor-pointer"
+                            onClick={() => window.open(entry.purchaseOrder?.picture, '_blank')}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-14 h-14 rounded-lg bg-zinc-50 flex items-center justify-center border border-dashed border-zinc-200 text-zinc-300">
+                          <ImageIcon className="w-6 h-6" />
+                        </div>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap">
                     <div className="font-bold text-[#0F1059] uppercase text-sm leading-tight">
@@ -705,10 +704,13 @@ export default function EquipmentEntriesPage() {
             >
               <option value="">เลือกอุปกร์ที่จัดซื้อ</option>
               {pos
-                .filter(po => po.status !== 'RECEIVED' || po.id === formData.purchase_id)
+                .filter(po => 
+                  (po.status !== 'RECEIVED' && po.status !== 'CANCELLED') || 
+                  po.id === formData.purchase_id
+                )
                 .map(po => (
                   <option key={po.id} value={po.id}>
-                    {po.status === 'RECEIVED' ? '✓ RECEIVED ' : po.status === 'APPROVED' ? '★ APPROVED ' : `[STATUS: ${po.status}] `} {po.list} ({po.po_code})
+                    {po.status === 'RECEIVED' ? '✓ RECEIVED ' : po.status === 'APPROVED' ? '★ APPROVED ' : `[${po.status}] `} {po.list} ({po.po_code})
                   </option>
                 ))}
             </select>
@@ -768,7 +770,6 @@ export default function EquipmentEntriesPage() {
               <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('receiving.receiver')}</label>
               <EmployeeSearchSelect
                 value={formData.recipient}
-                employees={employees}
                 onChange={(val) => setFormData({ ...formData, recipient: val })}
                 placeholder={t('requests.select_employee') || 'Search receiver...'}
               />

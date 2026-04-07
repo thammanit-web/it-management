@@ -319,6 +319,7 @@ export default function AuditLogsPage() {
         isOpen={!!selectedLog}
         onClose={() => setSelectedLog(null)}
         title={t('logs.details_title')}
+        size="full"
       >
         {selectedLog && (
            <div className="space-y-6 font-sans">

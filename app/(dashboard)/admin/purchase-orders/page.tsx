@@ -50,7 +50,6 @@ interface Employee {
 export default function PurchaseOrdersPage() {
   const { t, locale } = useTranslation();
   const [orders, setOrders] = useState<PO[]>([]);
-  const [employees, setEmployees] = useState<Employee[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,6 +61,10 @@ export default function PurchaseOrdersPage() {
   const [bulkStatus, setBulkStatus] = useState("PENDING");
   const [isProcessingBulk, setIsProcessingBulk] = useState(false);
 
+  // Recommendations
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -69,7 +72,7 @@ export default function PurchaseOrdersPage() {
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [sortConfig, setSortConfig] = useState<{ key: keyof PO; direction: 'asc' | 'desc' }>({
     key: 'po_code',
-    direction: 'desc'
+    direction: 'asc'
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -95,9 +98,7 @@ export default function PurchaseOrdersPage() {
     date_order: new Date().toISOString().split('T')[0]
   });
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -105,6 +106,34 @@ export default function PurchaseOrdersPage() {
     }, 300);
     return () => clearTimeout(timer);
   }, [search, filterStatus, sortConfig, page]);
+
+  // Fetch recommendations
+  useEffect(() => {
+    if (!formData.list || formData.list.length < 2 || !isModalOpen) {
+      setRecommendations([]);
+      return;
+    }
+
+    const fetchRecs = async () => {
+      try {
+        const res = await fetch(`/api/equipment-purchase-orders/recommendations?search=${encodeURIComponent(formData.list)}`);
+        if (res.ok) {
+           const data = await res.json();
+           // Only show recommendations if the current list isn't already one of the names fully matched
+           if (data.length === 1 && data[0].name === formData.list) {
+             setRecommendations([]);
+           } else {
+             setRecommendations(data || []);
+           }
+        }
+      } catch (err) {
+        console.error("Fetch recommendations error:", err);
+      }
+    };
+
+    const timer = setTimeout(fetchRecs, 300);
+    return () => clearTimeout(timer);
+  }, [formData.list, isModalOpen]);
 
   // Reset page to 1 when filters change
   useEffect(() => {
@@ -137,15 +166,7 @@ export default function PurchaseOrdersPage() {
   };
 
 
-  const fetchEmployees = async () => {
-    try {
-      const res = await fetch("/api/employees");
-      const data = await res.json();
-      if (Array.isArray(data)) setEmployees(data);
-    } catch (error) {
-      console.error("Fetch employees error:", error);
-    }
-  };
+
 
   const handleSort = (key: keyof PO) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -712,18 +733,62 @@ export default function PurchaseOrdersPage() {
             </div>
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5 sm:col-span-2">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.item_name')}</label>
+            <div className="space-y-1.5 sm:col-span-2 relative">
+              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest flex justify-between items-center w-full">
+                 <span>{t('po.item_name')}</span>
+                 {recommendations.length > 0 && <span className="text-[9px] text-[#0F1059] italic animate-pulse">Items found in DB</span>}
+              </label>
               <input
                 required
                 className="w-full bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.list}
-                onChange={(e) => setFormData({ ...formData, list: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, list: e.target.value });
+                  setShowRecommendations(true);
+                }}
+                onFocus={() => setShowRecommendations(true)}
               />
+              {showRecommendations && recommendations.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-zinc-200 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-[300px] overflow-y-auto">
+                   <div className="p-2 border-b border-zinc-50 bg-zinc-50/50">
+                      <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest pl-2">Recommendations from Database</p>
+                   </div>
+                   {recommendations.map((rec, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            list: rec.name,
+                            detail: rec.detail || prev.detail,
+                            picture: rec.picture || prev.picture
+                          }));
+                          setShowRecommendations(false);
+                        }}
+                        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-zinc-50 transition-colors border-b border-zinc-50 last:border-0 text-left group"
+                      >
+                         {rec.picture ? (
+                           <div className="w-10 h-10 rounded-lg overflow-hidden border border-zinc-100 bg-zinc-50 shrink-0">
+                              <img src={rec.picture} alt="" className="w-full h-full object-cover" />
+                           </div>
+                         ) : (
+                           <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-400 shrink-0">
+                              <ImageIcon className="h-4 w-4" />
+                           </div>
+                         )}
+                         <div className="flex-1 overflow-hidden">
+                            <p className="text-[11px] font-black uppercase text-[#0F1059] truncate group-hover:text-black">{rec.name}</p>
+                            {rec.detail && <p className="text-[9px] text-zinc-400 font-medium truncate italic">{rec.detail}</p>}
+                         </div>
+                      </button>
+                   ))}
+                </div>
+              )}
             </div>
 
             <div className="space-y-1.5 sm:col-span-2">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('requests.ticket_details')}</label>
+              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.order_details')}</label>
               <textarea
                 className="w-full bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-3 text-sm font-medium outline-none min-h-[80px] focus:border-[#0F1059]/30 transition-all shadow-sm"
                 value={formData.detail}
@@ -732,7 +797,7 @@ export default function PurchaseOrdersPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.quantity')}</label>
+              <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('  quantity')}</label>
               <input
                 type="number"
                 className="w-full bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
@@ -757,7 +822,7 @@ export default function PurchaseOrdersPage() {
                 value={formData.reason_order}
                 onChange={(e) => setFormData({ ...formData, reason_order: e.target.value })}
               >
-                <option value="">{locale === 'th' ? '-- เลือกเหตุผลการจัดซื้อ --' : '-- Select Reason --'}</option>
+                <option value="">{locale === 'th' ? 'เลือกเหตุผลการจัดซื้อ' : 'Select Reason'}</option>
                 <option value={t('po.reasons.deteriorate')}>{t('po.reasons.deteriorate')}</option>
                 <option value={t('po.reasons.disappear')}>{t('po.reasons.disappear')}</option>
                 <option value={t('po.reasons.lack_of_stock')}>{t('po.reasons.lack_of_stock')}</option>
@@ -780,7 +845,6 @@ export default function PurchaseOrdersPage() {
               <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('po.buyer')}</label>
               <EmployeeSearchSelect
                 value={formData.buyer}
-                employees={employees}
                 onChange={(val) => setFormData({ ...formData, buyer: val })}
                 placeholder={t('requests.select_employee')}
               />
@@ -789,7 +853,6 @@ export default function PurchaseOrdersPage() {
               <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{locale === 'th' ? 'ผู้ตรวจสอบ' : 'Reviewer'}</label>
               <EmployeeSearchSelect
                 value={formData.reviewer}
-                employees={employees}
                 onChange={(val) => setFormData({ ...formData, reviewer: val })}
                 placeholder={t('requests.select_employee')}
               />
@@ -798,7 +861,6 @@ export default function PurchaseOrdersPage() {
               <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{locale === 'th' ? 'ผู้อนุมัติ' : 'Approver'}</label>
               <EmployeeSearchSelect
                 value={formData.approver}
-                employees={employees}
                 onChange={(val) => setFormData({ ...formData, approver: val })}
                 placeholder={t('requests.select_employee')}
               />

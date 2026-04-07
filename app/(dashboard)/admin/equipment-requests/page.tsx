@@ -88,7 +88,6 @@ export default function AdminEquipmentRequestsPage() {
   const [requests, setRequests] = useState<BorrowGroup[]>([]);
   const [inventory, setInventory] = useState<Equipment[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [employees, setEmployees] = useState<Employee[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -102,8 +101,8 @@ export default function AdminEquipmentRequestsPage() {
   const [filterItStatus, setFilterItStatus] = useState("ALL");
   const [filterDeptStatus, setFilterDeptStatus] = useState("ALL");
   const [sortConfig, setSortConfig] = useState<{ key: keyof BorrowGroup; direction: 'asc' | 'desc' }>({
-    key: 'createdAt',
-    direction: 'desc'
+    key: 'group_code',
+    direction: 'asc'
   });
 
   // Export states
@@ -128,7 +127,6 @@ export default function AdminEquipmentRequestsPage() {
     fetchRequests();
     fetchInventory();
     fetchUsers();
-    fetchEmployees();
   }, []);
 
   const fetchRequests = async () => {
@@ -164,15 +162,7 @@ export default function AdminEquipmentRequestsPage() {
     }
   };
 
-  const fetchEmployees = async () => {
-    try {
-      const res = await fetch("/api/employees");
-      const data = await res.json();
-      if (Array.isArray(data)) setEmployees(data);
-    } catch (error) {
-       console.error("Fetch employees error:", error);
-    }
-  }
+
 
   const handleSort = (key: keyof BorrowGroup) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -446,11 +436,11 @@ export default function AdminEquipmentRequestsPage() {
               <TableRow className="border-none">
                 <TableHead 
                    className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
-                   onClick={() => handleSort('createdAt')}
+                   onClick={() => handleSort('group_code')}
                 >
                   <div className="flex items-center gap-1">
                     {t('borrowing.equipment_info')}
-                    {sortConfig.key === 'createdAt' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
+                    {sortConfig.key === 'group_code' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
                 <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('receiving.recipient')}</TableHead>
@@ -704,7 +694,6 @@ export default function AdminEquipmentRequestsPage() {
                      <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('borrowing.signed_by')}</label>
                      <EmployeeSearchSelect 
                         value={formData.approval || ""}
-                        employees={employees}
                         onChange={(val) => setFormData({...formData, approval: val})}
                         placeholder={t('requests.select_employee')}
                      />
@@ -740,7 +729,6 @@ export default function AdminEquipmentRequestsPage() {
                     <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('borrowing.it_auditor')}</label>
                     <EmployeeSearchSelect 
                        value={formData.it_approval || ""}
-                       employees={employees}
                        onChange={(val) => setFormData({...formData, it_approval: val})}
                        placeholder={t('requests.select_employee')}
                     />
