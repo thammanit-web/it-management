@@ -87,8 +87,12 @@ export default function CredentialsPage() {
 
   const fetchStaticData = async () => {
     try {
-      const empRes = await fetch("/api/employees").then(res => res.json());
-      if (Array.isArray(empRes)) setEmployees(empRes);
+      const empRes = await fetch("/api/employees?limit=1000").then(res => res.json());
+      if (empRes && Array.isArray(empRes.data)) {
+        setEmployees(empRes.data);
+      } else if (Array.isArray(empRes)) {
+        setEmployees(empRes);
+      }
     } catch (error) {
        console.error("Static fetch error:", error);
     }

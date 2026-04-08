@@ -21,6 +21,7 @@ import { ITRequestPDF } from "@/lib/pdf/ITRequestPDF";
 import { EmployeeSearchSelect } from "@/components/employee-search-select";
 import { PDFViewer } from "@react-pdf/renderer";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
+import { AICategorizeSuggest, AICategorizeSuggestHandle } from "@/components/ai/AICategorizeSuggest";
 
 interface RequestTicket {
   id: string;
@@ -53,13 +54,6 @@ interface RequestTicket {
   user?: { username: string; role?: string | null };
 }
 
-interface Employee {
-  id: string;
-  employee_name_th: string;
-  employee_code: string;
-  department?: string | null;
-  position?: string | null;
-}
 
 export default function TicketsPage() {
   const { data: session } = useSession();
@@ -94,6 +88,7 @@ export default function TicketsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [exportDateStart, setExportDateStart] = useState("");
   const [exportDateEnd, setExportDateEnd] = useState("");
+  const aiRef = React.useRef<AICategorizeSuggestHandle>(null);
 
   const [formData, setFormData] = useState({
     description: "",
@@ -279,8 +274,22 @@ export default function TicketsPage() {
         return;
       }
 
+      let finalCategory = formData.category;
+      let finalPriority = formData.priority;
+
+      // Only run AI when creating NEW ticket
+      if (!editingId) {
+        const aiResult = await aiRef.current?.runClassify();
+        if (aiResult) {
+          finalCategory = aiResult.category;
+          finalPriority = aiResult.priority;
+        }
+      }
+
       const payload = {
         ...formData,
+        category: finalCategory,
+        priority: finalPriority,
         it_approval: (formData.it_approval_status !== "PENDING" && !formData.it_approval)
           ? (session?.user?.name || "IT Admin")
           : formData.it_approval,
@@ -939,6 +948,19 @@ export default function TicketsPage() {
               />
             </div>
           </div>
+
+          {/* ── AI CONTROL (Create mode only) ── */}
+          {!editingId && (
+            <AICategorizeSuggest
+              ref={aiRef}
+              type_request={formData.type_request}
+              description={formData.description}
+              reason={formData.reason}
+              onApply={(category, priority) =>
+                setFormData({ ...formData, category, priority })
+              }
+            />
+          )}
 
           {/* ── CATEGORY / EMPLOYEE / PRIORITY ── */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

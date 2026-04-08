@@ -15,6 +15,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
+import { AIChatFAB } from "@/components/ai/AIChatFAB";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
@@ -124,6 +125,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
+      <AIChatFAB />
     </div>
   );
 }

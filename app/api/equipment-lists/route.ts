@@ -20,6 +20,7 @@ export async function GET(request: Request) {
         { eq_code: { contains: search, mode: 'insensitive' } },
         { equipmentEntry: { list: { contains: search, mode: 'insensitive' } } },
         { equipmentEntry: { brand_name: { contains: search, mode: 'insensitive' } } },
+        { equipmentEntry: { purchaseOrder: { po_code: { contains: search, mode: 'insensitive' } } } },
       ];
     }
 

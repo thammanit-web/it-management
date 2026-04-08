@@ -179,7 +179,10 @@ export function EmployeeSearchSelect({
           </div>
         ) : (
           filteredEmployees.map((emp) => {
-            const isSelected = value === emp.employee_name_th || value === emp.employee_code || value === emp.id;
+            const isSelected = value === emp.employee_name_th || 
+                             value === (emp.employee_name_en || "") || 
+                             value === emp.employee_code || 
+                             value === emp.id;
             return (
               <div 
                 key={emp.id}

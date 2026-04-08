@@ -275,8 +275,12 @@ export function AssetDrawer({
                    <EmployeeSearchSelect
                      value={formData.employeeId || ""}
                      onChange={(val) => {
-                       const emp = employees.find(e => e.employee_name_th === val || e.id === val);
-                       setFormData({ ...formData, employeeId: emp?.id || null, status: emp ? "IN_USE" : formData.status });
+                       const emp = employees.find(e => e.id === val || e.employee_name_th === val || e.employee_name_en === val);
+                       setFormData({ 
+                         ...formData, 
+                         employeeId: emp?.id || null, 
+                         status: emp ? "IN_USE" : formData.status 
+                       });
                      }}
                      employees={employees}
                      placeholder={t("assets.unassigned")}

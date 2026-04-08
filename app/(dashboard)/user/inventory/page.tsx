@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Search, CheckCircle2, Box, Image as ImageIcon, ChevronUp, ChevronDown, ShoppingBag } from "lucide-react";
 import { 
   Table, 

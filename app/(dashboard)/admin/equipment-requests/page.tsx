@@ -74,14 +74,6 @@ interface User {
   username: string;
 }
 
-interface Employee {
-  id: string;
-  employee_name_th: string;
-  employee_code: string;
-  department?: string;
-  position?: string;
-}
-
 export default function AdminEquipmentRequestsPage() {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
@@ -133,8 +125,12 @@ export default function AdminEquipmentRequestsPage() {
     setIsLoading(true);
     try {
       const res = await fetch("/api/equipment-requests");
-      const data = await res.json();
-      if (Array.isArray(data)) setRequests(data);
+      const result = await res.json();
+      if (Array.isArray(result)) {
+        setRequests(result);
+      } else if (result && Array.isArray(result.data)) {
+        setRequests(result.data);
+      }
     } catch (error) {
       console.error("Fetch requests error:", error);
     } finally {
@@ -145,8 +141,12 @@ export default function AdminEquipmentRequestsPage() {
   const fetchInventory = async () => {
     try {
       const res = await fetch("/api/equipment-lists");
-      const data = await res.json();
-      if (Array.isArray(data)) setInventory(data);
+      const result = await res.json();
+      if (Array.isArray(result)) {
+        setInventory(result);
+      } else if (result && Array.isArray(result.data)) {
+        setInventory(result.data);
+      }
     } catch (error) {
        console.error("Fetch inventory error:", error);
     }
@@ -154,9 +154,13 @@ export default function AdminEquipmentRequestsPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/users");
-      const data = await res.json();
-      if (Array.isArray(data)) setUsers(data);
+      const res = await fetch("/api/users?limit=1000");
+      const result = await res.json();
+      if (Array.isArray(result)) {
+        setUsers(result);
+      } else if (result && Array.isArray(result.data)) {
+        setUsers(result.data);
+      }
     } catch (error) {
        console.error("Fetch users error:", error);
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Search, Loader2, Edit2, Trash2, Box, Image as ImageIcon, ChevronUp, ChevronDown, FileSpreadsheet, Clock, Square, CheckSquare, CheckCircle2 } from "lucide-react";
 import { 
   Table, 
@@ -30,13 +30,13 @@ interface InventoryItem {
   createdAt?: string;
   updatedAt?: string;
   equipmentEntry?: {
-    item_name: string;
+    list: string;
     item_type: string;
     brand_name?: string;
     unit?: string;
     date_received?: string;
     purchaseOrder?: {
-      po_number: string;
+      po_code: string;
       picture?: string;
       list?: string;
       detail?: string;
@@ -106,11 +106,12 @@ export default function InventoryPage() {
   const filteredInventory = inventory
     .filter(item => {
       const searchTerm = search.toLowerCase();
-      const itemName = (item.equipmentEntry?.item_name || "").toLowerCase();
+      const itemName = (item.equipmentEntry?.list || "").toLowerCase();
       const brand = (item.equipmentEntry?.brand_name || "").toLowerCase();
-      const poNumber = (item.equipmentEntry?.purchaseOrder?.po_number || "").toLowerCase();
+      const poCode = (item.equipmentEntry?.purchaseOrder?.po_code || "").toLowerCase();
+      const eqCode = (item.eq_code || "").toLowerCase();
       
-      const matchesSearch = itemName.includes(searchTerm) || brand.includes(searchTerm) || poNumber.includes(searchTerm);
+      const matchesSearch = itemName.includes(searchTerm) || brand.includes(searchTerm) || poCode.includes(searchTerm) || eqCode.includes(searchTerm);
       const matchesStatus = filterStatus === "ALL" || item.status === filterStatus;
       const matchesCategory = filterCategory === "ALL" || item.equipmentEntry?.item_type === filterCategory;
       
@@ -124,8 +125,8 @@ export default function InventoryPage() {
         aValue = a.eq_code || "";
         bValue = b.eq_code || "";
       } else if (sortConfig.key === 'item_name') {
-        aValue = a.equipmentEntry?.item_name || "";
-        bValue = b.equipmentEntry?.item_name || "";
+        aValue = a.equipmentEntry?.list || "";
+        bValue = b.equipmentEntry?.list || "";
       } else if (sortConfig.key === 'remaining') {
         aValue = a.remaining || 0;
         bValue = b.remaining || 0;
@@ -225,10 +226,10 @@ export default function InventoryPage() {
     }
 
     const worksheetData = dataToExport.map(item => ({
-      "Asset Name": item.equipmentEntry?.item_name,
+      "Asset Name": item.equipmentEntry?.list,
       "Brand": item.equipmentEntry?.brand_name,
       "Type": item.equipmentEntry?.item_type,
-      "PO Number": item.equipmentEntry?.purchaseOrder?.po_number,
+      "PO Number": item.equipmentEntry?.purchaseOrder?.po_code,
       "Remaining": item.remaining,
       "Unit": item.equipmentEntry?.unit,
       "Issued": item.payout_amount,
@@ -333,9 +334,9 @@ export default function InventoryPage() {
           onChange={(e) => setFilterCategory(e.target.value)}
         >
           <option value="ALL">{t('inventory.all_categories')}</option>
-          <option value="Software">Software</option>
-          <option value="Hardware">Hardware</option>
-          <option value="Network">Network</option>
+          <option value="Software">{t('categories.software') || 'Software'}</option>
+          <option value="Hardware">{t('categories.hardware') || 'Hardware'}</option>
+          <option value="Network">{t('categories.network') || 'Network'}</option>
           <option value="Printer">Printer</option>
           <option value="Mobile">Mobile</option>
         </select>
@@ -445,11 +446,11 @@ export default function InventoryPage() {
                         <div className="space-y-0.5">
                            <span className="text-[10px] font-black text-[#0F1059] uppercase tracking-wider">{item.equipmentEntry?.purchaseOrder?.list || 'General'}</span>
                            <div className="font-black text-zinc-900 uppercase tracking-tight text-sm leading-none">
-                              {item.equipmentEntry?.item_name}
+                              {item.equipmentEntry?.list}
                            </div>
                         </div>
                         <div className="flex items-center gap-2 text-[9px] font-bold text-zinc-400 uppercase mt-2">
-                           <span>PO: {item.equipmentEntry?.purchaseOrder?.po_number}</span>
+                           <span>PO: {item.equipmentEntry?.purchaseOrder?.po_code}</span>
                            {item.equipmentEntry?.date_received && (
                               <div className="flex items-center gap-1">
                                  <Clock className="h-2.5 w-2.5" /> {new Date(item.equipmentEntry.date_received).toLocaleDateString('en-GB')}
@@ -502,7 +503,7 @@ export default function InventoryPage() {
         <form onSubmit={handleSave} className="space-y-6 font-sans">
            <div className="p-4 rounded-lg bg-zinc-50 border border-zinc-100 shadow-sm">
               <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">{t('inventory.stock_item')}</p>
-              <p className="text-sm font-bold text-[#0F1059]">{selectedItem?.equipmentEntry?.item_name}</p>
+              <p className="text-sm font-bold text-[#0F1059]">{selectedItem?.equipmentEntry?.list}</p>
               
               {selectedItem && (
                  <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-zinc-200/50">

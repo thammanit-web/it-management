@@ -171,13 +171,23 @@ function BorrowContent() {
     setIsLoading(true);
     try {
       const [invRes, histRes] = await Promise.all([
-        fetch("/api/equipment-lists"),
+        fetch("/api/equipment-lists?limit=1000"),
         fetch("/api/equipment-requests")
       ]);
       const invData = await invRes.json();
       const histData = await histRes.json();
-      if (Array.isArray(invData)) setInventory(invData);
-      if (Array.isArray(histData)) setMyHistory(histData);
+
+      if (Array.isArray(invData)) {
+        setInventory(invData);
+      } else if (invData && Array.isArray(invData.data)) {
+        setInventory(invData.data);
+      }
+
+      if (Array.isArray(histData)) {
+        setMyHistory(histData);
+      } else if (histData && Array.isArray(histData.data)) {
+        setMyHistory(histData.data);
+      }
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {
@@ -187,9 +197,13 @@ function BorrowContent() {
 
   const fetchEmployees = async () => {
     try {
-      const res = await fetch("/api/employees");
+      const res = await fetch("/api/employees?limit=1000");
       const data = await res.json();
-      if (Array.isArray(data)) setEmployees(data);
+      if (Array.isArray(data)) {
+        setEmployees(data);
+      } else if (data && Array.isArray(data.data)) {
+        setEmployees(data.data);
+      }
     } catch (error) {
       console.error("Fetch employees error:", error);
     }

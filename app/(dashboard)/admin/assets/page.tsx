@@ -78,12 +78,22 @@ export default function AssetsPage() {
   const fetchInitialData = async () => {
     try {
       const [empRes, equipRes] = await Promise.all([
-        fetch("/api/employees").then(res => res.json()),
-        fetch("/api/equipment-entry-lists").then(res => res.json())
+        fetch("/api/employees?limit=1000").then(res => res.json()),
+        fetch("/api/equipment-entry-lists?limit=1000").then(res => res.json())
       ]);
 
-      if (Array.isArray(empRes)) setEmployees(empRes);
-      if (Array.isArray(equipRes)) setEquipmentEntries(equipRes);
+      // API returns { data: [...] } for employees and { entries: [...] } for equipment
+      if (empRes && Array.isArray(empRes.data)) {
+        setEmployees(empRes.data);
+      } else if (Array.isArray(empRes)) {
+        setEmployees(empRes);
+      }
+
+      if (equipRes && Array.isArray(equipRes.entries)) {
+        setEquipmentEntries(equipRes.entries);
+      } else if (Array.isArray(equipRes)) {
+        setEquipmentEntries(equipRes);
+      }
     } catch (error) {
       console.error("Initial fetch error:", error);
     }

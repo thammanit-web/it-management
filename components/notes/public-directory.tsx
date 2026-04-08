@@ -11,7 +11,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { Phone, Mail, Library, Search, Eye } from "lucide-react";
+import { Phone, Mail, Search, Eye } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { ItNoteModal } from "./it-note-modal";

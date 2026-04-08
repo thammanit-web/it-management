@@ -104,9 +104,13 @@ export default function UsersPage() {
   };
   const fetchEmployees = async () => {
     try {
-      const res = await fetch("/api/employees");
-      const data = await res.json();
-      if (Array.isArray(data)) setEmployees(data);
+      const res = await fetch("/api/employees?limit=1000");
+      const result = await res.json();
+      if (Array.isArray(result)) {
+        setEmployees(result);
+      } else if (result && Array.isArray(result.data)) {
+        setEmployees(result.data);
+      }
     } catch (error) {
       console.error("Fetch employees error:", error);
     }

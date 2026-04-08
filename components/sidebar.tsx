@@ -30,7 +30,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
-import { LanguageSwitcher } from "./language-switcher";
 import { getPendingTicketsCount } from "@/lib/actions/ticket-actions";
 
 interface SidebarProps {

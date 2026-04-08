@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {  TableSkeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
+import { AICategorizeSuggest, AICategorizeSuggestHandle } from "@/components/ai/AICategorizeSuggest";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
@@ -79,6 +80,7 @@ function RequestsContent() {
    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
    const [cancelId, setCancelId] = useState<string | null>(null);
    const [isCancelling, setIsCancelling] = useState(false);
+   const aiRef = React.useRef<AICategorizeSuggestHandle>(null);
 
    // Form State
    const [formData, setFormData] = useState({
@@ -118,9 +120,13 @@ function RequestsContent() {
 
    const fetchInventory = async () => {
       try {
-         const res = await fetch("/api/equipment-lists");
-         const data = await res.json();
-         if (Array.isArray(data)) setInventory(data);
+         const res = await fetch("/api/equipment-lists?limit=1000");
+         const result = await res.json();
+         if (Array.isArray(result)) {
+            setInventory(result);
+         } else if (result && Array.isArray(result.data)) {
+            setInventory(result.data);
+         }
       } catch (error) {
          console.error("Fetch inventory error:", error);
       }
@@ -128,9 +134,13 @@ function RequestsContent() {
 
    const fetchEmployees = async () => {
       try {
-         const res = await fetch("/api/employees");
-         const data = await res.json();
-         if (Array.isArray(data)) setEmployees(data);
+         const res = await fetch("/api/employees?limit=1000");
+         const result = await res.json();
+         if (Array.isArray(result)) {
+            setEmployees(result);
+         } else if (result && Array.isArray(result.data)) {
+            setEmployees(result.data);
+         }
       } catch (error) {
          console.error("Fetch employees error:", error);
       }
@@ -139,9 +149,14 @@ function RequestsContent() {
    const fetchMyRequests = async () => {
       setIsLoading(true);
       try {
-         const res = await fetch("/api/requests");
+         const res = await fetch("/api/requests?limit=1000");
          const data = await res.json();
-         if (Array.isArray(data)) setRequests(data);
+         // Handle both direct array (old) and paginated object (new)
+         if (Array.isArray(data)) {
+            setRequests(data);
+         } else if (data && Array.isArray(data.data)) {
+            setRequests(data.data);
+         }
       } catch (error) {
          console.error("Fetch error:", error);
       } finally {
@@ -157,13 +172,25 @@ function RequestsContent() {
       }
       setFormError(null);
       setIsSaving(true);
+      
+      let finalCategory = formData.category;
+      let finalPriority = formData.priority;
 
       try {
+         // Run AI Classification at create time
+         const aiResult = await aiRef.current?.runClassify();
+         if (aiResult) {
+            finalCategory = aiResult.category;
+            finalPriority = aiResult.priority;
+         }
+
          const res = await fetch("/api/requests", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                ...formData,
+               category: finalCategory,
+               priority: finalPriority,
                approval_status: isStandard ? "APPROVED" : "PENDING",
                type_request: formData.type_request === "OTHER" ? formData.type_request_other : formData.type_request
             })
@@ -745,6 +772,17 @@ function RequestsContent() {
                      <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">* {t('requests.supervisor_needed_hint')}</p>
                   </div>
                )}
+
+                {/* AI Category & Priority Control */}
+                <AICategorizeSuggest
+                   ref={aiRef}
+                   type_request={formData.type_request}
+                   description={formData.description}
+                   reason={formData.reason}
+                   onApply={(category, priority) =>
+                     setFormData({ ...formData, category, priority })
+                   }
+                />
 
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
