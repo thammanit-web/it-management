@@ -141,11 +141,8 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
       )}>
         {!isCollapsed && (
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-               <ShieldCheck className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-black text-lg tracking-tighter uppercase whitespace-nowrap">
-               IT <span className="text-primary">System</span>
+            <span className="font-white text-lg tracking-tighter uppercase whitespace-nowrap">
+               IT SYSTEM
             </span>
           </div>
         )}
