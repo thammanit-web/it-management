@@ -175,6 +175,7 @@ function RequestsContent() {
       
       let finalCategory = formData.category;
       let finalPriority = formData.priority;
+      let aiReasoning = undefined;
 
       try {
          // Run AI Classification at create time
@@ -182,6 +183,7 @@ function RequestsContent() {
          if (aiResult) {
             finalCategory = aiResult.category;
             finalPriority = aiResult.priority;
+            if (aiResult.reasoning) aiReasoning = aiResult.reasoning;
          }
 
          const res = await fetch("/api/requests", {
@@ -191,6 +193,7 @@ function RequestsContent() {
                ...formData,
                category: finalCategory,
                priority: finalPriority,
+               ai_reasoning: aiReasoning,
                approval_status: isStandard ? "APPROVED" : "PENDING",
                type_request: formData.type_request === "OTHER" ? formData.type_request_other : formData.type_request
             })
@@ -341,10 +344,10 @@ function RequestsContent() {
                               <TableCell className="px-5 py-4 text-center">
                                  <div className={cn(
                                     "inline-flex items-center rounded-lg px-2.5 py-0.5 border",
-                                    req.priority === "URGENT" ? "text-danger bg-danger/5 border-danger/20" :
-                                       req.priority === "HIGH" ? "text-warning bg-warning/5 border-warning/20" :
-                                          req.priority === "MEDIUM" ? "text-primary bg-primary/5 border-primary/20" :
-                                             "text-accent bg-secondary border-border"
+                                    req.priority === "URGENT" ? "text-red-700 bg-red-700/5 border-red-700/20" :
+                                       req.priority === "HIGH" ? "text-orange-700 bg-orange-700/5 border-orange-700/20" :
+                                          req.priority === "MEDIUM" ? "text-yellow-700 bg-yellow-700/5 border-yellow-700/20" :
+                                             "text-green-700 bg-green-700/5 border-green-700/20"
                                  )}>
                                     <span className="text-[8px] font-black uppercase tracking-widest">
                                        {req.priority === "URGENT" ? t('priorities.urgent') :
@@ -489,9 +492,9 @@ function RequestsContent() {
                      <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none">{t('common.priority')}</p>
                      <Badge className={cn(
                         "rounded-lg px-2 py-0.5 text-[9px] font-black uppercase tracking-widest border-none text-white",
-                        viewRequest?.priority === "URGENT" ? "bg-danger" :
-                           viewRequest?.priority === "HIGH" ? "bg-warning" :
-                              viewRequest?.priority === "MEDIUM" ? "bg-primary" : "bg-accent"
+                        viewRequest?.priority === "URGENT" ? "bg-red-700" :
+                           viewRequest?.priority === "HIGH" ? "bg-red-500" :
+                              viewRequest?.priority === "MEDIUM" ? "bg-yellow-500 text-black" : "bg-green-500 text-black"
                      )}>
                         {viewRequest?.priority || 'LOW'}
                      </Badge>

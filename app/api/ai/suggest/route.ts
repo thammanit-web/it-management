@@ -26,7 +26,7 @@ Return ONLY this JSON (no other text):
 {
   "category": "HARDWARE" | "SOFTWARE" | "NETWORK" | "GENERAL",
   "priority": "LOW" | "MEDIUM" | "HIGH",
-  "reasoning": "brief 1-sentence Thai/English explanation of why these values were ASSIGNED"
+  "reasoning": "อธิบายเหตุผลสั้นๆ เป็นภาษาไทย 1 ประโยค ว่าทำไมเลือกค่าแบบนี้"
 }`;
 
 export async function POST(req: Request) {

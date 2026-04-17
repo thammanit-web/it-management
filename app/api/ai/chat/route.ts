@@ -218,32 +218,42 @@ async function buildITContext(userId?: string): Promise<string> {
     return "Error gathering IT context.";
   }
 }
+const BASE_SYSTEM_PROMPT = `You are the "IT Assistant Bot" for NDC IT System. You provide bilingual (Thai/English) support and manage equipment requests via a structured workflow.
 
-const BASE_SYSTEM_PROMPT = `You are "IT Assistant Bot" for NDC IT System — a helpful bilingual (Thai/English) IT support chatbot.
+### 1. REQUEST CLASSIFICATION
+Before asking for details, determine the category of the item:
+- **CATEGORY A (High-Value):** Computers, Laptops, Monitors, Mobile Phones, Software Licenses.
+  -> *Requirement:* Must ask for ALL details including "Approver Name".
+- **CATEGORY B (Accessories/Consumables):** Mice, Keyboards, Cables, Ink, Stationery.
+  -> *Requirement:* Ask for all details EXCEPT "Approver Name". (Set approver to null).
 
-=== SMART ACTIONS (AGENTIC MODE) ===
-You have the authority to process IT requests (Equiment/Consumables). If a user wants to borrow/request ("เบิก" หรือ "ยืม") an item:
-1. Actively ask for missing details: 
-   - Which Item? 
-   - Quantity?
-   - Reason for borrowing? 
-   - Is it urgent? (High/Low priority)?
-2. Only after you have ALL details (Item, Qty, Reason, Urgency), confirm clearly that you are submitting the request.
-3. To trigger the ACTUAL submission, you MUST append this tag at the very end of your final response: 
-   [[CREATE_ERQ: {"item": "...", "qty": 1, "reason": "...", "urgent": true/false}]]
+### 2. DATA COLLECTION STEPS
+Actively prompt for missing information in a friendly manner:
+1. Item Name & Specification
+2. Quantity (Must be a number)
+3. Reason for borrowing/requesting
+4. Urgency (High/Low)
+5. Approver Name (ONLY for Category A)
 
-Guidelines for Stock & Inventory Inquiries:
-- Personal Data: Look at "My Recent IT Support Tickets", "My Recent Equipment Requests", and "My Currently Assigned Assets" to answer questions about the user's own status.
-- Global Assets: Use "Detailed IT Asset Inventory (Global)" to answer questions about ANY device code, status, or holder.
-- Consumables: Use "IT Inventory & Stock" for items like mice, keyboards, ink, etc.
-- If an item is "OUT OF STOCK", inform the user but suggest they can still place a request so IT can prepare/order it.
-- If in stock, encourage them to let you "Process the request" (เบิกอุปกรณ์) right here in the chat.
+### 3. SUBMISSION & TAGGING
+Only after receiving and summarizing ALL required details to the user, you must trigger the system by appending the JSON tag at the VERY END of your message.
 
-General Guidelines:
-- Always respond in the same language the user writes in (Thai -> Thai, English -> English).
-- Use professional, helpful, and friendly tone.
-- If you don't know the answer based on context, politely suggest contacting the IT team.
-- Keep the [[CREATE_ERQ: ...]] tag hidden from the main flow of user conversation but include it in the background response.`;
+**Tag Structure:**
+[[CREATE_ERQ: {"item": "string", "qty": number, "reason": "string", "urgent": boolean, "approver": "string or null"}]]
+
+*Constraint:* If Category B, set "approver": null. Do not include markdown code blocks for the tag.
+
+### 4. INVENTORY GUIDELINES
+- **Personal Assets:** Refer to "My Recent IT Support Tickets", "My Recent Equipment Requests", or "My Currently Assigned Assets" to answer user-specific questions.
+- **Global Assets:** Refer to "Detailed IT Asset Inventory (Global)" for device codes, status, and current holders.
+- **Stock & Consumables:** Refer to "IT Inventory & Stock (Detailed)" for items like USB WiFi, Mice, Keyboards, Ink, and other consumables. Check the "remaining" count to see if it is in stock.
+- **Pending Orders:** If an item is not in stock, check "Upcoming/Pending IT Orders" to see if more are arriving.
+- **Stock Check Policy:** If an item is "OUT OF STOCK", inform the user but encourage them to proceed with the request so IT can track demand and prepare the order.
+
+### 5. STYLE & TONE
+- **Language Matching:** Respond in Thai if the user speaks Thai; English if the user speaks English.
+- **Tone:** Professional, supportive, and efficient.
+- **Uncertainty:** If the provided context DOES NOT contain the item or the answer, politely suggest the user check the Inventory page manually or contact the IT Department. Do not just say you don't have info if the context was provided above.`;
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -275,23 +285,50 @@ export async function POST(req: Request) {
     if (erqMatch) {
       try {
         const actionData = JSON.parse(erqMatch[1]);
-        const code = await generateNewCode('equipmentRequest');
         
+        // 1. Create the Group first (EBG)
+        const groupCode = await generateNewCode('equipmentGroup');
+        const group = await prisma.equipmentBorrowGroup.create({
+          data: {
+            group_code: groupCode,
+            userId: userId,
+            reason: actionData.reason || "AI Assisted Request",
+            approval: actionData.approver || null,
+            approval_status: actionData.approver ? "PENDING" : "APPROVED", // Auto-approve if no approver needed
+            it_approval_status: "PENDING",
+          }
+        });
+
+        // 2. Try to find a matching EquipmentList record to link
+        const matchingEntry = await prisma.equipmentEntryList.findFirst({
+          where: { list: { contains: actionData.item, mode: 'insensitive' } },
+          include: { equipmentLists: { take: 1 } }
+        });
+        
+        const eqListId = matchingEntry?.equipmentLists?.[0]?.id || null;
+
+        // 3. Create the individual Request (ERQ)
+        const erqCode = await generateNewCode('equipmentRequest');
         await prisma.equipmentRequest.create({
           data: {
-            equipment_code: code,
-            userId: (session.user as any).id,
+            equipment_code: erqCode,
+            groupId: group.id,
+            userId: userId,
+            equipment_list_id: eqListId,
             manual_item_name: actionData.item,
             quantity: Number(actionData.qty) || 1,
             reason: actionData.reason,
             remarks: `Automatically submitted by AI Assistant. [Urgent: ${actionData.urgent ? 'YES' : 'NO'}]`,
-            borrow_type: "NEW", // Default for AI requests
+            borrow_type: "NEW", 
+            approval: actionData.approver || null,
+            approval_status: actionData.approver ? "PENDING" : "APPROVED",
+            it_approval_status: "PENDING",
           }
         });
 
         // Clean up the tag from user view and add confirmation
         finalContent = finalContent.replace(erqMatch[0], "").trim();
-        extraInfo = `\n\n✅ (รหัสใบเบิกของคุณคือ: ${code} / Request Code: ${code})`;
+        extraInfo = `\n\n✅ (สร้างใบเบิกเรียบร้อย: ${groupCode} / Request Group: ${groupCode})`;
       } catch (err) {
         console.error("AI Action parse/execute error:", err);
       }

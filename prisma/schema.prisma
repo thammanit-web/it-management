@@ -24,6 +24,7 @@ model User {
   equipmentGroups   EquipmentBorrowGroup[]
   auditLogs         AuditLog[]
   itNotes           ItNote[]
+  incidentReports   IncidentReport[]
 }
 
 model Employee {
@@ -365,4 +366,61 @@ model ItNoteDetail {
   updatedAt   DateTime @updatedAt
 
   @@map("it_note_details")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String   @db.Text
+  type      String   @default("INFO") // INFO, TICKET, EQUIPMENT, ALERT
+  isRead    Boolean  @default(false)
+  link      String?  // Optional link to navigate when clicked
+  
+  userId    String?  // If targeted at a specific user (e.g. an admin). If null, it's for all admins.
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+model IncidentReport {
+  id                  String   @id @default(cuid())
+  report_code         String?  @unique
+  
+  // Reporter fields
+  incidentTime        DateTime
+  location            String
+  employeeCode        String
+  reporterName        String
+  department          String
+  incidentType        String   // MALWARE, SYSTEM_DOWN, HUMAN_ERROR, UNAUTHORIZED_ACCESS, OTHER
+  incidentTypeOther   String?
+  details             String   @db.Text
+  reportSignatureDate DateTime?
+  reporterSign        String?
+
+  // Maintenance fields
+  cause               String?  @db.Text
+  maintenanceDate     DateTime?
+  repairType          String?  // EXTERNAL, INTERNAL
+  resolution          String?  @db.Text
+  prevention          String?  @db.Text
+
+  responsibleSign     String?
+  responsibleDate     DateTime?
+  reviewerSign        String?
+  reviewerDate        DateTime?
+  maintenanceComment  String?
+
+  status              String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  userId              String?
+  user                User?    @relation(fields: [userId], references: [id])
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("incident_reports")
 }

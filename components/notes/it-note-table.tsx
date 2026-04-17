@@ -14,7 +14,7 @@ import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-export function ItNoteTable({ notes, query }: { notes: any[], query?: string }) {
+export function ItNoteTable({ notes }: { notes: any[] }) {
   const { t } = useTranslation();
 
   return (

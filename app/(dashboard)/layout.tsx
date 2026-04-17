@@ -16,6 +16,7 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { AIChatFAB } from "@/components/ai/AIChatFAB";
+import { NotificationBell } from "@/components/ui/notification-bell";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
@@ -89,6 +90,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex items-center gap-3 lg:gap-4">
+             <NotificationBell />
              <ThemeSwitcher />
              <LanguageSwitcher />
 

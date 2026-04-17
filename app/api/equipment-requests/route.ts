@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { headers } from "next/headers";
 import { generateNewCode } from "@/lib/code-generator";
+import { sendOutlookEmail, createSystemNotification, generateEmailTemplate } from "@/lib/notifier";
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -131,7 +132,7 @@ export async function POST(request: Request) {
       const updatedGroup = await tx.equipmentBorrowGroup.update({
          where: { id: group.id },
          data: { approval_status: overallStatus },
-         include: { requests: { include: { equipmentList: { include: { equipmentEntry: true } } } } }
+         include: { requests: { include: { equipmentList: { include: { equipmentEntry: true } } } }, user: { include: { employee: true } } }
       });
 
       return updatedGroup;
@@ -150,6 +151,50 @@ export async function POST(request: Request) {
       ipAddress: ip,
       userAgent: ua
     });
+
+    try {
+      const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3003";
+
+      const creatorName = (result as any).user?.employee?.employee_name_th || (result as any).user?.username || (session?.user as any)?.name || 'Unknown';
+      const creatorPosition = (result as any).user?.employee?.position || '-';
+      const creatorDept = (result as any).user?.employee?.department || '-';
+      const creatorDisplay = `${creatorName} (ตำแหน่ง: ${creatorPosition}, แผนก: ${creatorDept})`;
+
+      // Save to database
+      await createSystemNotification({
+        title: `New Equipment Request: ${result.group_code}`,
+        message: `Equipment request ${result.group_code} submitted by ${creatorDisplay}. Items: ${result.requests.length}.`,
+        type: "EQUIPMENT",
+        link: `/admin/equipment-requests`
+      });
+
+      const reqUrl = `${baseUrl}/admin/equipment-requests`;
+      const htmlItemsList = result.requests.map((r: any) => `<li style="margin-bottom: 4px;">${r.quantity}x ${r.equipmentList?.equipmentEntry?.list || r.manual_item_name || 'Unknown Item'}</li>`).join('');
+
+      const emailContent = `
+        <table class="details-table">
+          <tr><th>Submitted by</th><td>${creatorDisplay}</td></tr>
+          <tr><th>Reason</th><td>${result.reason || "N/A"}</td></tr>
+          <tr><th>Approval Req.</th><td>${result.approval || "None"}</td></tr>
+          <tr>
+            <th>Items Requested</th>
+            <td><ul style="margin: 0; padding-left: 16px;">${htmlItemsList || "<li>No items listed</li>"}</ul></td>
+          </tr>
+        </table>
+      `;
+
+      await sendOutlookEmail({
+        subject: `New Equipment Request: ${result.group_code}`,
+        content: generateEmailTemplate(
+          `New Equipment Request: ${result.group_code}`,
+          emailContent,
+          reqUrl,
+          "View Request Details"
+        )
+      });
+    } catch (e) {
+      console.error("Failed to send webhook:", e);
+    }
 
     return NextResponse.json(result, { status: 201 });
   } catch (error: any) {

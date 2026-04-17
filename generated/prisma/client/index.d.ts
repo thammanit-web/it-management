@@ -88,6 +88,16 @@ export type ItNote = $Result.DefaultSelection<Prisma.$ItNotePayload>
  * 
  */
 export type ItNoteDetail = $Result.DefaultSelection<Prisma.$ItNoteDetailPayload>
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
+/**
+ * Model IncidentReport
+ * 
+ */
+export type IncidentReport = $Result.DefaultSelection<Prisma.$IncidentReportPayload>
 
 /**
  * Enums
@@ -405,6 +415,26 @@ export class PrismaClient<
     * ```
     */
   get itNoteDetail(): Prisma.ItNoteDetailDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Notifications
+    * const notifications = await prisma.notification.findMany()
+    * ```
+    */
+  get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.incidentReport`: Exposes CRUD operations for the **IncidentReport** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more IncidentReports
+    * const incidentReports = await prisma.incidentReport.findMany()
+    * ```
+    */
+  get incidentReport(): Prisma.IncidentReportDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -853,7 +883,9 @@ export namespace Prisma {
     AssetHistory: 'AssetHistory',
     UserCredential: 'UserCredential',
     ItNote: 'ItNote',
-    ItNoteDetail: 'ItNoteDetail'
+    ItNoteDetail: 'ItNoteDetail',
+    Notification: 'Notification',
+    IncidentReport: 'IncidentReport'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -869,7 +901,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "employee" | "request" | "comment" | "equipmentPurchaseOrder" | "equipmentEntryList" | "equipmentList" | "equipmentRequest" | "equipmentBorrowGroup" | "auditLog" | "asset" | "assetHistory" | "userCredential" | "itNote" | "itNoteDetail"
+      modelProps: "user" | "employee" | "request" | "comment" | "equipmentPurchaseOrder" | "equipmentEntryList" | "equipmentList" | "equipmentRequest" | "equipmentBorrowGroup" | "auditLog" | "asset" | "assetHistory" | "userCredential" | "itNote" | "itNoteDetail" | "notification" | "incidentReport"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1983,6 +2015,154 @@ export namespace Prisma {
           }
         }
       }
+      Notification: {
+        payload: Prisma.$NotificationPayload<ExtArgs>
+        fields: Prisma.NotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findMany: {
+            args: Prisma.NotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          create: {
+            args: Prisma.NotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          createMany: {
+            args: Prisma.NotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          update: {
+            args: Prisma.NotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NotificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.NotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotification>
+          }
+          groupBy: {
+            args: Prisma.NotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationCountAggregateOutputType> | number
+          }
+        }
+      }
+      IncidentReport: {
+        payload: Prisma.$IncidentReportPayload<ExtArgs>
+        fields: Prisma.IncidentReportFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.IncidentReportFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.IncidentReportFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload>
+          }
+          findFirst: {
+            args: Prisma.IncidentReportFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.IncidentReportFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload>
+          }
+          findMany: {
+            args: Prisma.IncidentReportFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload>[]
+          }
+          create: {
+            args: Prisma.IncidentReportCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload>
+          }
+          createMany: {
+            args: Prisma.IncidentReportCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.IncidentReportCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload>[]
+          }
+          delete: {
+            args: Prisma.IncidentReportDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload>
+          }
+          update: {
+            args: Prisma.IncidentReportUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload>
+          }
+          deleteMany: {
+            args: Prisma.IncidentReportDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.IncidentReportUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.IncidentReportUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload>[]
+          }
+          upsert: {
+            args: Prisma.IncidentReportUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$IncidentReportPayload>
+          }
+          aggregate: {
+            args: Prisma.IncidentReportAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateIncidentReport>
+          }
+          groupBy: {
+            args: Prisma.IncidentReportGroupByArgs<ExtArgs>
+            result: $Utils.Optional<IncidentReportGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.IncidentReportCountArgs<ExtArgs>
+            result: $Utils.Optional<IncidentReportCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2106,6 +2286,8 @@ export namespace Prisma {
     userCredential?: UserCredentialOmit
     itNote?: ItNoteOmit
     itNoteDetail?: ItNoteDetailOmit
+    notification?: NotificationOmit
+    incidentReport?: IncidentReportOmit
   }
 
   /* Types for Logging */
@@ -2192,6 +2374,7 @@ export namespace Prisma {
     equipmentGroups: number
     auditLogs: number
     itNotes: number
+    incidentReports: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2201,6 +2384,7 @@ export namespace Prisma {
     equipmentGroups?: boolean | UserCountOutputTypeCountEquipmentGroupsArgs
     auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
     itNotes?: boolean | UserCountOutputTypeCountItNotesArgs
+    incidentReports?: boolean | UserCountOutputTypeCountIncidentReportsArgs
   }
 
   // Custom InputTypes
@@ -2254,6 +2438,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountItNotesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ItNoteWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountIncidentReportsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: IncidentReportWhereInput
   }
 
 
@@ -2714,6 +2905,7 @@ export namespace Prisma {
     equipmentGroups?: boolean | User$equipmentGroupsArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     itNotes?: boolean | User$itNotesArgs<ExtArgs>
+    incidentReports?: boolean | User$incidentReportsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2758,6 +2950,7 @@ export namespace Prisma {
     equipmentGroups?: boolean | User$equipmentGroupsArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     itNotes?: boolean | User$itNotesArgs<ExtArgs>
+    incidentReports?: boolean | User$incidentReportsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2777,6 +2970,7 @@ export namespace Prisma {
       equipmentGroups: Prisma.$EquipmentBorrowGroupPayload<ExtArgs>[]
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
       itNotes: Prisma.$ItNotePayload<ExtArgs>[]
+      incidentReports: Prisma.$IncidentReportPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3187,6 +3381,7 @@ export namespace Prisma {
     equipmentGroups<T extends User$equipmentGroupsArgs<ExtArgs> = {}>(args?: Subset<T, User$equipmentGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EquipmentBorrowGroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     itNotes<T extends User$itNotesArgs<ExtArgs> = {}>(args?: Subset<T, User$itNotesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ItNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    incidentReports<T extends User$incidentReportsArgs<ExtArgs> = {}>(args?: Subset<T, User$incidentReportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3784,6 +3979,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ItNoteScalarFieldEnum | ItNoteScalarFieldEnum[]
+  }
+
+  /**
+   * User.incidentReports
+   */
+  export type User$incidentReportsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    where?: IncidentReportWhereInput
+    orderBy?: IncidentReportOrderByWithRelationInput | IncidentReportOrderByWithRelationInput[]
+    cursor?: IncidentReportWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: IncidentReportScalarFieldEnum | IncidentReportScalarFieldEnum[]
   }
 
   /**
@@ -20557,6 +20776,2413 @@ export namespace Prisma {
 
 
   /**
+   * Model Notification
+   */
+
+  export type AggregateNotification = {
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  export type NotificationMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    message: string | null
+    type: string | null
+    isRead: boolean | null
+    link: string | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    message: string | null
+    type: string | null
+    isRead: boolean | null
+    link: string | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationCountAggregateOutputType = {
+    id: number
+    title: number
+    message: number
+    type: number
+    isRead: number
+    link: number
+    userId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NotificationMinAggregateInputType = {
+    id?: true
+    title?: true
+    message?: true
+    type?: true
+    isRead?: true
+    link?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationMaxAggregateInputType = {
+    id?: true
+    title?: true
+    message?: true
+    type?: true
+    isRead?: true
+    link?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationCountAggregateInputType = {
+    id?: true
+    title?: true
+    message?: true
+    type?: true
+    isRead?: true
+    link?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notification to aggregate.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Notifications
+    **/
+    _count?: true | NotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type GetNotificationAggregateType<T extends NotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotification[P]>
+      : GetScalarType<T[P], AggregateNotification[P]>
+  }
+
+
+
+
+  export type NotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithAggregationInput | NotificationOrderByWithAggregationInput[]
+    by: NotificationScalarFieldEnum[] | NotificationScalarFieldEnum
+    having?: NotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationCountAggregateInputType | true
+    _min?: NotificationMinAggregateInputType
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type NotificationGroupByOutputType = {
+    id: string
+    title: string
+    message: string
+    type: string
+    isRead: boolean
+    link: string | null
+    userId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  type GetNotificationGroupByPayload<T extends NotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    isRead?: boolean
+    link?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    isRead?: boolean
+    link?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    isRead?: boolean
+    link?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectScalar = {
+    id?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    isRead?: boolean
+    link?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "message" | "type" | "isRead" | "link" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["notification"]>
+
+  export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Notification"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      message: string
+      type: string
+      isRead: boolean
+      link: string | null
+      userId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["notification"]>
+    composites: {}
+  }
+
+  type NotificationGetPayload<S extends boolean | null | undefined | NotificationDefaultArgs> = $Result.GetResult<Prisma.$NotificationPayload, S>
+
+  type NotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationCountAggregateInputType | true
+    }
+
+  export interface NotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Notification'], meta: { name: 'Notification' } }
+    /**
+     * Find zero or one Notification that matches the filter.
+     * @param {NotificationFindUniqueArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationFindUniqueArgs>(args: SelectSubset<T, NotificationFindUniqueArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Notification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationFindUniqueOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationFindFirstArgs>(args?: SelectSubset<T, NotificationFindFirstArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Notifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Notifications
+     * const notifications = await prisma.notification.findMany()
+     * 
+     * // Get first 10 Notifications
+     * const notifications = await prisma.notification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationWithIdOnly = await prisma.notification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationFindManyArgs>(args?: SelectSubset<T, NotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Notification.
+     * @param {NotificationCreateArgs} args - Arguments to create a Notification.
+     * @example
+     * // Create one Notification
+     * const Notification = await prisma.notification.create({
+     *   data: {
+     *     // ... data to create a Notification
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationCreateArgs>(args: SelectSubset<T, NotificationCreateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Notifications.
+     * @param {NotificationCreateManyArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationCreateManyArgs>(args?: SelectSubset<T, NotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Notifications and returns the data saved in the database.
+     * @param {NotificationCreateManyAndReturnArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Notification.
+     * @param {NotificationDeleteArgs} args - Arguments to delete one Notification.
+     * @example
+     * // Delete one Notification
+     * const Notification = await prisma.notification.delete({
+     *   where: {
+     *     // ... filter to delete one Notification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationDeleteArgs>(args: SelectSubset<T, NotificationDeleteArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Notification.
+     * @param {NotificationUpdateArgs} args - Arguments to update one Notification.
+     * @example
+     * // Update one Notification
+     * const notification = await prisma.notification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationUpdateArgs>(args: SelectSubset<T, NotificationUpdateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Notifications.
+     * @param {NotificationDeleteManyArgs} args - Arguments to filter Notifications to delete.
+     * @example
+     * // Delete a few Notifications
+     * const { count } = await prisma.notification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationDeleteManyArgs>(args?: SelectSubset<T, NotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationUpdateManyArgs>(args: SelectSubset<T, NotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications and returns the data updated in the database.
+     * @param {NotificationUpdateManyAndReturnArgs} args - Arguments to update many Notifications.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NotificationUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Notification.
+     * @param {NotificationUpsertArgs} args - Arguments to update or create a Notification.
+     * @example
+     * // Update or create a Notification
+     * const notification = await prisma.notification.upsert({
+     *   create: {
+     *     // ... data to create a Notification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Notification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationUpsertArgs>(args: SelectSubset<T, NotificationUpsertArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationCountArgs} args - Arguments to filter Notifications to count.
+     * @example
+     * // Count the number of Notifications
+     * const count = await prisma.notification.count({
+     *   where: {
+     *     // ... the filter for the Notifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationCountArgs>(
+      args?: Subset<T, NotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationAggregateArgs>(args: Subset<T, NotificationAggregateArgs>): Prisma.PrismaPromise<GetNotificationAggregateType<T>>
+
+    /**
+     * Group by Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Notification model
+   */
+  readonly fields: NotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Notification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Notification model
+   */
+  interface NotificationFieldRefs {
+    readonly id: FieldRef<"Notification", 'String'>
+    readonly title: FieldRef<"Notification", 'String'>
+    readonly message: FieldRef<"Notification", 'String'>
+    readonly type: FieldRef<"Notification", 'String'>
+    readonly isRead: FieldRef<"Notification", 'Boolean'>
+    readonly link: FieldRef<"Notification", 'String'>
+    readonly userId: FieldRef<"Notification", 'String'>
+    readonly createdAt: FieldRef<"Notification", 'DateTime'>
+    readonly updatedAt: FieldRef<"Notification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Notification findUnique
+   */
+  export type NotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findUniqueOrThrow
+   */
+  export type NotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findFirst
+   */
+  export type NotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findFirstOrThrow
+   */
+  export type NotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findMany
+   */
+  export type NotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter, which Notifications to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification create
+   */
+  export type NotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Notification.
+     */
+    data: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+  }
+
+  /**
+   * Notification createMany
+   */
+  export type NotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Notification createManyAndReturn
+   */
+  export type NotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Notification update
+   */
+  export type NotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Notification.
+     */
+    data: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+    /**
+     * Choose, which Notification to update.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification updateMany
+   */
+  export type NotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification updateManyAndReturn
+   */
+  export type NotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification upsert
+   */
+  export type NotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Notification to update in case it exists.
+     */
+    where: NotificationWhereUniqueInput
+    /**
+     * In case the Notification found by the `where` argument doesn't exist, create a new Notification with this data.
+     */
+    create: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+    /**
+     * In case the Notification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * Notification delete
+   */
+  export type NotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Filter which Notification to delete.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification deleteMany
+   */
+  export type NotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notifications to delete
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification without action
+   */
+  export type NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model IncidentReport
+   */
+
+  export type AggregateIncidentReport = {
+    _count: IncidentReportCountAggregateOutputType | null
+    _min: IncidentReportMinAggregateOutputType | null
+    _max: IncidentReportMaxAggregateOutputType | null
+  }
+
+  export type IncidentReportMinAggregateOutputType = {
+    id: string | null
+    report_code: string | null
+    incidentTime: Date | null
+    location: string | null
+    employeeCode: string | null
+    reporterName: string | null
+    department: string | null
+    incidentType: string | null
+    incidentTypeOther: string | null
+    details: string | null
+    reportSignatureDate: Date | null
+    reporterSign: string | null
+    cause: string | null
+    maintenanceDate: Date | null
+    repairType: string | null
+    resolution: string | null
+    prevention: string | null
+    responsibleSign: string | null
+    responsibleDate: Date | null
+    reviewerSign: string | null
+    reviewerDate: Date | null
+    maintenanceComment: string | null
+    status: string | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type IncidentReportMaxAggregateOutputType = {
+    id: string | null
+    report_code: string | null
+    incidentTime: Date | null
+    location: string | null
+    employeeCode: string | null
+    reporterName: string | null
+    department: string | null
+    incidentType: string | null
+    incidentTypeOther: string | null
+    details: string | null
+    reportSignatureDate: Date | null
+    reporterSign: string | null
+    cause: string | null
+    maintenanceDate: Date | null
+    repairType: string | null
+    resolution: string | null
+    prevention: string | null
+    responsibleSign: string | null
+    responsibleDate: Date | null
+    reviewerSign: string | null
+    reviewerDate: Date | null
+    maintenanceComment: string | null
+    status: string | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type IncidentReportCountAggregateOutputType = {
+    id: number
+    report_code: number
+    incidentTime: number
+    location: number
+    employeeCode: number
+    reporterName: number
+    department: number
+    incidentType: number
+    incidentTypeOther: number
+    details: number
+    reportSignatureDate: number
+    reporterSign: number
+    cause: number
+    maintenanceDate: number
+    repairType: number
+    resolution: number
+    prevention: number
+    responsibleSign: number
+    responsibleDate: number
+    reviewerSign: number
+    reviewerDate: number
+    maintenanceComment: number
+    status: number
+    userId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type IncidentReportMinAggregateInputType = {
+    id?: true
+    report_code?: true
+    incidentTime?: true
+    location?: true
+    employeeCode?: true
+    reporterName?: true
+    department?: true
+    incidentType?: true
+    incidentTypeOther?: true
+    details?: true
+    reportSignatureDate?: true
+    reporterSign?: true
+    cause?: true
+    maintenanceDate?: true
+    repairType?: true
+    resolution?: true
+    prevention?: true
+    responsibleSign?: true
+    responsibleDate?: true
+    reviewerSign?: true
+    reviewerDate?: true
+    maintenanceComment?: true
+    status?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type IncidentReportMaxAggregateInputType = {
+    id?: true
+    report_code?: true
+    incidentTime?: true
+    location?: true
+    employeeCode?: true
+    reporterName?: true
+    department?: true
+    incidentType?: true
+    incidentTypeOther?: true
+    details?: true
+    reportSignatureDate?: true
+    reporterSign?: true
+    cause?: true
+    maintenanceDate?: true
+    repairType?: true
+    resolution?: true
+    prevention?: true
+    responsibleSign?: true
+    responsibleDate?: true
+    reviewerSign?: true
+    reviewerDate?: true
+    maintenanceComment?: true
+    status?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type IncidentReportCountAggregateInputType = {
+    id?: true
+    report_code?: true
+    incidentTime?: true
+    location?: true
+    employeeCode?: true
+    reporterName?: true
+    department?: true
+    incidentType?: true
+    incidentTypeOther?: true
+    details?: true
+    reportSignatureDate?: true
+    reporterSign?: true
+    cause?: true
+    maintenanceDate?: true
+    repairType?: true
+    resolution?: true
+    prevention?: true
+    responsibleSign?: true
+    responsibleDate?: true
+    reviewerSign?: true
+    reviewerDate?: true
+    maintenanceComment?: true
+    status?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type IncidentReportAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which IncidentReport to aggregate.
+     */
+    where?: IncidentReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IncidentReports to fetch.
+     */
+    orderBy?: IncidentReportOrderByWithRelationInput | IncidentReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: IncidentReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IncidentReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IncidentReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned IncidentReports
+    **/
+    _count?: true | IncidentReportCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: IncidentReportMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: IncidentReportMaxAggregateInputType
+  }
+
+  export type GetIncidentReportAggregateType<T extends IncidentReportAggregateArgs> = {
+        [P in keyof T & keyof AggregateIncidentReport]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateIncidentReport[P]>
+      : GetScalarType<T[P], AggregateIncidentReport[P]>
+  }
+
+
+
+
+  export type IncidentReportGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: IncidentReportWhereInput
+    orderBy?: IncidentReportOrderByWithAggregationInput | IncidentReportOrderByWithAggregationInput[]
+    by: IncidentReportScalarFieldEnum[] | IncidentReportScalarFieldEnum
+    having?: IncidentReportScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: IncidentReportCountAggregateInputType | true
+    _min?: IncidentReportMinAggregateInputType
+    _max?: IncidentReportMaxAggregateInputType
+  }
+
+  export type IncidentReportGroupByOutputType = {
+    id: string
+    report_code: string | null
+    incidentTime: Date
+    location: string
+    employeeCode: string
+    reporterName: string
+    department: string
+    incidentType: string
+    incidentTypeOther: string | null
+    details: string
+    reportSignatureDate: Date | null
+    reporterSign: string | null
+    cause: string | null
+    maintenanceDate: Date | null
+    repairType: string | null
+    resolution: string | null
+    prevention: string | null
+    responsibleSign: string | null
+    responsibleDate: Date | null
+    reviewerSign: string | null
+    reviewerDate: Date | null
+    maintenanceComment: string | null
+    status: string
+    userId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: IncidentReportCountAggregateOutputType | null
+    _min: IncidentReportMinAggregateOutputType | null
+    _max: IncidentReportMaxAggregateOutputType | null
+  }
+
+  type GetIncidentReportGroupByPayload<T extends IncidentReportGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<IncidentReportGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof IncidentReportGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], IncidentReportGroupByOutputType[P]>
+            : GetScalarType<T[P], IncidentReportGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type IncidentReportSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    report_code?: boolean
+    incidentTime?: boolean
+    location?: boolean
+    employeeCode?: boolean
+    reporterName?: boolean
+    department?: boolean
+    incidentType?: boolean
+    incidentTypeOther?: boolean
+    details?: boolean
+    reportSignatureDate?: boolean
+    reporterSign?: boolean
+    cause?: boolean
+    maintenanceDate?: boolean
+    repairType?: boolean
+    resolution?: boolean
+    prevention?: boolean
+    responsibleSign?: boolean
+    responsibleDate?: boolean
+    reviewerSign?: boolean
+    reviewerDate?: boolean
+    maintenanceComment?: boolean
+    status?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | IncidentReport$userArgs<ExtArgs>
+  }, ExtArgs["result"]["incidentReport"]>
+
+  export type IncidentReportSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    report_code?: boolean
+    incidentTime?: boolean
+    location?: boolean
+    employeeCode?: boolean
+    reporterName?: boolean
+    department?: boolean
+    incidentType?: boolean
+    incidentTypeOther?: boolean
+    details?: boolean
+    reportSignatureDate?: boolean
+    reporterSign?: boolean
+    cause?: boolean
+    maintenanceDate?: boolean
+    repairType?: boolean
+    resolution?: boolean
+    prevention?: boolean
+    responsibleSign?: boolean
+    responsibleDate?: boolean
+    reviewerSign?: boolean
+    reviewerDate?: boolean
+    maintenanceComment?: boolean
+    status?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | IncidentReport$userArgs<ExtArgs>
+  }, ExtArgs["result"]["incidentReport"]>
+
+  export type IncidentReportSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    report_code?: boolean
+    incidentTime?: boolean
+    location?: boolean
+    employeeCode?: boolean
+    reporterName?: boolean
+    department?: boolean
+    incidentType?: boolean
+    incidentTypeOther?: boolean
+    details?: boolean
+    reportSignatureDate?: boolean
+    reporterSign?: boolean
+    cause?: boolean
+    maintenanceDate?: boolean
+    repairType?: boolean
+    resolution?: boolean
+    prevention?: boolean
+    responsibleSign?: boolean
+    responsibleDate?: boolean
+    reviewerSign?: boolean
+    reviewerDate?: boolean
+    maintenanceComment?: boolean
+    status?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | IncidentReport$userArgs<ExtArgs>
+  }, ExtArgs["result"]["incidentReport"]>
+
+  export type IncidentReportSelectScalar = {
+    id?: boolean
+    report_code?: boolean
+    incidentTime?: boolean
+    location?: boolean
+    employeeCode?: boolean
+    reporterName?: boolean
+    department?: boolean
+    incidentType?: boolean
+    incidentTypeOther?: boolean
+    details?: boolean
+    reportSignatureDate?: boolean
+    reporterSign?: boolean
+    cause?: boolean
+    maintenanceDate?: boolean
+    repairType?: boolean
+    resolution?: boolean
+    prevention?: boolean
+    responsibleSign?: boolean
+    responsibleDate?: boolean
+    reviewerSign?: boolean
+    reviewerDate?: boolean
+    maintenanceComment?: boolean
+    status?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type IncidentReportOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "report_code" | "incidentTime" | "location" | "employeeCode" | "reporterName" | "department" | "incidentType" | "incidentTypeOther" | "details" | "reportSignatureDate" | "reporterSign" | "cause" | "maintenanceDate" | "repairType" | "resolution" | "prevention" | "responsibleSign" | "responsibleDate" | "reviewerSign" | "reviewerDate" | "maintenanceComment" | "status" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["incidentReport"]>
+  export type IncidentReportInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | IncidentReport$userArgs<ExtArgs>
+  }
+  export type IncidentReportIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | IncidentReport$userArgs<ExtArgs>
+  }
+  export type IncidentReportIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | IncidentReport$userArgs<ExtArgs>
+  }
+
+  export type $IncidentReportPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "IncidentReport"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      report_code: string | null
+      incidentTime: Date
+      location: string
+      employeeCode: string
+      reporterName: string
+      department: string
+      incidentType: string
+      incidentTypeOther: string | null
+      details: string
+      reportSignatureDate: Date | null
+      reporterSign: string | null
+      cause: string | null
+      maintenanceDate: Date | null
+      repairType: string | null
+      resolution: string | null
+      prevention: string | null
+      responsibleSign: string | null
+      responsibleDate: Date | null
+      reviewerSign: string | null
+      reviewerDate: Date | null
+      maintenanceComment: string | null
+      status: string
+      userId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["incidentReport"]>
+    composites: {}
+  }
+
+  type IncidentReportGetPayload<S extends boolean | null | undefined | IncidentReportDefaultArgs> = $Result.GetResult<Prisma.$IncidentReportPayload, S>
+
+  type IncidentReportCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<IncidentReportFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: IncidentReportCountAggregateInputType | true
+    }
+
+  export interface IncidentReportDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['IncidentReport'], meta: { name: 'IncidentReport' } }
+    /**
+     * Find zero or one IncidentReport that matches the filter.
+     * @param {IncidentReportFindUniqueArgs} args - Arguments to find a IncidentReport
+     * @example
+     * // Get one IncidentReport
+     * const incidentReport = await prisma.incidentReport.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends IncidentReportFindUniqueArgs>(args: SelectSubset<T, IncidentReportFindUniqueArgs<ExtArgs>>): Prisma__IncidentReportClient<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one IncidentReport that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {IncidentReportFindUniqueOrThrowArgs} args - Arguments to find a IncidentReport
+     * @example
+     * // Get one IncidentReport
+     * const incidentReport = await prisma.incidentReport.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends IncidentReportFindUniqueOrThrowArgs>(args: SelectSubset<T, IncidentReportFindUniqueOrThrowArgs<ExtArgs>>): Prisma__IncidentReportClient<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first IncidentReport that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IncidentReportFindFirstArgs} args - Arguments to find a IncidentReport
+     * @example
+     * // Get one IncidentReport
+     * const incidentReport = await prisma.incidentReport.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends IncidentReportFindFirstArgs>(args?: SelectSubset<T, IncidentReportFindFirstArgs<ExtArgs>>): Prisma__IncidentReportClient<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first IncidentReport that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IncidentReportFindFirstOrThrowArgs} args - Arguments to find a IncidentReport
+     * @example
+     * // Get one IncidentReport
+     * const incidentReport = await prisma.incidentReport.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends IncidentReportFindFirstOrThrowArgs>(args?: SelectSubset<T, IncidentReportFindFirstOrThrowArgs<ExtArgs>>): Prisma__IncidentReportClient<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more IncidentReports that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IncidentReportFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all IncidentReports
+     * const incidentReports = await prisma.incidentReport.findMany()
+     * 
+     * // Get first 10 IncidentReports
+     * const incidentReports = await prisma.incidentReport.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const incidentReportWithIdOnly = await prisma.incidentReport.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends IncidentReportFindManyArgs>(args?: SelectSubset<T, IncidentReportFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a IncidentReport.
+     * @param {IncidentReportCreateArgs} args - Arguments to create a IncidentReport.
+     * @example
+     * // Create one IncidentReport
+     * const IncidentReport = await prisma.incidentReport.create({
+     *   data: {
+     *     // ... data to create a IncidentReport
+     *   }
+     * })
+     * 
+     */
+    create<T extends IncidentReportCreateArgs>(args: SelectSubset<T, IncidentReportCreateArgs<ExtArgs>>): Prisma__IncidentReportClient<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many IncidentReports.
+     * @param {IncidentReportCreateManyArgs} args - Arguments to create many IncidentReports.
+     * @example
+     * // Create many IncidentReports
+     * const incidentReport = await prisma.incidentReport.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends IncidentReportCreateManyArgs>(args?: SelectSubset<T, IncidentReportCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many IncidentReports and returns the data saved in the database.
+     * @param {IncidentReportCreateManyAndReturnArgs} args - Arguments to create many IncidentReports.
+     * @example
+     * // Create many IncidentReports
+     * const incidentReport = await prisma.incidentReport.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many IncidentReports and only return the `id`
+     * const incidentReportWithIdOnly = await prisma.incidentReport.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends IncidentReportCreateManyAndReturnArgs>(args?: SelectSubset<T, IncidentReportCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a IncidentReport.
+     * @param {IncidentReportDeleteArgs} args - Arguments to delete one IncidentReport.
+     * @example
+     * // Delete one IncidentReport
+     * const IncidentReport = await prisma.incidentReport.delete({
+     *   where: {
+     *     // ... filter to delete one IncidentReport
+     *   }
+     * })
+     * 
+     */
+    delete<T extends IncidentReportDeleteArgs>(args: SelectSubset<T, IncidentReportDeleteArgs<ExtArgs>>): Prisma__IncidentReportClient<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one IncidentReport.
+     * @param {IncidentReportUpdateArgs} args - Arguments to update one IncidentReport.
+     * @example
+     * // Update one IncidentReport
+     * const incidentReport = await prisma.incidentReport.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends IncidentReportUpdateArgs>(args: SelectSubset<T, IncidentReportUpdateArgs<ExtArgs>>): Prisma__IncidentReportClient<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more IncidentReports.
+     * @param {IncidentReportDeleteManyArgs} args - Arguments to filter IncidentReports to delete.
+     * @example
+     * // Delete a few IncidentReports
+     * const { count } = await prisma.incidentReport.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends IncidentReportDeleteManyArgs>(args?: SelectSubset<T, IncidentReportDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more IncidentReports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IncidentReportUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many IncidentReports
+     * const incidentReport = await prisma.incidentReport.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends IncidentReportUpdateManyArgs>(args: SelectSubset<T, IncidentReportUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more IncidentReports and returns the data updated in the database.
+     * @param {IncidentReportUpdateManyAndReturnArgs} args - Arguments to update many IncidentReports.
+     * @example
+     * // Update many IncidentReports
+     * const incidentReport = await prisma.incidentReport.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more IncidentReports and only return the `id`
+     * const incidentReportWithIdOnly = await prisma.incidentReport.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends IncidentReportUpdateManyAndReturnArgs>(args: SelectSubset<T, IncidentReportUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one IncidentReport.
+     * @param {IncidentReportUpsertArgs} args - Arguments to update or create a IncidentReport.
+     * @example
+     * // Update or create a IncidentReport
+     * const incidentReport = await prisma.incidentReport.upsert({
+     *   create: {
+     *     // ... data to create a IncidentReport
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the IncidentReport we want to update
+     *   }
+     * })
+     */
+    upsert<T extends IncidentReportUpsertArgs>(args: SelectSubset<T, IncidentReportUpsertArgs<ExtArgs>>): Prisma__IncidentReportClient<$Result.GetResult<Prisma.$IncidentReportPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of IncidentReports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IncidentReportCountArgs} args - Arguments to filter IncidentReports to count.
+     * @example
+     * // Count the number of IncidentReports
+     * const count = await prisma.incidentReport.count({
+     *   where: {
+     *     // ... the filter for the IncidentReports we want to count
+     *   }
+     * })
+    **/
+    count<T extends IncidentReportCountArgs>(
+      args?: Subset<T, IncidentReportCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], IncidentReportCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a IncidentReport.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IncidentReportAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends IncidentReportAggregateArgs>(args: Subset<T, IncidentReportAggregateArgs>): Prisma.PrismaPromise<GetIncidentReportAggregateType<T>>
+
+    /**
+     * Group by IncidentReport.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {IncidentReportGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends IncidentReportGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: IncidentReportGroupByArgs['orderBy'] }
+        : { orderBy?: IncidentReportGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, IncidentReportGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIncidentReportGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the IncidentReport model
+   */
+  readonly fields: IncidentReportFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for IncidentReport.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__IncidentReportClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends IncidentReport$userArgs<ExtArgs> = {}>(args?: Subset<T, IncidentReport$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the IncidentReport model
+   */
+  interface IncidentReportFieldRefs {
+    readonly id: FieldRef<"IncidentReport", 'String'>
+    readonly report_code: FieldRef<"IncidentReport", 'String'>
+    readonly incidentTime: FieldRef<"IncidentReport", 'DateTime'>
+    readonly location: FieldRef<"IncidentReport", 'String'>
+    readonly employeeCode: FieldRef<"IncidentReport", 'String'>
+    readonly reporterName: FieldRef<"IncidentReport", 'String'>
+    readonly department: FieldRef<"IncidentReport", 'String'>
+    readonly incidentType: FieldRef<"IncidentReport", 'String'>
+    readonly incidentTypeOther: FieldRef<"IncidentReport", 'String'>
+    readonly details: FieldRef<"IncidentReport", 'String'>
+    readonly reportSignatureDate: FieldRef<"IncidentReport", 'DateTime'>
+    readonly reporterSign: FieldRef<"IncidentReport", 'String'>
+    readonly cause: FieldRef<"IncidentReport", 'String'>
+    readonly maintenanceDate: FieldRef<"IncidentReport", 'DateTime'>
+    readonly repairType: FieldRef<"IncidentReport", 'String'>
+    readonly resolution: FieldRef<"IncidentReport", 'String'>
+    readonly prevention: FieldRef<"IncidentReport", 'String'>
+    readonly responsibleSign: FieldRef<"IncidentReport", 'String'>
+    readonly responsibleDate: FieldRef<"IncidentReport", 'DateTime'>
+    readonly reviewerSign: FieldRef<"IncidentReport", 'String'>
+    readonly reviewerDate: FieldRef<"IncidentReport", 'DateTime'>
+    readonly maintenanceComment: FieldRef<"IncidentReport", 'String'>
+    readonly status: FieldRef<"IncidentReport", 'String'>
+    readonly userId: FieldRef<"IncidentReport", 'String'>
+    readonly createdAt: FieldRef<"IncidentReport", 'DateTime'>
+    readonly updatedAt: FieldRef<"IncidentReport", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * IncidentReport findUnique
+   */
+  export type IncidentReportFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IncidentReport to fetch.
+     */
+    where: IncidentReportWhereUniqueInput
+  }
+
+  /**
+   * IncidentReport findUniqueOrThrow
+   */
+  export type IncidentReportFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IncidentReport to fetch.
+     */
+    where: IncidentReportWhereUniqueInput
+  }
+
+  /**
+   * IncidentReport findFirst
+   */
+  export type IncidentReportFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IncidentReport to fetch.
+     */
+    where?: IncidentReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IncidentReports to fetch.
+     */
+    orderBy?: IncidentReportOrderByWithRelationInput | IncidentReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for IncidentReports.
+     */
+    cursor?: IncidentReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IncidentReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IncidentReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of IncidentReports.
+     */
+    distinct?: IncidentReportScalarFieldEnum | IncidentReportScalarFieldEnum[]
+  }
+
+  /**
+   * IncidentReport findFirstOrThrow
+   */
+  export type IncidentReportFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IncidentReport to fetch.
+     */
+    where?: IncidentReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IncidentReports to fetch.
+     */
+    orderBy?: IncidentReportOrderByWithRelationInput | IncidentReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for IncidentReports.
+     */
+    cursor?: IncidentReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IncidentReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IncidentReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of IncidentReports.
+     */
+    distinct?: IncidentReportScalarFieldEnum | IncidentReportScalarFieldEnum[]
+  }
+
+  /**
+   * IncidentReport findMany
+   */
+  export type IncidentReportFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    /**
+     * Filter, which IncidentReports to fetch.
+     */
+    where?: IncidentReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of IncidentReports to fetch.
+     */
+    orderBy?: IncidentReportOrderByWithRelationInput | IncidentReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing IncidentReports.
+     */
+    cursor?: IncidentReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` IncidentReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` IncidentReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of IncidentReports.
+     */
+    distinct?: IncidentReportScalarFieldEnum | IncidentReportScalarFieldEnum[]
+  }
+
+  /**
+   * IncidentReport create
+   */
+  export type IncidentReportCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    /**
+     * The data needed to create a IncidentReport.
+     */
+    data: XOR<IncidentReportCreateInput, IncidentReportUncheckedCreateInput>
+  }
+
+  /**
+   * IncidentReport createMany
+   */
+  export type IncidentReportCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many IncidentReports.
+     */
+    data: IncidentReportCreateManyInput | IncidentReportCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * IncidentReport createManyAndReturn
+   */
+  export type IncidentReportCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * The data used to create many IncidentReports.
+     */
+    data: IncidentReportCreateManyInput | IncidentReportCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * IncidentReport update
+   */
+  export type IncidentReportUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    /**
+     * The data needed to update a IncidentReport.
+     */
+    data: XOR<IncidentReportUpdateInput, IncidentReportUncheckedUpdateInput>
+    /**
+     * Choose, which IncidentReport to update.
+     */
+    where: IncidentReportWhereUniqueInput
+  }
+
+  /**
+   * IncidentReport updateMany
+   */
+  export type IncidentReportUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update IncidentReports.
+     */
+    data: XOR<IncidentReportUpdateManyMutationInput, IncidentReportUncheckedUpdateManyInput>
+    /**
+     * Filter which IncidentReports to update
+     */
+    where?: IncidentReportWhereInput
+    /**
+     * Limit how many IncidentReports to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * IncidentReport updateManyAndReturn
+   */
+  export type IncidentReportUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * The data used to update IncidentReports.
+     */
+    data: XOR<IncidentReportUpdateManyMutationInput, IncidentReportUncheckedUpdateManyInput>
+    /**
+     * Filter which IncidentReports to update
+     */
+    where?: IncidentReportWhereInput
+    /**
+     * Limit how many IncidentReports to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * IncidentReport upsert
+   */
+  export type IncidentReportUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    /**
+     * The filter to search for the IncidentReport to update in case it exists.
+     */
+    where: IncidentReportWhereUniqueInput
+    /**
+     * In case the IncidentReport found by the `where` argument doesn't exist, create a new IncidentReport with this data.
+     */
+    create: XOR<IncidentReportCreateInput, IncidentReportUncheckedCreateInput>
+    /**
+     * In case the IncidentReport was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<IncidentReportUpdateInput, IncidentReportUncheckedUpdateInput>
+  }
+
+  /**
+   * IncidentReport delete
+   */
+  export type IncidentReportDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+    /**
+     * Filter which IncidentReport to delete.
+     */
+    where: IncidentReportWhereUniqueInput
+  }
+
+  /**
+   * IncidentReport deleteMany
+   */
+  export type IncidentReportDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which IncidentReports to delete
+     */
+    where?: IncidentReportWhereInput
+    /**
+     * Limit how many IncidentReports to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * IncidentReport.user
+   */
+  export type IncidentReport$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * IncidentReport without action
+   */
+  export type IncidentReportDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the IncidentReport
+     */
+    select?: IncidentReportSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the IncidentReport
+     */
+    omit?: IncidentReportOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: IncidentReportInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -20835,6 +23461,53 @@ export namespace Prisma {
   export type ItNoteDetailScalarFieldEnum = (typeof ItNoteDetailScalarFieldEnum)[keyof typeof ItNoteDetailScalarFieldEnum]
 
 
+  export const NotificationScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    message: 'message',
+    type: 'type',
+    isRead: 'isRead',
+    link: 'link',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+  export const IncidentReportScalarFieldEnum: {
+    id: 'id',
+    report_code: 'report_code',
+    incidentTime: 'incidentTime',
+    location: 'location',
+    employeeCode: 'employeeCode',
+    reporterName: 'reporterName',
+    department: 'department',
+    incidentType: 'incidentType',
+    incidentTypeOther: 'incidentTypeOther',
+    details: 'details',
+    reportSignatureDate: 'reportSignatureDate',
+    reporterSign: 'reporterSign',
+    cause: 'cause',
+    maintenanceDate: 'maintenanceDate',
+    repairType: 'repairType',
+    resolution: 'resolution',
+    prevention: 'prevention',
+    responsibleSign: 'responsibleSign',
+    responsibleDate: 'responsibleDate',
+    reviewerSign: 'reviewerSign',
+    reviewerDate: 'reviewerDate',
+    maintenanceComment: 'maintenanceComment',
+    status: 'status',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type IncidentReportScalarFieldEnum = (typeof IncidentReportScalarFieldEnum)[keyof typeof IncidentReportScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -20990,6 +23663,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupListRelationFilter
     auditLogs?: AuditLogListRelationFilter
     itNotes?: ItNoteListRelationFilter
+    incidentReports?: IncidentReportListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -21007,6 +23681,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupOrderByRelationAggregateInput
     auditLogs?: AuditLogOrderByRelationAggregateInput
     itNotes?: ItNoteOrderByRelationAggregateInput
+    incidentReports?: IncidentReportOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -21027,6 +23702,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupListRelationFilter
     auditLogs?: AuditLogListRelationFilter
     itNotes?: ItNoteListRelationFilter
+    incidentReports?: IncidentReportListRelationFilter
   }, "id" | "username" | "employeeId">
 
   export type UserOrderByWithAggregationInput = {
@@ -22366,6 +25042,238 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ItNoteDetail"> | Date | string
   }
 
+  export type NotificationWhereInput = {
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    type?: StringFilter<"Notification"> | string
+    isRead?: BoolFilter<"Notification"> | boolean
+    link?: StringNullableFilter<"Notification"> | string | null
+    userId?: StringNullableFilter<"Notification"> | string | null
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    updatedAt?: DateTimeFilter<"Notification"> | Date | string
+  }
+
+  export type NotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    isRead?: SortOrder
+    link?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    type?: StringFilter<"Notification"> | string
+    isRead?: BoolFilter<"Notification"> | boolean
+    link?: StringNullableFilter<"Notification"> | string | null
+    userId?: StringNullableFilter<"Notification"> | string | null
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    updatedAt?: DateTimeFilter<"Notification"> | Date | string
+  }, "id">
+
+  export type NotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    isRead?: SortOrder
+    link?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NotificationCountOrderByAggregateInput
+    _max?: NotificationMaxOrderByAggregateInput
+    _min?: NotificationMinOrderByAggregateInput
+  }
+
+  export type NotificationScalarWhereWithAggregatesInput = {
+    AND?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    OR?: NotificationScalarWhereWithAggregatesInput[]
+    NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Notification"> | string
+    title?: StringWithAggregatesFilter<"Notification"> | string
+    message?: StringWithAggregatesFilter<"Notification"> | string
+    type?: StringWithAggregatesFilter<"Notification"> | string
+    isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
+    link?: StringNullableWithAggregatesFilter<"Notification"> | string | null
+    userId?: StringNullableWithAggregatesFilter<"Notification"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
+  }
+
+  export type IncidentReportWhereInput = {
+    AND?: IncidentReportWhereInput | IncidentReportWhereInput[]
+    OR?: IncidentReportWhereInput[]
+    NOT?: IncidentReportWhereInput | IncidentReportWhereInput[]
+    id?: StringFilter<"IncidentReport"> | string
+    report_code?: StringNullableFilter<"IncidentReport"> | string | null
+    incidentTime?: DateTimeFilter<"IncidentReport"> | Date | string
+    location?: StringFilter<"IncidentReport"> | string
+    employeeCode?: StringFilter<"IncidentReport"> | string
+    reporterName?: StringFilter<"IncidentReport"> | string
+    department?: StringFilter<"IncidentReport"> | string
+    incidentType?: StringFilter<"IncidentReport"> | string
+    incidentTypeOther?: StringNullableFilter<"IncidentReport"> | string | null
+    details?: StringFilter<"IncidentReport"> | string
+    reportSignatureDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    reporterSign?: StringNullableFilter<"IncidentReport"> | string | null
+    cause?: StringNullableFilter<"IncidentReport"> | string | null
+    maintenanceDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    repairType?: StringNullableFilter<"IncidentReport"> | string | null
+    resolution?: StringNullableFilter<"IncidentReport"> | string | null
+    prevention?: StringNullableFilter<"IncidentReport"> | string | null
+    responsibleSign?: StringNullableFilter<"IncidentReport"> | string | null
+    responsibleDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    reviewerSign?: StringNullableFilter<"IncidentReport"> | string | null
+    reviewerDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    maintenanceComment?: StringNullableFilter<"IncidentReport"> | string | null
+    status?: StringFilter<"IncidentReport"> | string
+    userId?: StringNullableFilter<"IncidentReport"> | string | null
+    createdAt?: DateTimeFilter<"IncidentReport"> | Date | string
+    updatedAt?: DateTimeFilter<"IncidentReport"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type IncidentReportOrderByWithRelationInput = {
+    id?: SortOrder
+    report_code?: SortOrderInput | SortOrder
+    incidentTime?: SortOrder
+    location?: SortOrder
+    employeeCode?: SortOrder
+    reporterName?: SortOrder
+    department?: SortOrder
+    incidentType?: SortOrder
+    incidentTypeOther?: SortOrderInput | SortOrder
+    details?: SortOrder
+    reportSignatureDate?: SortOrderInput | SortOrder
+    reporterSign?: SortOrderInput | SortOrder
+    cause?: SortOrderInput | SortOrder
+    maintenanceDate?: SortOrderInput | SortOrder
+    repairType?: SortOrderInput | SortOrder
+    resolution?: SortOrderInput | SortOrder
+    prevention?: SortOrderInput | SortOrder
+    responsibleSign?: SortOrderInput | SortOrder
+    responsibleDate?: SortOrderInput | SortOrder
+    reviewerSign?: SortOrderInput | SortOrder
+    reviewerDate?: SortOrderInput | SortOrder
+    maintenanceComment?: SortOrderInput | SortOrder
+    status?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type IncidentReportWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    report_code?: string
+    AND?: IncidentReportWhereInput | IncidentReportWhereInput[]
+    OR?: IncidentReportWhereInput[]
+    NOT?: IncidentReportWhereInput | IncidentReportWhereInput[]
+    incidentTime?: DateTimeFilter<"IncidentReport"> | Date | string
+    location?: StringFilter<"IncidentReport"> | string
+    employeeCode?: StringFilter<"IncidentReport"> | string
+    reporterName?: StringFilter<"IncidentReport"> | string
+    department?: StringFilter<"IncidentReport"> | string
+    incidentType?: StringFilter<"IncidentReport"> | string
+    incidentTypeOther?: StringNullableFilter<"IncidentReport"> | string | null
+    details?: StringFilter<"IncidentReport"> | string
+    reportSignatureDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    reporterSign?: StringNullableFilter<"IncidentReport"> | string | null
+    cause?: StringNullableFilter<"IncidentReport"> | string | null
+    maintenanceDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    repairType?: StringNullableFilter<"IncidentReport"> | string | null
+    resolution?: StringNullableFilter<"IncidentReport"> | string | null
+    prevention?: StringNullableFilter<"IncidentReport"> | string | null
+    responsibleSign?: StringNullableFilter<"IncidentReport"> | string | null
+    responsibleDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    reviewerSign?: StringNullableFilter<"IncidentReport"> | string | null
+    reviewerDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    maintenanceComment?: StringNullableFilter<"IncidentReport"> | string | null
+    status?: StringFilter<"IncidentReport"> | string
+    userId?: StringNullableFilter<"IncidentReport"> | string | null
+    createdAt?: DateTimeFilter<"IncidentReport"> | Date | string
+    updatedAt?: DateTimeFilter<"IncidentReport"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id" | "report_code">
+
+  export type IncidentReportOrderByWithAggregationInput = {
+    id?: SortOrder
+    report_code?: SortOrderInput | SortOrder
+    incidentTime?: SortOrder
+    location?: SortOrder
+    employeeCode?: SortOrder
+    reporterName?: SortOrder
+    department?: SortOrder
+    incidentType?: SortOrder
+    incidentTypeOther?: SortOrderInput | SortOrder
+    details?: SortOrder
+    reportSignatureDate?: SortOrderInput | SortOrder
+    reporterSign?: SortOrderInput | SortOrder
+    cause?: SortOrderInput | SortOrder
+    maintenanceDate?: SortOrderInput | SortOrder
+    repairType?: SortOrderInput | SortOrder
+    resolution?: SortOrderInput | SortOrder
+    prevention?: SortOrderInput | SortOrder
+    responsibleSign?: SortOrderInput | SortOrder
+    responsibleDate?: SortOrderInput | SortOrder
+    reviewerSign?: SortOrderInput | SortOrder
+    reviewerDate?: SortOrderInput | SortOrder
+    maintenanceComment?: SortOrderInput | SortOrder
+    status?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: IncidentReportCountOrderByAggregateInput
+    _max?: IncidentReportMaxOrderByAggregateInput
+    _min?: IncidentReportMinOrderByAggregateInput
+  }
+
+  export type IncidentReportScalarWhereWithAggregatesInput = {
+    AND?: IncidentReportScalarWhereWithAggregatesInput | IncidentReportScalarWhereWithAggregatesInput[]
+    OR?: IncidentReportScalarWhereWithAggregatesInput[]
+    NOT?: IncidentReportScalarWhereWithAggregatesInput | IncidentReportScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"IncidentReport"> | string
+    report_code?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    incidentTime?: DateTimeWithAggregatesFilter<"IncidentReport"> | Date | string
+    location?: StringWithAggregatesFilter<"IncidentReport"> | string
+    employeeCode?: StringWithAggregatesFilter<"IncidentReport"> | string
+    reporterName?: StringWithAggregatesFilter<"IncidentReport"> | string
+    department?: StringWithAggregatesFilter<"IncidentReport"> | string
+    incidentType?: StringWithAggregatesFilter<"IncidentReport"> | string
+    incidentTypeOther?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    details?: StringWithAggregatesFilter<"IncidentReport"> | string
+    reportSignatureDate?: DateTimeNullableWithAggregatesFilter<"IncidentReport"> | Date | string | null
+    reporterSign?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    cause?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    maintenanceDate?: DateTimeNullableWithAggregatesFilter<"IncidentReport"> | Date | string | null
+    repairType?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    resolution?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    prevention?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    responsibleSign?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    responsibleDate?: DateTimeNullableWithAggregatesFilter<"IncidentReport"> | Date | string | null
+    reviewerSign?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    reviewerDate?: DateTimeNullableWithAggregatesFilter<"IncidentReport"> | Date | string | null
+    maintenanceComment?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    status?: StringWithAggregatesFilter<"IncidentReport"> | string
+    userId?: StringNullableWithAggregatesFilter<"IncidentReport"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"IncidentReport"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"IncidentReport"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     username: string
@@ -22380,6 +25288,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     itNotes?: ItNoteCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -22396,6 +25305,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     itNotes?: ItNoteUncheckedCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -22412,6 +25322,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -22428,6 +25339,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUncheckedUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -23957,6 +26869,292 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type NotificationCreateInput = {
+    id?: string
+    title: string
+    message: string
+    type?: string
+    isRead?: boolean
+    link?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationUncheckedCreateInput = {
+    id?: string
+    title: string
+    message: string
+    type?: string
+    isRead?: boolean
+    link?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateManyInput = {
+    id?: string
+    title: string
+    message: string
+    type?: string
+    isRead?: boolean
+    link?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IncidentReportCreateInput = {
+    id?: string
+    report_code?: string | null
+    incidentTime: Date | string
+    location: string
+    employeeCode: string
+    reporterName: string
+    department: string
+    incidentType: string
+    incidentTypeOther?: string | null
+    details: string
+    reportSignatureDate?: Date | string | null
+    reporterSign?: string | null
+    cause?: string | null
+    maintenanceDate?: Date | string | null
+    repairType?: string | null
+    resolution?: string | null
+    prevention?: string | null
+    responsibleSign?: string | null
+    responsibleDate?: Date | string | null
+    reviewerSign?: string | null
+    reviewerDate?: Date | string | null
+    maintenanceComment?: string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutIncidentReportsInput
+  }
+
+  export type IncidentReportUncheckedCreateInput = {
+    id?: string
+    report_code?: string | null
+    incidentTime: Date | string
+    location: string
+    employeeCode: string
+    reporterName: string
+    department: string
+    incidentType: string
+    incidentTypeOther?: string | null
+    details: string
+    reportSignatureDate?: Date | string | null
+    reporterSign?: string | null
+    cause?: string | null
+    maintenanceDate?: Date | string | null
+    repairType?: string | null
+    resolution?: string | null
+    prevention?: string | null
+    responsibleSign?: string | null
+    responsibleDate?: Date | string | null
+    reviewerSign?: string | null
+    reviewerDate?: Date | string | null
+    maintenanceComment?: string | null
+    status?: string
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type IncidentReportUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    report_code?: NullableStringFieldUpdateOperationsInput | string | null
+    incidentTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: StringFieldUpdateOperationsInput | string
+    employeeCode?: StringFieldUpdateOperationsInput | string
+    reporterName?: StringFieldUpdateOperationsInput | string
+    department?: StringFieldUpdateOperationsInput | string
+    incidentType?: StringFieldUpdateOperationsInput | string
+    incidentTypeOther?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: StringFieldUpdateOperationsInput | string
+    reportSignatureDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterSign?: NullableStringFieldUpdateOperationsInput | string | null
+    cause?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repairType?: NullableStringFieldUpdateOperationsInput | string | null
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    prevention?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleSign?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerSign?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maintenanceComment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutIncidentReportsNestedInput
+  }
+
+  export type IncidentReportUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    report_code?: NullableStringFieldUpdateOperationsInput | string | null
+    incidentTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: StringFieldUpdateOperationsInput | string
+    employeeCode?: StringFieldUpdateOperationsInput | string
+    reporterName?: StringFieldUpdateOperationsInput | string
+    department?: StringFieldUpdateOperationsInput | string
+    incidentType?: StringFieldUpdateOperationsInput | string
+    incidentTypeOther?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: StringFieldUpdateOperationsInput | string
+    reportSignatureDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterSign?: NullableStringFieldUpdateOperationsInput | string | null
+    cause?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repairType?: NullableStringFieldUpdateOperationsInput | string | null
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    prevention?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleSign?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerSign?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maintenanceComment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IncidentReportCreateManyInput = {
+    id?: string
+    report_code?: string | null
+    incidentTime: Date | string
+    location: string
+    employeeCode: string
+    reporterName: string
+    department: string
+    incidentType: string
+    incidentTypeOther?: string | null
+    details: string
+    reportSignatureDate?: Date | string | null
+    reporterSign?: string | null
+    cause?: string | null
+    maintenanceDate?: Date | string | null
+    repairType?: string | null
+    resolution?: string | null
+    prevention?: string | null
+    responsibleSign?: string | null
+    responsibleDate?: Date | string | null
+    reviewerSign?: string | null
+    reviewerDate?: Date | string | null
+    maintenanceComment?: string | null
+    status?: string
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type IncidentReportUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    report_code?: NullableStringFieldUpdateOperationsInput | string | null
+    incidentTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: StringFieldUpdateOperationsInput | string
+    employeeCode?: StringFieldUpdateOperationsInput | string
+    reporterName?: StringFieldUpdateOperationsInput | string
+    department?: StringFieldUpdateOperationsInput | string
+    incidentType?: StringFieldUpdateOperationsInput | string
+    incidentTypeOther?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: StringFieldUpdateOperationsInput | string
+    reportSignatureDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterSign?: NullableStringFieldUpdateOperationsInput | string | null
+    cause?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repairType?: NullableStringFieldUpdateOperationsInput | string | null
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    prevention?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleSign?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerSign?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maintenanceComment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IncidentReportUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    report_code?: NullableStringFieldUpdateOperationsInput | string | null
+    incidentTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: StringFieldUpdateOperationsInput | string
+    employeeCode?: StringFieldUpdateOperationsInput | string
+    reporterName?: StringFieldUpdateOperationsInput | string
+    department?: StringFieldUpdateOperationsInput | string
+    incidentType?: StringFieldUpdateOperationsInput | string
+    incidentTypeOther?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: StringFieldUpdateOperationsInput | string
+    reportSignatureDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterSign?: NullableStringFieldUpdateOperationsInput | string | null
+    cause?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repairType?: NullableStringFieldUpdateOperationsInput | string | null
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    prevention?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleSign?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerSign?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maintenanceComment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -24039,6 +27237,12 @@ export namespace Prisma {
     none?: ItNoteWhereInput
   }
 
+  export type IncidentReportListRelationFilter = {
+    every?: IncidentReportWhereInput
+    some?: IncidentReportWhereInput
+    none?: IncidentReportWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -24065,6 +27269,10 @@ export namespace Prisma {
   }
 
   export type ItNoteOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type IncidentReportOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25087,6 +28295,129 @@ export namespace Prisma {
     order?: SortOrder
   }
 
+  export type NotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    isRead?: SortOrder
+    link?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    isRead?: SortOrder
+    link?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    isRead?: SortOrder
+    link?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type IncidentReportCountOrderByAggregateInput = {
+    id?: SortOrder
+    report_code?: SortOrder
+    incidentTime?: SortOrder
+    location?: SortOrder
+    employeeCode?: SortOrder
+    reporterName?: SortOrder
+    department?: SortOrder
+    incidentType?: SortOrder
+    incidentTypeOther?: SortOrder
+    details?: SortOrder
+    reportSignatureDate?: SortOrder
+    reporterSign?: SortOrder
+    cause?: SortOrder
+    maintenanceDate?: SortOrder
+    repairType?: SortOrder
+    resolution?: SortOrder
+    prevention?: SortOrder
+    responsibleSign?: SortOrder
+    responsibleDate?: SortOrder
+    reviewerSign?: SortOrder
+    reviewerDate?: SortOrder
+    maintenanceComment?: SortOrder
+    status?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type IncidentReportMaxOrderByAggregateInput = {
+    id?: SortOrder
+    report_code?: SortOrder
+    incidentTime?: SortOrder
+    location?: SortOrder
+    employeeCode?: SortOrder
+    reporterName?: SortOrder
+    department?: SortOrder
+    incidentType?: SortOrder
+    incidentTypeOther?: SortOrder
+    details?: SortOrder
+    reportSignatureDate?: SortOrder
+    reporterSign?: SortOrder
+    cause?: SortOrder
+    maintenanceDate?: SortOrder
+    repairType?: SortOrder
+    resolution?: SortOrder
+    prevention?: SortOrder
+    responsibleSign?: SortOrder
+    responsibleDate?: SortOrder
+    reviewerSign?: SortOrder
+    reviewerDate?: SortOrder
+    maintenanceComment?: SortOrder
+    status?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type IncidentReportMinOrderByAggregateInput = {
+    id?: SortOrder
+    report_code?: SortOrder
+    incidentTime?: SortOrder
+    location?: SortOrder
+    employeeCode?: SortOrder
+    reporterName?: SortOrder
+    department?: SortOrder
+    incidentType?: SortOrder
+    incidentTypeOther?: SortOrder
+    details?: SortOrder
+    reportSignatureDate?: SortOrder
+    reporterSign?: SortOrder
+    cause?: SortOrder
+    maintenanceDate?: SortOrder
+    repairType?: SortOrder
+    resolution?: SortOrder
+    prevention?: SortOrder
+    responsibleSign?: SortOrder
+    responsibleDate?: SortOrder
+    reviewerSign?: SortOrder
+    reviewerDate?: SortOrder
+    maintenanceComment?: SortOrder
+    status?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type EmployeeCreateNestedOneWithoutUserInput = {
     create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
     connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
@@ -25135,6 +28466,13 @@ export namespace Prisma {
     connect?: ItNoteWhereUniqueInput | ItNoteWhereUniqueInput[]
   }
 
+  export type IncidentReportCreateNestedManyWithoutUserInput = {
+    create?: XOR<IncidentReportCreateWithoutUserInput, IncidentReportUncheckedCreateWithoutUserInput> | IncidentReportCreateWithoutUserInput[] | IncidentReportUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IncidentReportCreateOrConnectWithoutUserInput | IncidentReportCreateOrConnectWithoutUserInput[]
+    createMany?: IncidentReportCreateManyUserInputEnvelope
+    connect?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
+  }
+
   export type RequestUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<RequestCreateWithoutUserInput, RequestUncheckedCreateWithoutUserInput> | RequestCreateWithoutUserInput[] | RequestUncheckedCreateWithoutUserInput[]
     connectOrCreate?: RequestCreateOrConnectWithoutUserInput | RequestCreateOrConnectWithoutUserInput[]
@@ -25175,6 +28513,13 @@ export namespace Prisma {
     connectOrCreate?: ItNoteCreateOrConnectWithoutUserInput | ItNoteCreateOrConnectWithoutUserInput[]
     createMany?: ItNoteCreateManyUserInputEnvelope
     connect?: ItNoteWhereUniqueInput | ItNoteWhereUniqueInput[]
+  }
+
+  export type IncidentReportUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<IncidentReportCreateWithoutUserInput, IncidentReportUncheckedCreateWithoutUserInput> | IncidentReportCreateWithoutUserInput[] | IncidentReportUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IncidentReportCreateOrConnectWithoutUserInput | IncidentReportCreateOrConnectWithoutUserInput[]
+    createMany?: IncidentReportCreateManyUserInputEnvelope
+    connect?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -25279,6 +28624,20 @@ export namespace Prisma {
     deleteMany?: ItNoteScalarWhereInput | ItNoteScalarWhereInput[]
   }
 
+  export type IncidentReportUpdateManyWithoutUserNestedInput = {
+    create?: XOR<IncidentReportCreateWithoutUserInput, IncidentReportUncheckedCreateWithoutUserInput> | IncidentReportCreateWithoutUserInput[] | IncidentReportUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IncidentReportCreateOrConnectWithoutUserInput | IncidentReportCreateOrConnectWithoutUserInput[]
+    upsert?: IncidentReportUpsertWithWhereUniqueWithoutUserInput | IncidentReportUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: IncidentReportCreateManyUserInputEnvelope
+    set?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
+    disconnect?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
+    delete?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
+    connect?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
+    update?: IncidentReportUpdateWithWhereUniqueWithoutUserInput | IncidentReportUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: IncidentReportUpdateManyWithWhereWithoutUserInput | IncidentReportUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: IncidentReportScalarWhereInput | IncidentReportScalarWhereInput[]
+  }
+
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
   }
@@ -25365,6 +28724,20 @@ export namespace Prisma {
     update?: ItNoteUpdateWithWhereUniqueWithoutUserInput | ItNoteUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ItNoteUpdateManyWithWhereWithoutUserInput | ItNoteUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ItNoteScalarWhereInput | ItNoteScalarWhereInput[]
+  }
+
+  export type IncidentReportUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<IncidentReportCreateWithoutUserInput, IncidentReportUncheckedCreateWithoutUserInput> | IncidentReportCreateWithoutUserInput[] | IncidentReportUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: IncidentReportCreateOrConnectWithoutUserInput | IncidentReportCreateOrConnectWithoutUserInput[]
+    upsert?: IncidentReportUpsertWithWhereUniqueWithoutUserInput | IncidentReportUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: IncidentReportCreateManyUserInputEnvelope
+    set?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
+    disconnect?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
+    delete?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
+    connect?: IncidentReportWhereUniqueInput | IncidentReportWhereUniqueInput[]
+    update?: IncidentReportUpdateWithWhereUniqueWithoutUserInput | IncidentReportUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: IncidentReportUpdateManyWithWhereWithoutUserInput | IncidentReportUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: IncidentReportScalarWhereInput | IncidentReportScalarWhereInput[]
   }
 
   export type RequestCreateNestedManyWithoutEmployeeInput = {
@@ -26096,6 +29469,22 @@ export namespace Prisma {
     update?: XOR<XOR<ItNoteUpdateToOneWithWhereWithoutDetailsInput, ItNoteUpdateWithoutDetailsInput>, ItNoteUncheckedUpdateWithoutDetailsInput>
   }
 
+  export type UserCreateNestedOneWithoutIncidentReportsInput = {
+    create?: XOR<UserCreateWithoutIncidentReportsInput, UserUncheckedCreateWithoutIncidentReportsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIncidentReportsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneWithoutIncidentReportsNestedInput = {
+    create?: XOR<UserCreateWithoutIncidentReportsInput, UserUncheckedCreateWithoutIncidentReportsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIncidentReportsInput
+    upsert?: UserUpsertWithoutIncidentReportsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutIncidentReportsInput, UserUpdateWithoutIncidentReportsInput>, UserUncheckedUpdateWithoutIncidentReportsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -26641,6 +30030,72 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type IncidentReportCreateWithoutUserInput = {
+    id?: string
+    report_code?: string | null
+    incidentTime: Date | string
+    location: string
+    employeeCode: string
+    reporterName: string
+    department: string
+    incidentType: string
+    incidentTypeOther?: string | null
+    details: string
+    reportSignatureDate?: Date | string | null
+    reporterSign?: string | null
+    cause?: string | null
+    maintenanceDate?: Date | string | null
+    repairType?: string | null
+    resolution?: string | null
+    prevention?: string | null
+    responsibleSign?: string | null
+    responsibleDate?: Date | string | null
+    reviewerSign?: string | null
+    reviewerDate?: Date | string | null
+    maintenanceComment?: string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type IncidentReportUncheckedCreateWithoutUserInput = {
+    id?: string
+    report_code?: string | null
+    incidentTime: Date | string
+    location: string
+    employeeCode: string
+    reporterName: string
+    department: string
+    incidentType: string
+    incidentTypeOther?: string | null
+    details: string
+    reportSignatureDate?: Date | string | null
+    reporterSign?: string | null
+    cause?: string | null
+    maintenanceDate?: Date | string | null
+    repairType?: string | null
+    resolution?: string | null
+    prevention?: string | null
+    responsibleSign?: string | null
+    responsibleDate?: Date | string | null
+    reviewerSign?: string | null
+    reviewerDate?: Date | string | null
+    maintenanceComment?: string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type IncidentReportCreateOrConnectWithoutUserInput = {
+    where: IncidentReportWhereUniqueInput
+    create: XOR<IncidentReportCreateWithoutUserInput, IncidentReportUncheckedCreateWithoutUserInput>
+  }
+
+  export type IncidentReportCreateManyUserInputEnvelope = {
+    data: IncidentReportCreateManyUserInput | IncidentReportCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type EmployeeUpsertWithoutUserInput = {
     update: XOR<EmployeeUpdateWithoutUserInput, EmployeeUncheckedUpdateWithoutUserInput>
     create: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
@@ -26901,6 +30356,54 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ItNote"> | Date | string
   }
 
+  export type IncidentReportUpsertWithWhereUniqueWithoutUserInput = {
+    where: IncidentReportWhereUniqueInput
+    update: XOR<IncidentReportUpdateWithoutUserInput, IncidentReportUncheckedUpdateWithoutUserInput>
+    create: XOR<IncidentReportCreateWithoutUserInput, IncidentReportUncheckedCreateWithoutUserInput>
+  }
+
+  export type IncidentReportUpdateWithWhereUniqueWithoutUserInput = {
+    where: IncidentReportWhereUniqueInput
+    data: XOR<IncidentReportUpdateWithoutUserInput, IncidentReportUncheckedUpdateWithoutUserInput>
+  }
+
+  export type IncidentReportUpdateManyWithWhereWithoutUserInput = {
+    where: IncidentReportScalarWhereInput
+    data: XOR<IncidentReportUpdateManyMutationInput, IncidentReportUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type IncidentReportScalarWhereInput = {
+    AND?: IncidentReportScalarWhereInput | IncidentReportScalarWhereInput[]
+    OR?: IncidentReportScalarWhereInput[]
+    NOT?: IncidentReportScalarWhereInput | IncidentReportScalarWhereInput[]
+    id?: StringFilter<"IncidentReport"> | string
+    report_code?: StringNullableFilter<"IncidentReport"> | string | null
+    incidentTime?: DateTimeFilter<"IncidentReport"> | Date | string
+    location?: StringFilter<"IncidentReport"> | string
+    employeeCode?: StringFilter<"IncidentReport"> | string
+    reporterName?: StringFilter<"IncidentReport"> | string
+    department?: StringFilter<"IncidentReport"> | string
+    incidentType?: StringFilter<"IncidentReport"> | string
+    incidentTypeOther?: StringNullableFilter<"IncidentReport"> | string | null
+    details?: StringFilter<"IncidentReport"> | string
+    reportSignatureDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    reporterSign?: StringNullableFilter<"IncidentReport"> | string | null
+    cause?: StringNullableFilter<"IncidentReport"> | string | null
+    maintenanceDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    repairType?: StringNullableFilter<"IncidentReport"> | string | null
+    resolution?: StringNullableFilter<"IncidentReport"> | string | null
+    prevention?: StringNullableFilter<"IncidentReport"> | string | null
+    responsibleSign?: StringNullableFilter<"IncidentReport"> | string | null
+    responsibleDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    reviewerSign?: StringNullableFilter<"IncidentReport"> | string | null
+    reviewerDate?: DateTimeNullableFilter<"IncidentReport"> | Date | string | null
+    maintenanceComment?: StringNullableFilter<"IncidentReport"> | string | null
+    status?: StringFilter<"IncidentReport"> | string
+    userId?: StringNullableFilter<"IncidentReport"> | string | null
+    createdAt?: DateTimeFilter<"IncidentReport"> | Date | string
+    updatedAt?: DateTimeFilter<"IncidentReport"> | Date | string
+  }
+
   export type RequestCreateWithoutEmployeeInput = {
     id?: string
     request_code: string
@@ -26970,6 +30473,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     itNotes?: ItNoteCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEmployeeInput = {
@@ -26985,6 +30489,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     itNotes?: ItNoteUncheckedCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEmployeeInput = {
@@ -27112,6 +30617,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEmployeeInput = {
@@ -27127,6 +30633,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUncheckedUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AssetUpsertWithWhereUniqueWithoutEmployeeInput = {
@@ -27252,6 +30759,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     itNotes?: ItNoteCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRequestsInput = {
@@ -27267,6 +30775,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     itNotes?: ItNoteUncheckedCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRequestsInput = {
@@ -27373,6 +30882,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRequestsInput = {
@@ -27388,6 +30898,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUncheckedUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CommentUpsertWithWhereUniqueWithoutRequestInput = {
@@ -27470,6 +30981,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     itNotes?: ItNoteCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCommentsInput = {
@@ -27485,6 +30997,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     itNotes?: ItNoteUncheckedCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCommentsInput = {
@@ -27573,6 +31086,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCommentsInput = {
@@ -27588,6 +31102,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUncheckedUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EquipmentEntryListCreateWithoutPurchaseOrderInput = {
@@ -28032,6 +31547,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     itNotes?: ItNoteCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEquipmentRequestsInput = {
@@ -28047,6 +31563,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     itNotes?: ItNoteUncheckedCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEquipmentRequestsInput = {
@@ -28158,6 +31675,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEquipmentRequestsInput = {
@@ -28173,6 +31691,7 @@ export namespace Prisma {
     equipmentGroups?: EquipmentBorrowGroupUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUncheckedUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutEquipmentGroupsInput = {
@@ -28188,6 +31707,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     itNotes?: ItNoteCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEquipmentGroupsInput = {
@@ -28203,6 +31723,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     itNotes?: ItNoteUncheckedCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEquipmentGroupsInput = {
@@ -28290,6 +31811,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEquipmentGroupsInput = {
@@ -28305,6 +31827,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUncheckedUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EquipmentRequestUpsertWithWhereUniqueWithoutGroupInput = {
@@ -28336,6 +31859,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestCreateNestedManyWithoutUserInput
     equipmentGroups?: EquipmentBorrowGroupCreateNestedManyWithoutUserInput
     itNotes?: ItNoteCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -28351,6 +31875,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestUncheckedCreateNestedManyWithoutUserInput
     equipmentGroups?: EquipmentBorrowGroupUncheckedCreateNestedManyWithoutUserInput
     itNotes?: ItNoteUncheckedCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -28382,6 +31907,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestUpdateManyWithoutUserNestedInput
     equipmentGroups?: EquipmentBorrowGroupUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -28397,6 +31923,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestUncheckedUpdateManyWithoutUserNestedInput
     equipmentGroups?: EquipmentBorrowGroupUncheckedUpdateManyWithoutUserNestedInput
     itNotes?: ItNoteUncheckedUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type EmployeeCreateWithoutAssetsInput = {
@@ -28774,6 +32301,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestCreateNestedManyWithoutUserInput
     equipmentGroups?: EquipmentBorrowGroupCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutItNotesInput = {
@@ -28789,6 +32317,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestUncheckedCreateNestedManyWithoutUserInput
     equipmentGroups?: EquipmentBorrowGroupUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    incidentReports?: IncidentReportUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutItNotesInput = {
@@ -28849,6 +32378,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestUpdateManyWithoutUserNestedInput
     equipmentGroups?: EquipmentBorrowGroupUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutItNotesInput = {
@@ -28864,6 +32394,7 @@ export namespace Prisma {
     equipmentRequests?: EquipmentRequestUncheckedUpdateManyWithoutUserNestedInput
     equipmentGroups?: EquipmentBorrowGroupUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    incidentReports?: IncidentReportUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ItNoteCreateWithoutDetailsInput = {
@@ -28924,6 +32455,86 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserCreateWithoutIncidentReportsInput = {
+    id?: string
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    employee?: EmployeeCreateNestedOneWithoutUserInput
+    requests?: RequestCreateNestedManyWithoutUserInput
+    comments?: CommentCreateNestedManyWithoutUserInput
+    equipmentRequests?: EquipmentRequestCreateNestedManyWithoutUserInput
+    equipmentGroups?: EquipmentBorrowGroupCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    itNotes?: ItNoteCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutIncidentReportsInput = {
+    id?: string
+    username: string
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    employeeId?: string | null
+    requests?: RequestUncheckedCreateNestedManyWithoutUserInput
+    comments?: CommentUncheckedCreateNestedManyWithoutUserInput
+    equipmentRequests?: EquipmentRequestUncheckedCreateNestedManyWithoutUserInput
+    equipmentGroups?: EquipmentBorrowGroupUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    itNotes?: ItNoteUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutIncidentReportsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutIncidentReportsInput, UserUncheckedCreateWithoutIncidentReportsInput>
+  }
+
+  export type UserUpsertWithoutIncidentReportsInput = {
+    update: XOR<UserUpdateWithoutIncidentReportsInput, UserUncheckedUpdateWithoutIncidentReportsInput>
+    create: XOR<UserCreateWithoutIncidentReportsInput, UserUncheckedCreateWithoutIncidentReportsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutIncidentReportsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutIncidentReportsInput, UserUncheckedUpdateWithoutIncidentReportsInput>
+  }
+
+  export type UserUpdateWithoutIncidentReportsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    employee?: EmployeeUpdateOneWithoutUserNestedInput
+    requests?: RequestUpdateManyWithoutUserNestedInput
+    comments?: CommentUpdateManyWithoutUserNestedInput
+    equipmentRequests?: EquipmentRequestUpdateManyWithoutUserNestedInput
+    equipmentGroups?: EquipmentBorrowGroupUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    itNotes?: ItNoteUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutIncidentReportsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    employeeId?: NullableStringFieldUpdateOperationsInput | string | null
+    requests?: RequestUncheckedUpdateManyWithoutUserNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
+    equipmentRequests?: EquipmentRequestUncheckedUpdateManyWithoutUserNestedInput
+    equipmentGroups?: EquipmentBorrowGroupUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    itNotes?: ItNoteUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RequestCreateManyUserInput = {
@@ -29015,6 +32626,34 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type IncidentReportCreateManyUserInput = {
+    id?: string
+    report_code?: string | null
+    incidentTime: Date | string
+    location: string
+    employeeCode: string
+    reporterName: string
+    department: string
+    incidentType: string
+    incidentTypeOther?: string | null
+    details: string
+    reportSignatureDate?: Date | string | null
+    reporterSign?: string | null
+    cause?: string | null
+    maintenanceDate?: Date | string | null
+    repairType?: string | null
+    resolution?: string | null
+    prevention?: string | null
+    responsibleSign?: string | null
+    responsibleDate?: Date | string | null
+    reviewerSign?: string | null
+    reviewerDate?: Date | string | null
+    maintenanceComment?: string | null
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -29300,6 +32939,90 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IncidentReportUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    report_code?: NullableStringFieldUpdateOperationsInput | string | null
+    incidentTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: StringFieldUpdateOperationsInput | string
+    employeeCode?: StringFieldUpdateOperationsInput | string
+    reporterName?: StringFieldUpdateOperationsInput | string
+    department?: StringFieldUpdateOperationsInput | string
+    incidentType?: StringFieldUpdateOperationsInput | string
+    incidentTypeOther?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: StringFieldUpdateOperationsInput | string
+    reportSignatureDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterSign?: NullableStringFieldUpdateOperationsInput | string | null
+    cause?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repairType?: NullableStringFieldUpdateOperationsInput | string | null
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    prevention?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleSign?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerSign?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maintenanceComment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IncidentReportUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    report_code?: NullableStringFieldUpdateOperationsInput | string | null
+    incidentTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: StringFieldUpdateOperationsInput | string
+    employeeCode?: StringFieldUpdateOperationsInput | string
+    reporterName?: StringFieldUpdateOperationsInput | string
+    department?: StringFieldUpdateOperationsInput | string
+    incidentType?: StringFieldUpdateOperationsInput | string
+    incidentTypeOther?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: StringFieldUpdateOperationsInput | string
+    reportSignatureDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterSign?: NullableStringFieldUpdateOperationsInput | string | null
+    cause?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repairType?: NullableStringFieldUpdateOperationsInput | string | null
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    prevention?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleSign?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerSign?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maintenanceComment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type IncidentReportUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    report_code?: NullableStringFieldUpdateOperationsInput | string | null
+    incidentTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    location?: StringFieldUpdateOperationsInput | string
+    employeeCode?: StringFieldUpdateOperationsInput | string
+    reporterName?: StringFieldUpdateOperationsInput | string
+    department?: StringFieldUpdateOperationsInput | string
+    incidentType?: StringFieldUpdateOperationsInput | string
+    incidentTypeOther?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: StringFieldUpdateOperationsInput | string
+    reportSignatureDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reporterSign?: NullableStringFieldUpdateOperationsInput | string | null
+    cause?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    repairType?: NullableStringFieldUpdateOperationsInput | string | null
+    resolution?: NullableStringFieldUpdateOperationsInput | string | null
+    prevention?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleSign?: NullableStringFieldUpdateOperationsInput | string | null
+    responsibleDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewerSign?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    maintenanceComment?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

@@ -17,9 +17,9 @@ const PRIORITY_COLORS: Record<string, string> = {
 };
 
 const PROVIDER_LABELS: Record<string, string> = {
-  ollama: "🖥️ Ollama",
-  groq: "⚡ Groq",
-  openrouter: "🌐 OpenRouter",
+  ollama: "Ollama",
+  groq: "Groq",
+  openrouter: "OpenRouter",
 };
 
 interface AICategorizeSuggestProps {
@@ -31,7 +31,7 @@ interface AICategorizeSuggestProps {
 }
 
 export interface AICategorizeSuggestHandle {
-  runClassify: () => Promise<{ category: string; priority: string } | null>;
+  runClassify: () => Promise<{ category: string; priority: string; reasoning?: string } | null>;
 }
 
 export const AICategorizeSuggest = forwardRef<AICategorizeSuggestHandle, AICategorizeSuggestProps>(
@@ -45,7 +45,7 @@ export const AICategorizeSuggest = forwardRef<AICategorizeSuggestHandle, AICateg
         const result = await suggest(type_request, description, reason);
         if (result) {
           onApply(result.category, result.priority);
-          return { category: result.category, priority: result.priority };
+          return { category: result.category, priority: result.priority, reasoning: result.reasoning };
         }
         return null;
       }
@@ -118,7 +118,7 @@ export const AICategorizeSuggest = forwardRef<AICategorizeSuggestHandle, AICateg
 
             {suggestion.reasoning && (
               <p className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-700/50 pt-2 italic">
-                💡 {suggestion.reasoning}
+                {suggestion.reasoning}
               </p>
             )}
           </div>

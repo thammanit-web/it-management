@@ -10,30 +10,32 @@ interface DrawerProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  size?: "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "full";
+  size?: "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "half" | "full";
   direction?: "right" | "top" | "bottom";
 }
 
 const sizes = {
-  md: "max-w-md",
-  lg: "max-w-lg",
-  xl: "max-w-xl",
-  "2xl": "max-w-2xl",
-  "3xl": "max-w-3xl",
-  "4xl": "max-w-4xl",
-  "5xl": "max-w-5xl",
-  full: "max-w-full",
+  md: "w-full sm:max-w-md",
+  lg: "w-full sm:max-w-lg",
+  xl: "w-full sm:max-w-xl",
+  "2xl": "w-full md:max-w-2xl",
+  "3xl": "w-full md:max-w-3xl",
+  "4xl": "w-full lg:max-w-4xl",
+  "5xl": "w-full lg:max-w-5xl",
+  half: "w-full lg:max-w-[50vw]",
+  full: "w-full",
 };
 
 const heights = {
-  md: "max-h-[50vh]",
-  lg: "max-h-[70vh]",
-  xl: "max-h-[85vh]",
-  "2xl": "max-h-[85vh]",
-  "3xl": "max-h-[85vh]",
-  "4xl": "max-h-[85vh]",
-  "5xl": "max-h-[85vh]",
-  full: "max-h-full",
+  md: "h-[50vh]",
+  lg: "h-[70vh]",
+  xl: "h-[85vh]",
+  "2xl": "h-[85vh]",
+  "3xl": "h-[85vh]",
+  "4xl": "h-[85vh]",
+  "5xl": "h-[85vh]",
+  half: "h-full lg:h-[85vh]",
+  full: "h-full",
 };
 
 export function Drawer({ 

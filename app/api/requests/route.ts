@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { headers } from "next/headers";
 import { generateNewCode } from "@/lib/code-generator";
+import { sendOutlookEmail, createSystemNotification, generateEmailTemplate } from "@/lib/notifier";
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -92,7 +93,8 @@ export async function POST(request: Request) {
         it_approval,
         it_approval_status,
         it_approval_comment,
-        createdAt
+        createdAt,
+        ai_reasoning
       } = body;
   
       // Use authUserId instead of relying on client-provided id
@@ -175,6 +177,50 @@ export async function POST(request: Request) {
       ipAddress: ip,
       userAgent: ua
     });
+
+    try {
+      const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3003";
+
+      const creatorName = (newRequest as any).employee?.employee_name_th || (newRequest as any).user?.username || 'Unknown';
+      const creatorPosition = (newRequest as any).employee?.position || '-';
+      const creatorDept = (newRequest as any).employee?.department || '-';
+      const creatorDisplay = `${creatorName} (ตำแหน่ง: ${creatorPosition}, แผนก: ${creatorDept})`;
+
+      // Save to database
+      await createSystemNotification({
+        title: `New IT Support Ticket: ${newRequest.request_code}`,
+        message: `Ticket ${newRequest.request_code} created by ${creatorDisplay}. Category: ${newRequest.category}, Priority: ${newRequest.priority}.`,
+        type: "TICKET",
+        link: `/admin/requests/${newRequest.id}`
+      });
+
+      const ticketUrl = `${baseUrl}/admin/requests/${newRequest.id}`;
+      const emailContent = `
+        <table class="details-table">
+          <tr><th>Created by</th><td>${creatorDisplay}</td></tr>
+          <tr><th>Type</th><td>${typeName}</td></tr>
+          <tr><th>Priority</th><td><span style="font-weight:bold; color: ${newRequest.priority === 'HIGH' ? '#e11d48' : newRequest.priority === 'MEDIUM' ? '#d97706' : '#2563eb'}">${newRequest.priority}</span></td></tr>
+          <tr><th>Category</th><td>${newRequest.category || "N/A"}</td></tr>
+          <tr><th>Status</th><td>${newRequest.status}</td></tr>
+          <tr><th>Description</th><td>${newRequest.description || "N/A"}</td></tr>
+          <tr><th>Reason</th><td>${newRequest.reason || "N/A"}</td></tr>
+          <tr><th>Approval Req.</th><td>${newRequest.approval || "None"}</td></tr>
+          ${ai_reasoning ? `<tr><th>เหตุผลจาก AI</th><td>${ai_reasoning}</td></tr>` : ''}
+        </table>
+      `;
+
+      await sendOutlookEmail({
+        subject: `IT Ticket: ${newRequest.request_code} has been created`,
+        content: generateEmailTemplate(
+          `New IT Support Ticket: ${newRequest.request_code}`,
+          emailContent,
+          ticketUrl,
+          "View Ticket Details"
+        )
+      });
+    } catch (e) {
+      console.error("Failed to send webhook:", e);
+    }
 
     return NextResponse.json(newRequest, { status: 201 });
   } catch (error) {

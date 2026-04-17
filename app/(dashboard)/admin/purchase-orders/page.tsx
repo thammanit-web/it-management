@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, Loader2, ShoppingCart, Plus, Edit2, Trash2, Image as ImageIcon, Upload, ChevronUp, ChevronDown, FileSpreadsheet, Square, CheckSquare, Eye, Printer, Calendar, User, Info, FileText } from "lucide-react";
+import { Search, Loader2, ShoppingCart, Plus, Edit2, Trash2, Image as ImageIcon, Upload, ChevronUp, ChevronDown, FileSpreadsheet, Square, CheckSquare, Eye, Calendar, User, Info, FileText } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -37,14 +37,6 @@ interface PO {
   status: string;
   createdAt?: string;
   updatedAt?: string;
-}
-
-interface Employee {
-  id: string;
-  employee_name_th: string;
-  employee_code: string;
-  department?: string;
-  position?: string;
 }
 
 export default function PurchaseOrdersPage() {
