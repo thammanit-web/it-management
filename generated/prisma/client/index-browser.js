@@ -352,6 +352,35 @@ exports.Prisma.NotificationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.IncidentReportScalarFieldEnum = {
+  id: 'id',
+  report_code: 'report_code',
+  incidentTime: 'incidentTime',
+  location: 'location',
+  employeeCode: 'employeeCode',
+  reporterName: 'reporterName',
+  department: 'department',
+  incidentType: 'incidentType',
+  incidentTypeOther: 'incidentTypeOther',
+  details: 'details',
+  reportSignatureDate: 'reportSignatureDate',
+  reporterSign: 'reporterSign',
+  cause: 'cause',
+  maintenanceDate: 'maintenanceDate',
+  repairType: 'repairType',
+  resolution: 'resolution',
+  prevention: 'prevention',
+  responsibleSign: 'responsibleSign',
+  responsibleDate: 'responsibleDate',
+  reviewerSign: 'reviewerSign',
+  reviewerDate: 'reviewerDate',
+  maintenanceComment: 'maintenanceComment',
+  status: 'status',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -402,7 +431,8 @@ exports.Prisma.ModelName = {
   UserCredential: 'UserCredential',
   ItNote: 'ItNote',
   ItNoteDetail: 'ItNoteDetail',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  IncidentReport: 'IncidentReport'
 };
 
 /**

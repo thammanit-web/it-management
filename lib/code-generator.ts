@@ -9,7 +9,7 @@ import { prisma as defaultPrisma } from "./prisma";
  * - Supports being run within a Prisma transaction.
  */
 export async function generateNewCode(
-  model: 'request' | 'equipmentRequest' | 'equipmentGroup' | 'purchaseOrder' | 'equipmentList',
+  model: 'request' | 'equipmentRequest' | 'equipmentGroup' | 'purchaseOrder' | 'equipmentList' | 'incidentReport',
   tx?: any
 ) {
   const prisma = tx || defaultPrisma;
@@ -23,7 +23,8 @@ export async function generateNewCode(
     equipmentRequest: 'ERQ',
     equipmentGroup: 'EBG',
     purchaseOrder: 'PO',
-    equipmentList: 'EQ'
+    equipmentList: 'EQ',
+    incidentReport: 'INC'
   };
 
   const type = typeMap[model] || 'GEN';
@@ -68,6 +69,13 @@ export async function generateNewCode(
       select: { eq_code: true },
     });
     lastCode = last?.eq_code || null;
+  } else if (model === 'incidentReport') {
+    const last = await prisma.incidentReport.findFirst({
+      where: { report_code: { startsWith: prefix } },
+      orderBy: { report_code: 'desc' },
+      select: { report_code: true },
+    });
+    lastCode = last?.report_code || null;
   }
 
   let sequence = 1;

@@ -24,6 +24,7 @@ model User {
   equipmentGroups   EquipmentBorrowGroup[]
   auditLogs         AuditLog[]
   itNotes           ItNote[]
+  incidentReports   IncidentReport[]
 }
 
 model Employee {
@@ -382,4 +383,43 @@ model Notification {
   @@index([createdAt])
   @@index([isRead])
   @@map("notifications")
+}
+
+model IncidentReport {
+  id          String  @id @default(cuid())
+  report_code String? @unique
+
+  // Reporter fields
+  incidentTime        DateTime
+  location            String
+  employeeCode        String
+  reporterName        String
+  department          String
+  incidentType        String // MALWARE, SYSTEM_DOWN, HUMAN_ERROR, UNAUTHORIZED_ACCESS, OTHER
+  incidentTypeOther   String?
+  details             String    @db.Text
+  reportSignatureDate DateTime?
+  reporterSign        String?
+
+  // Maintenance fields
+  cause           String?   @db.Text
+  maintenanceDate DateTime?
+  repairType      String? // EXTERNAL, INTERNAL
+  resolution      String?   @db.Text
+  prevention      String?   @db.Text
+
+  responsibleSign    String?
+  responsibleDate    DateTime?
+  reviewerSign       String?
+  reviewerDate       DateTime?
+  maintenanceComment String?
+
+  status String  @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("incident_reports")
 }

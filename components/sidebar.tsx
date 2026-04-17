@@ -23,7 +23,8 @@ import {
   ChevronRight,
   LogOut,
   User as UserIcon,
-  X
+  X,
+  AlertTriangle
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -75,6 +76,7 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
     { name: t('sidebar.dashboard'), href: "/", icon: LayoutDashboard },
     { name: t('sidebar.approvals'), href: "/admin/approvals", icon: CheckCircle2, badge: pendingCount > 0 ? pendingCount.toString() : undefined },
     { name: t('sidebar.tickets'), href: "/admin/tickets", icon: Ticket },
+
     { name: t('sidebar.borrowing'), href: "/admin/equipment-requests", icon: Box },
     { name: t('sidebar.purchase_orders'), href: "/admin/purchase-orders", icon: ShoppingCart },
     { name: t('sidebar.receiving'), href: "/admin/equipment-entry-lists", icon: Truck },
@@ -82,6 +84,7 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
     { name: t('sidebar.assets'), href: "/admin/assets", icon: Laptop },
     { name: t('sidebar.credentials'), href: "/admin/credentials", icon: Lock },
     { name: t('sidebar.it_vault'), href: "/user/notes", icon: ShieldCheck },
+    { name: "Incident Reports", href: "/admin/incident-reports", icon: AlertTriangle },
     { name: t('sidebar.employees'), href: "/admin/employees", icon: Users },
     { name: t('sidebar.users'), href: "/admin/users", icon: UserCog },
     { name: t('sidebar.import'), href: "/admin/import", icon: FileJson },
@@ -94,6 +97,7 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
     { name: t('sidebar.borrow_equipment'), href: "/user/borrow", icon: PlusCircle },
     { name: t('sidebar.inventory'), href: "/user/inventory", icon: Warehouse },
     { name: t('sidebar.it_vault'), href: "/user/notes", icon: ShieldCheck },
+    { name: "Incident Reports", href: "/user/incident-reports", icon: AlertTriangle },
   ];
 
   const links = role === "admin" ? adminLinks : userLinks;

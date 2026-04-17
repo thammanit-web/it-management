@@ -5,7 +5,7 @@ import { ItNoteActions } from "./it-note-actions";
 import { Shield, ShieldAlert, Clock, User2 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 
-export function ItNoteCards({ notes, query }: { notes: any[], query?: string }) {
+export function ItNoteCards({ notes }: { notes: any[] }) {
   const { t } = useTranslation();
 
   const formatDate = (date: Date) => {

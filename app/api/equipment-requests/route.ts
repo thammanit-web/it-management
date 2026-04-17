@@ -154,7 +154,6 @@ export async function POST(request: Request) {
 
     try {
       const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3003";
-      const itemsList = result.requests.map((r: any) => `- ${r.quantity}x ${r.equipmentList?.equipmentEntry?.list || r.manual_item_name || 'Unknown Item'}`).join('\n');
 
       const creatorName = (result as any).user?.employee?.employee_name_th || (result as any).user?.username || (session?.user as any)?.name || 'Unknown';
       const creatorPosition = (result as any).user?.employee?.position || '-';

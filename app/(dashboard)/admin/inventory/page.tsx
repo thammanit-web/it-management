@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Loader2, Edit2, Trash2, Box, Image as ImageIcon, ChevronUp, ChevronDown, FileSpreadsheet, Clock, Square, CheckSquare, CheckCircle2 } from "lucide-react";
+import { Search, Loader2, Edit2, Trash2, Box, Image as ImageIcon, ChevronUp, ChevronDown, FileSpreadsheet, Clock, Square, CheckSquare } from "lucide-react";
 import { 
   Table, 
   TableHeader, 
