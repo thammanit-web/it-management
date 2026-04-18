@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Loader2, Package, User2, Edit2, Trash2, ChevronUp, ChevronDown, FileSpreadsheet } from "lucide-react";
+import { Search, Loader2, Package, User2, Edit2, Trash2, ChevronUp, ChevronDown, FileSpreadsheet, X } from "lucide-react";
 import { 
   Table, 
   TableHeader, 
@@ -96,6 +96,22 @@ export default function AdminEquipmentRequestsPage() {
     key: 'group_code',
     direction: 'asc'
   });
+  const [filterMonth, setFilterMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
+
+  const monthOptions = React.useMemo(() => {
+    const options = [];
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const label = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+      options.push({ val, label });
+    }
+    return options;
+  }, []);
 
   // Export states
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -119,12 +135,12 @@ export default function AdminEquipmentRequestsPage() {
     fetchRequests();
     fetchInventory();
     fetchUsers();
-  }, []);
+  }, [filterMonth]);
 
   const fetchRequests = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch("/api/equipment-requests");
+      const res = await fetch(`/api/equipment-requests?month=${filterMonth}`);
       const result = await res.json();
       if (Array.isArray(result)) {
         setRequests(result);
@@ -426,11 +442,35 @@ export default function AdminEquipmentRequestsPage() {
           value={filterItStatus}
           onChange={(e) => setFilterItStatus(e.target.value)}
         >
-          <option value="ALL">{t('borrowing.it_status')}: ALL</option>
-          <option value="PENDING">PENDING</option>
           <option value="APPROVED">APPROVED</option>
           <option value="REJECTED">REJECTED</option>
         </select>
+
+        <select 
+          className="bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-2.5 text-[10px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 cursor-pointer transition-all"
+          value={filterMonth}
+          onChange={(e) => setFilterMonth(e.target.value)}
+        >
+          <option value="ALL">{locale === 'th' ? 'ทุกเดือน' : 'ALL MONTHS'}</option>
+          {monthOptions.map(opt => (
+            <option key={opt.val} value={opt.val}>{opt.label}</option>
+          ))}
+        </select>
+
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="h-10 w-10 rounded-xl"
+          onClick={() => { 
+            setSearch(""); 
+            setFilterDeptStatus("ALL");
+            setFilterItStatus("ALL");
+            const now = new Date();
+            setFilterMonth(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
+          }}
+        >
+           <X className="h-4 w-4" />
+        </Button>
       </div>
 
       <Card className="rounded-xl border-zinc-100 overflow-hidden bg-white/90 shadow-sm">

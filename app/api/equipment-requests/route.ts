@@ -13,6 +13,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || "";
+    const month = searchParams.get("month") || "ALL";
     const sortField = searchParams.get("sortField") || "group_code";
     const sortOrder = (searchParams.get("sortOrder") as "asc" | "desc") || "asc";
 
@@ -24,6 +25,16 @@ export async function GET(request: Request) {
           { user: { employee: { employee_name_th: { contains: search, mode: 'insensitive' } } } },
           { reason: { contains: search, mode: 'insensitive' } },
        ];
+    }
+
+    if (month !== "ALL") {
+      const [year, m] = month.split("-").map(Number);
+      const startDate = new Date(year, m - 1, 1);
+      const endDate = new Date(year, m, 1);
+      where.createdAt = {
+        gte: startDate,
+        lt: endDate,
+      };
     }
 
     // Return groups (batches) instead of solo requests if possible

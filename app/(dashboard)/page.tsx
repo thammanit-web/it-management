@@ -30,6 +30,7 @@ export default function DashboardPage() {
   const {
     filteredRequests,
     activities,
+    filteredActivities,
     inventory,
     isLoading,
     error,
@@ -125,7 +126,7 @@ export default function DashboardPage() {
           <RecentActivity
             isAdmin={isAdmin}
             isLoading={isLoading}
-            filteredActivities={activities}
+            filteredActivities={filteredActivities}
             onRefresh={refreshData}
             router={router}
             session={session}

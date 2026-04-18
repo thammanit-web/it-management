@@ -72,11 +72,28 @@ export default function TicketsPage() {
   const [filterPriority, setFilterPriority] = useState("ALL");
   const [filterCategory, setFilterCategory] = useState("ALL");
   const [filterTypeRequest, setFilterTypeRequest] = useState("ALL");
+  const [filterMonth, setFilterMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState<{ key: keyof RequestTicket; direction: 'asc' | 'desc' }>({
     key: 'request_code',
     direction: 'asc'
   });
+  
+  // Last 12 months generator
+  const monthOptions = React.useMemo(() => {
+    const options = [];
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const label = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+      options.push({ val, label });
+    }
+    return options;
+  }, []);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
@@ -119,12 +136,12 @@ export default function TicketsPage() {
       fetchTicketsList();
     }, 300);
     return () => clearTimeout(timer);
-  }, [search, filterStatus, filterPriority, filterCategory, filterTypeRequest, sortConfig, page]);
+  }, [search, filterStatus, filterPriority, filterCategory, filterTypeRequest, filterMonth, sortConfig, page]);
 
   // Reset page to 1 when filters change
   useEffect(() => {
     setPage(1);
-  }, [search, filterStatus, filterPriority, filterCategory, filterTypeRequest, sortConfig]);
+  }, [search, filterStatus, filterPriority, filterCategory, filterTypeRequest, filterMonth, sortConfig]);
 
   const fetchTicketsList = async () => {
     setIsLoading(true);
@@ -137,6 +154,7 @@ export default function TicketsPage() {
         priority: filterPriority,
         category: filterCategory,
         type_request: filterTypeRequest,
+        month: filterMonth,
         sortField: sortConfig.key as string,
         sortOrder: sortConfig.direction
       });
@@ -414,7 +432,6 @@ export default function TicketsPage() {
           <option value="OPEN">OPEN</option>
           <option value="IN_PROGRESS">IN PROGRESS</option>
           <option value="RESOLVED">RESOLVED</option>
-          <option value="CLOSED">CLOSED</option>
         </select>
 
         {/* Priority */}
@@ -460,6 +477,18 @@ export default function TicketsPage() {
           <option value="CHANGE">{t('types.change')}</option>
           <option value="OTHER">{t('types.other')}</option>
         </select>
+
+        {/* Month */}
+        <select
+          className="bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-2.5 text-[11px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 font-sans"
+          value={filterMonth}
+          onChange={(e) => setFilterMonth(e.target.value)}
+        >
+          <option value="ALL">{locale === 'th' ? 'ทุกเดือน' : 'All Months'}</option>
+          {monthOptions.map(opt => (
+            <option key={opt.val} value={opt.val}>{opt.label}</option>
+          ))}
+        </select>
       </div>
 
       {/* Results summary */}
@@ -467,9 +496,17 @@ export default function TicketsPage() {
         <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
           {locale === 'th' ? `แสดงทั้งหมด ${total} รายการ` : `Showing total ${total} tickets`}
         </p>
-        {(filterStatus !== 'ALL' || filterPriority !== 'ALL' || filterCategory !== 'ALL' || filterTypeRequest !== 'ALL' || search) && (
+        {(filterStatus !== 'ALL' || filterPriority !== 'ALL' || filterCategory !== 'ALL' || filterTypeRequest !== 'ALL' || filterMonth !== (new Date().getFullYear() + "-" + String(new Date().getMonth() + 1).padStart(2, '0')) || search) && (
           <button
-            onClick={() => { setFilterStatus('ALL'); setFilterPriority('ALL'); setFilterCategory('ALL'); setFilterTypeRequest('ALL'); setSearch(''); }}
+            onClick={() => { 
+                setFilterStatus('ALL'); 
+                setFilterPriority('ALL'); 
+                setFilterCategory('ALL'); 
+                setFilterTypeRequest('ALL'); 
+                const now = new Date();
+                setFilterMonth(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`); 
+                setSearch(''); 
+            }}
             className="text-[10px] font-black text-rose-400 hover:text-rose-600 uppercase tracking-widest transition-colors"
           >
             {locale === 'th' ? '× ล้างตัวกรอง' : '× Clear Filters'}
@@ -733,14 +770,13 @@ export default function TicketsPage() {
                       onChange={(e) => updateStatusInline(t_item.id, 'status', e.target.value)}
                       className={cn(
                         "rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-widest border-none outline-none cursor-pointer font-sans",
-                        t_item.status === "RESOLVED" || t_item.status === "CLOSED" ? "bg-emerald-50 text-emerald-600" :
+                        t_item.status === "RESOLVED" ? "bg-emerald-50 text-emerald-600" :
                         t_item.status === "IN_PROGRESS" ? "bg-amber-50 text-amber-600" : "bg-blue-50 text-blue-600"
                       )}
                     >
                       <option value="OPEN">OPEN</option>
                       <option value="IN_PROGRESS">IN PROGRESS</option>
                       <option value="RESOLVED">RESOLVED</option>
-                      <option value="CLOSED">CLOSED</option>
                     </select>
                   </TableCell>
 
@@ -1127,7 +1163,6 @@ export default function TicketsPage() {
               <option value="OPEN">{locale === 'th' ? 'รอดำเนินการ' : 'OPEN'}</option>
               <option value="IN_PROGRESS">{locale === 'th' ? 'กำลังดำเนินการ' : 'IN PROGRESS'}</option>
               <option value="RESOLVED">{locale === 'th' ? 'แก้ไขแล้ว' : 'RESOLVED'}</option>
-              <option value="CLOSED">{locale === 'th' ? 'ปิดงาน' : 'CLOSED'}</option>
             </select>
           </div>
 

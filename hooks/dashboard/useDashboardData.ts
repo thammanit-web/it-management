@@ -77,7 +77,7 @@ export function useDashboardData(isAdmin: boolean, session: any) {
 
       if (isAdmin) {
         const merged = [
-          ...requestsData.filter((r: any) => r.status !== 'CLOSED' && r.status !== 'RESOLVED').map((r: any) => ({ ...r, type: 'REQUEST' })),
+          ...requestsData.filter((r: any) => r.status !== 'RESOLVED').map((r: any) => ({ ...r, type: 'REQUEST' })),
           ...entriesData.map((e: any) => ({ ...e, type: 'EQUIPMENT' }))
         ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setActivities(merged);
@@ -120,6 +120,14 @@ export function useDashboardData(isAdmin: boolean, session: any) {
       return !isNaN(d.getTime()) && `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` === dateFilter;
     });
   }, [requests, dateFilter]);
+
+  const filteredActivities = useMemo(() => {
+    if (dateFilter === "ALL") return activities;
+    return activities.filter(a => {
+      const d = new Date(a.createdAt);
+      return !isNaN(d.getTime()) && `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` === dateFilter;
+    });
+  }, [activities, dateFilter]);
 
   const categoryData = useMemo(() => {
     const CATEGORY_MAP: Record<string, string> = {
@@ -180,7 +188,7 @@ export function useDashboardData(isAdmin: boolean, session: any) {
         if (idx !== -1) {
           result[idx].new += 1;
           result[idx].total += 1;
-          if (r.status === 'RESOLVED' || r.status === 'CLOSED') result[idx].resolved += 1;
+          if (r.status === 'RESOLVED') result[idx].resolved += 1;
           else result[idx].pending += 1;
         }
       });
@@ -207,7 +215,7 @@ export function useDashboardData(isAdmin: boolean, session: any) {
           if (result[idx]) {
             result[idx].new += 1;
             result[idx].total += 1;
-            if (r.status === 'RESOLVED' || r.status === 'CLOSED') result[idx].resolved += 1;
+            if (r.status === 'RESOLVED') result[idx].resolved += 1;
             else result[idx].pending += 1;
           }
         }
@@ -282,7 +290,7 @@ export function useDashboardData(isAdmin: boolean, session: any) {
     }) : filteredRequests;
     
     const total = targetMonthRequests.length;
-    const resolved = targetMonthRequests.filter(r => r.status === 'RESOLVED' || r.status === 'CLOSED').length;
+    const resolved = targetMonthRequests.filter(r => r.status === 'RESOLVED').length;
     return total === 0 ? 0 : Math.round((resolved / total) * 100);
   }, [requests, filteredRequests, dateFilter]);
 
@@ -434,6 +442,7 @@ export function useDashboardData(isAdmin: boolean, session: any) {
     requests,
     filteredRequests,
     activities,
+    filteredActivities,
     inventory,
     isLoading,
     error,

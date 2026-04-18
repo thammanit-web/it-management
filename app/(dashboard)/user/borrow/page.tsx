@@ -102,11 +102,27 @@ function BorrowContent() {
   const [isExportingPDF] = useState(false);
   const [invSearch, setInvSearch] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const [filterMonth, setFilterMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
 
   // Cancellation States
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
+
+  const monthOptions = React.useMemo(() => {
+    const options = [];
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const label = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+      options.push({ val, label });
+    }
+    return options;
+  }, []);
 
   const [formData, setFormData] = useState({
     reason: "",
@@ -165,14 +181,14 @@ function BorrowContent() {
         setIsModalOpen(true);
       }
     }
-  }, [session, action]);
+  }, [session, action, filterMonth]);
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
       const [invRes, histRes] = await Promise.all([
         fetch("/api/equipment-lists?limit=1000"),
-        fetch("/api/equipment-requests")
+        fetch(`/api/equipment-requests?month=${filterMonth}`)
       ]);
       const invData = await invRes.json();
       const histData = await histRes.json();
@@ -327,9 +343,7 @@ function BorrowContent() {
             >
               {t('borrow.public_view')}
             </button>
-          </div>
-
-          <div className="flex items-center gap-2 bg-surface px-4 py-2 rounded-xl border border-border w-full sm:w-64 shadow-sm group focus-within:border-primary/30 transition-all">
+                      <div className="flex items-center gap-2 bg-surface px-4 py-2 rounded-xl border border-border w-full sm:w-64 shadow-sm group focus-within:border-primary/30 transition-all">
             <Search className="h-3.5 w-3.5 text-accent" />
             <input 
               className="bg-transparent border-none outline-none text-[11px] font-bold uppercase tracking-wider w-full text-foreground placeholder:text-accent/50"
@@ -338,6 +352,33 @@ function BorrowContent() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+
+          <select
+            className="bg-surface border border-border rounded-xl px-4 py-2 text-[10px] font-black uppercase outline-none text-accent focus:border-primary/30 font-sans shadow-sm h-10"
+            value={filterMonth}
+            onChange={(e) => setFilterMonth(e.target.value)}
+          >
+            <option value="ALL">{locale === 'th' ? 'ทุกเดือน' : 'ALL MONTHS'}</option>
+            {monthOptions.map(opt => (
+              <option key={opt.val} value={opt.val}>{opt.label}</option>
+            ))}
+          </select>
+
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-10 w-10 rounded-xl"
+            onClick={() => { 
+              setSearch(""); 
+              const now = new Date();
+              setFilterMonth(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
+            }}
+          >
+             <X className="h-4 w-4" />
+          </Button>
+          </div>
+
+
         </div>
 
         {/* Desktop Table View */}

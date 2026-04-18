@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
   const page = parseInt(searchParams.get("page") || "1");
   const limit = parseInt(searchParams.get("limit") || "50");
   const search = searchParams.get("search") || "";
+  const month = searchParams.get("month") || "ALL";
   const sortField = searchParams.get("sortField") || "createdAt";
   const sortOrder = (searchParams.get("sortOrder") as "asc" | "desc") || "desc";
 
@@ -25,6 +26,16 @@ export async function GET(request: NextRequest) {
         { reporterName: { contains: search, mode: "insensitive" } },
         { details: { contains: search, mode: "insensitive" } },
       ];
+    }
+
+    if (month !== "ALL") {
+      const [year, m] = month.split("-").map(Number);
+      const startDate = new Date(year, m - 1, 1);
+      const endDate = new Date(year, m, 1);
+      where.createdAt = {
+        gte: startDate,
+        lt: endDate,
+      };
     }
 
     const [reports, total] = await Promise.all([

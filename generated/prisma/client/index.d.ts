@@ -125,8 +125,7 @@ export type Priority = (typeof Priority)[keyof typeof Priority]
 export const Status: {
   OPEN: 'OPEN',
   IN_PROGRESS: 'IN_PROGRESS',
-  RESOLVED: 'RESOLVED',
-  CLOSED: 'CLOSED'
+  RESOLVED: 'RESOLVED'
 };
 
 export type Status = (typeof Status)[keyof typeof Status]

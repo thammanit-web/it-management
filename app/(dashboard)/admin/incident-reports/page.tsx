@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Filter, FileText, Eye, Trash2 } from "lucide-react";
+import { Search, Plus, X, FileText, Eye, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { Drawer } from "@/components/ui/drawer";
 import IncidentReportForm from "@/components/incident-reports/incident-report-form";
@@ -14,15 +14,31 @@ export default function IncidentReportsPage() {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [filterMonth, setFilterMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<any>(null);
   
   const { toast } = useToast();
 
+  const monthOptions = useState(() => {
+    const options = [];
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const label = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+      options.push({ val, label });
+    }
+    return options;
+  })[0];
+
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/incident-reports?search=${search}`);
+      const res = await fetch(`/api/incident-reports?search=${search}&month=${filterMonth}`);
       const data = await res.json();
       if (res.ok) {
         setReports(data.data || []);
@@ -36,7 +52,7 @@ export default function IncidentReportsPage() {
 
   useEffect(() => {
     fetchReports();
-  }, [search]);
+  }, [search, filterMonth]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this incident report?")) return;
@@ -92,8 +108,22 @@ export default function IncidentReportsPage() {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
               />
             </div>
-            <Button variant="outline" size="icon">
-              <Filter className="h-4 w-4" />
+            <select
+              className="bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-2.5 text-[11px] font-black uppercase outline-none text-zinc-600 focus:border-primary/30 font-sans h-10"
+              value={filterMonth}
+              onChange={(e) => setFilterMonth(e.target.value)}
+            >
+              <option value="ALL">ALL MONTHS</option>
+              {monthOptions.map(opt => (
+                <option key={opt.val} value={opt.val}>{opt.label}</option>
+              ))}
+            </select>
+            <Button variant="outline" size="icon" onClick={() => { 
+              setSearch(""); 
+              const now = new Date();
+              setFilterMonth(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
+            }}>
+               <X className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
@@ -132,7 +162,7 @@ export default function IncidentReportsPage() {
                           {report.incidentType === "OTHER" ? report.incidentTypeOther : report.incidentType}
                         </td>
                         <td className="px-4 py-3">
-                          <Badge variant={report.status === "CLOSED" ? "secondary" : "default"} className={report.status === "CLOSED" ? "bg-secondary text-accent" : "bg-primary text-white"}>
+                          <Badge variant={report.status === "RESOLVED" ? "secondary" : "default"} className={report.status === "RESOLVED" ? "bg-secondary text-accent" : "bg-primary text-white"}>
                             {report.status}
                           </Badge>
                         </td>
@@ -158,7 +188,7 @@ export default function IncidentReportsPage() {
                   <div key={report.id} className="bg-surface border border-border p-4 rounded-xl shadow-sm flex flex-col gap-3">
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-foreground">{report.report_code || "N/A"}</span>
-                      <Badge variant={report.status === "CLOSED" ? "secondary" : "default"} className={report.status === "CLOSED" ? "bg-secondary text-accent" : "bg-primary text-white"}>
+                      <Badge variant={report.status === "RESOLVED" ? "secondary" : "default"} className={report.status === "RESOLVED" ? "bg-secondary text-accent" : "bg-primary text-white"}>
                         {report.status}
                       </Badge>
                     </div>

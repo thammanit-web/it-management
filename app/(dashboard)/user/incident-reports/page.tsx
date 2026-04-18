@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Loader2, Plus, FileText, Eye, AlertTriangle } from "lucide-react";
+import { Search, Loader2, Plus, FileText, Eye, AlertTriangle, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast";
@@ -26,14 +26,30 @@ export default function UserIncidentReportsPage() {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [filterMonth, setFilterMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
+  
+  const monthOptions = useState(() => {
+    const options = [];
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+       const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+       const label = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+       options.push({ val, label });
+    }
+    return options;
+  })[0];
 
   const fetchReports = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/incident-reports?limit=1000");
+      const res = await fetch(`/api/incident-reports?limit=1000&month=${filterMonth}`);
       const data = await res.json();
       
       const items = Array.isArray(data) ? data : (data.data || []);
@@ -53,7 +69,7 @@ export default function UserIncidentReportsPage() {
     if (session) {
       fetchReports();
     }
-  }, [session]);
+  }, [session, filterMonth]);
 
   const handleOpenNew = () => {
     setIsEditing(false);
@@ -132,6 +148,27 @@ export default function UserIncidentReportsPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+        <select
+          className="bg-slate-50 border-none rounded-xl px-4 py-2 text-[11px] font-black uppercase outline-none text-slate-500 focus:ring-2 focus:ring-primary/20 font-sans h-12"
+          value={filterMonth}
+          onChange={(e) => setFilterMonth(e.target.value)}
+        >
+          <option value="ALL">ALL MONTHS</option>
+          {monthOptions.map(opt => (
+            <option key={opt.val} value={opt.val}>{opt.label}</option>
+          ))}
+        </select>
+        <motion.button 
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { 
+            setSearch(""); 
+            const now = new Date();
+            setFilterMonth(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
+          }}
+          className="h-12 px-4 rounded-xl bg-slate-100 text-slate-400 hover:text-red-500 transition-colors"
+        >
+           <X className="h-4 w-4" />
+        </motion.button>
       </motion.div>
 
       <motion.div variants={itemVariants} className="w-full h-full">
@@ -203,7 +240,7 @@ export default function UserIncidentReportsPage() {
                           </TableCell>
                           <TableCell className="px-5 py-6">
                              <Badge variant={
-                                r.status === "RESOLVED" || r.status === "CLOSED" ? "success" :
+                                r.status === "RESOLVED" ? "success" :
                                 r.status === "IN_PROGRESS" ? "warning" : "default"
                              } className="text-[10px] px-4 py-2 rounded-xl uppercase tracking-[0.15em] font-black shadow-lg shadow-current/10 border-none">
                                 {r.status || "OPEN"}
@@ -258,7 +295,7 @@ export default function UserIncidentReportsPage() {
                        </CardTitle>
                     </div>
                     <Badge variant={
-                       r.status === "RESOLVED" || r.status === "CLOSED" ? "success" :
+                       r.status === "RESOLVED" ? "success" :
                        r.status === "IN_PROGRESS" ? "warning" : "default"
                     } className="ml-3 rounded-xl text-[9px] font-black uppercase tracking-widest px-4 py-2 shrink-0 shadow-lg shadow-current/5 border-none">
                        {r.status || "OPEN"}
