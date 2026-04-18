@@ -18,6 +18,7 @@ export async function GET(request: Request) {
   const priority = searchParams.get("priority") || "ALL";
   const category = searchParams.get("category") || "ALL";
   const type_request = searchParams.get("type_request") || "ALL";
+  const month = searchParams.get("month") || "ALL";
   const sortField = searchParams.get("sortField") || "request_code";
   const sortOrder = (searchParams.get("sortOrder") as "asc" | "desc") || "asc";
 
@@ -39,6 +40,16 @@ export async function GET(request: Request) {
     if (priority !== "ALL") where.priority = priority;
     if (category !== "ALL") where.category = category;
     if (type_request !== "ALL") where.type_request = type_request;
+
+    if (month !== "ALL") {
+      const [year, m] = month.split("-").map(Number);
+      const startDate = new Date(year, m - 1, 1);
+      const endDate = new Date(year, m, 1);
+      where.createdAt = {
+        gte: startDate,
+        lt: endDate,
+      };
+    }
 
     const [requests, total] = await Promise.all([
       prisma.request.findMany({

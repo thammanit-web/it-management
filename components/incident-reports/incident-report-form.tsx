@@ -274,7 +274,6 @@ export default function IncidentReportForm({
                  <option value="OPEN">OPEN</option>
                  <option value="IN_PROGRESS">IN PROGRESS</option>
                  <option value="RESOLVED">RESOLVED</option>
-                 <option value="CLOSED">CLOSED</option>
                </select>
             </div>
           </CardHeader>

@@ -65,7 +65,6 @@ enum Status {
   OPEN
   IN_PROGRESS
   RESOLVED
-  CLOSED
 }
 
 model Request {
@@ -417,7 +416,7 @@ model IncidentReport {
   reviewerDate        DateTime?
   maintenanceComment  String?
 
-  status              String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  status              String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED
   userId              String?
   user                User?    @relation(fields: [userId], references: [id])
 

@@ -130,8 +130,8 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                 <div className="flex items-center gap-2 mb-0.5">
                   <div className={cn(
                     "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 border border-slate-200 dark:border-slate-700 transition-transform group-hover:scale-105 shadow-sm",
-                    act.type === 'EQUIPMENT' ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600" :
-                      act.status === 'CLOSED' ? "bg-slate-50 dark:bg-slate-800 text-slate-400" : "bg-white dark:bg-slate-900 text-[#0F1059] dark:text-white"
+                      act.type === 'EQUIPMENT' ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600" :
+                        "bg-white dark:bg-slate-900 text-[#0F1059] dark:text-white"
                   )}>
                     {act.type === 'EQUIPMENT' ? <Package className="h-5 w-5" /> : <Ticket className="h-5 w-5" />}
                   </div>

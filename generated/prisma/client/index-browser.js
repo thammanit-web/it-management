@@ -413,8 +413,7 @@ exports.Priority = exports.$Enums.Priority = {
 exports.Status = exports.$Enums.Status = {
   OPEN: 'OPEN',
   IN_PROGRESS: 'IN_PROGRESS',
-  RESOLVED: 'RESOLVED',
-  CLOSED: 'CLOSED'
+  RESOLVED: 'RESOLVED'
 };
 
 exports.Prisma.ModelName = {

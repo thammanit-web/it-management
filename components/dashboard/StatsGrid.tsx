@@ -40,7 +40,7 @@ export const StatsGrid: React.FC<StatsGridProps> = ({
   const adminStats: StatCardData[] = [
     { 
       label: "รายการแจ้งซ่อม / Active Tickets", 
-      value: filteredRequests.filter(r => r.status !== 'CLOSED').length, 
+      value: filteredRequests.filter(r => r.status !== 'RESOLVED').length, 
       icon: Ticket, 
       sub: <div className="flex items-center gap-1.5"><TrendingUp className="h-3 w-3 text-rose-500" /><span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">Pending</span></div>, 
       color: "blue" 
@@ -70,8 +70,8 @@ export const StatsGrid: React.FC<StatsGridProps> = ({
   ];
 
   const userStats: StatCardData[] = [
-    { label: "แจ้งซ่อมของฉัน / My Active Tickets", value: filteredRequests.filter(r => r.userId === session?.user?.id && r.status !== 'RESOLVED' && r.status !== 'CLOSED').length, icon: Ticket, sub: "In-progress", color: "blue" },
-    { label: "รายการที่ปิดแล้ว / Closed Tasks", value: filteredRequests.filter(r => r.userId === session?.user?.id && (r.status === 'RESOLVED' || r.status === 'CLOSED')).length, icon: CheckCircle2, sub: "Resolved", color: "emerald" },
+    { label: "แจ้งซ่อมของฉัน / My Active Tickets", value: filteredRequests.filter(r => r.userId === session?.user?.id && r.status !== 'RESOLVED').length, icon: Ticket, sub: "In-progress", color: "blue" },
+    { label: "รายการที่ปิดแล้ว / Resolved Tasks", value: filteredRequests.filter(r => r.userId === session?.user?.id && r.status === 'RESOLVED').length, icon: CheckCircle2, sub: "Resolved", color: "emerald" },
     { label: "รอการตรวจสอบ / Wait for Review", value: filteredRequests.filter(r => r.userId === session?.user?.id && r.status === 'OPEN').length, icon: Clock, sub: "Pending", color: "amber" },
     { label: "รายการสำคัญ / Urgent items", value: filteredRequests.filter(r => r.userId === session?.user?.id && r.priority === 'HIGH').length, icon: AlertCircle, sub: "Attention", color: "rose" },
   ];

@@ -76,12 +76,28 @@ function RequestsContent() {
    const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
    const [filterType, setFilterType] = useState<'ME' | 'ALL'>('ME');
    const [formError, setFormError] = useState<string | null>(null);
+   const [filterMonth, setFilterMonth] = useState(() => {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+   });
 
    // Cancellation States
    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
    const [cancelId, setCancelId] = useState<string | null>(null);
    const [isCancelling, setIsCancelling] = useState(false);
    const [isUploading, setIsUploading] = useState(false);
+   const monthOptions = React.useMemo(() => {
+      const options = [];
+      const now = new Date();
+      for (let i = 0; i < 12; i++) {
+         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+         const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+         const label = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+         options.push({ val, label });
+      }
+      return options;
+   }, []);
+
    const aiRef = React.useRef<AICategorizeSuggestHandle>(null);
 
    // Form State
@@ -119,7 +135,7 @@ function RequestsContent() {
             setIsModalOpen(true);
          }
       }
-   }, [session, action, itemName]);
+   }, [session, action, itemName, filterMonth]);
 
    const fetchInventory = async () => {
       try {
@@ -152,7 +168,11 @@ function RequestsContent() {
    const fetchMyRequests = async () => {
       setIsLoading(true);
       try {
-         const res = await fetch("/api/requests?limit=1000");
+         const params = new URLSearchParams({
+            limit: '1000',
+            month: filterMonth
+         });
+         const res = await fetch(`/api/requests?${params.toString()}`);
          const data = await res.json();
          // Handle both direct array (old) and paginated object (new)
          if (Array.isArray(data)) {
@@ -309,7 +329,18 @@ function RequestsContent() {
                         {btn.label}
                      </button>
                   ))}
-               </div>
+                  {/* Month Filter */}
+               <select
+                  className="bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-2 text-[10px] font-black uppercase outline-none text-accent focus:border-primary/30 font-sans shadow-sm"
+                  value={filterMonth}
+                  onChange={(e) => setFilterMonth(e.target.value)}
+               >
+                  <option value="ALL">{locale === 'th' ? 'ทุกเดือน' : 'ALL MONTHS'}</option>
+                  {monthOptions.map(opt => (
+                     <option key={opt.val} value={opt.val}>{opt.label}</option>
+                  ))}
+               </select>
+            </div>
                {/* No Search here? Borrow has search. Let's add it if needed but user didn't ask for search in Request yet. Let's stick to existing. */}
             </div>
 
@@ -389,7 +420,7 @@ function RequestsContent() {
                               </TableCell>
                               <TableCell className="px-5 py-4">
                                  <Badge variant={
-                                    req.status === "RESOLVED" || req.status === "CLOSED" ? "success" :
+                                    req.status === "RESOLVED" ? "success" :
                                        req.status === "IN_PROGRESS" ? "warning" : "default"
                                  } className="rounded-lg text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5">
                                     {req.status || 'PENDING'}
@@ -433,7 +464,7 @@ function RequestsContent() {
                            <CardTitle className="line-clamp-2 uppercase text-sm font-black text-primary tracking-tight leading-tight mt-1">{req.description}</CardTitle>
                         </div>
                         <Badge variant={
-                           req.status === "RESOLVED" || req.status === "CLOSED" ? "success" :
+                           req.status === "RESOLVED" ? "success" :
                               req.status === "IN_PROGRESS" ? "warning" : "default"
                         } className="ml-2 rounded-lg text-[8px] font-black uppercase tracking-widest px-2 py-0.5 shrink-0">
                            {req.status || 'OPEN'}
