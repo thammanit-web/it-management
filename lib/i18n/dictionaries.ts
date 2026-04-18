@@ -186,6 +186,7 @@ export const translations = {
       other_item: "OTHER",
       no_additional_context: "No additional context provided.",
       no_additional_specs: "No additional specifications provided.",
+      date_needed: "Date Needed",
     },
     admin_tickets: {
       title: "Ticket Management",
@@ -747,6 +748,7 @@ export const translations = {
       new_item: "ของใหม่",
       broken_item: "ชำรุด",
       other_item: "อื่นๆ",
+      date_needed: "วันที่ต้องการใช้งาน",
     },
     admin_tickets: {
       title: "จัดการคำแจ้งซ่อม",

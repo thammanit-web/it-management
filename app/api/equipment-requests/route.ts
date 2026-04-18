@@ -73,7 +73,8 @@ export async function POST(request: Request) {
       items, // Array of { equipmentListId, quantity, borrow_type, remarks }
       reason,
       approval,
-      userId
+      userId,
+      date_needed
     } = body;
 
     const finalUserId = userId || session?.user?.id;
@@ -93,6 +94,7 @@ export async function POST(request: Request) {
           reason: reason || "",
           approval: approval,
           approval_status: "PENDING", // Initial state
+          date_needed: date_needed ? new Date(date_needed) : null,
         }
       });
 

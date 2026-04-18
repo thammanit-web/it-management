@@ -50,6 +50,7 @@ interface BorrowGroup {
   it_approval?: string;
   it_approval_status: string;
   it_approval_comment?: string;
+  date_needed?: string;
   createdAt: string;
   requests: Array<{
     id: string;
@@ -546,9 +547,17 @@ function BorrowContent() {
                     <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none">{t('borrow.group_code')}</p>
                     <p className="text-sm font-black text-primary uppercase tracking-tight">{viewGroup?.group_code || 'N/A'}</p>
                  </div>
-                 <div className="text-right space-y-0.5">
-                    <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none">{locale === 'th' ? 'วันที่สร้าง' : 'CREATED'}</p>
-                    <p className="text-xs font-bold text-foreground/70 uppercase">{viewGroup?.createdAt ? new Date(viewGroup.createdAt).toLocaleDateString('en-GB') : '-'}</p>
+                 <div className="flex flex-col items-end gap-3">
+                    <div className="text-right space-y-0.5">
+                       <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none">{locale === 'th' ? 'วันที่สร้าง' : 'CREATED'}</p>
+                       <p className="text-xs font-bold text-foreground/70 uppercase">{viewGroup?.createdAt ? new Date(viewGroup.createdAt).toLocaleDateString('en-GB') : '-'}</p>
+                    </div>
+                    {viewGroup?.date_needed && (
+                       <div className="text-right space-y-0.5">
+                          <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">{t('borrow.date_needed')}</p>
+                          <p className="text-xs font-black text-primary uppercase">{new Date(viewGroup.date_needed).toLocaleDateString('en-GB')}</p>
+                       </div>
+                    )}
                  </div>
               </div>
               
@@ -824,6 +833,16 @@ function BorrowContent() {
                           placeholder={t('borrow.describe_purpose')}
                           value={formData.reason}
                           onChange={(e) => setFormData({...formData, reason: e.target.value})}
+                       />
+                    </div>
+                    <div className="space-y-2">
+                       <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none">{t('borrow.date_needed')}</p>
+                       <input 
+                          type="date"
+                          required
+                          className="w-full bg-secondary/20 border border-border rounded-2xl px-4 py-3 text-sm font-medium outline-none focus:bg-surface transition-all h-12"
+                          value={formData.date_needed}
+                          onChange={(e) => setFormData({...formData, date_needed: e.target.value})}
                        />
                     </div>
                     {cart.some(i => ["MAIN", "SOFTWARE"].includes(i.item?.equipmentEntry?.item_type || "")) && (
