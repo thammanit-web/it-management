@@ -5298,6 +5298,7 @@ export namespace Prisma {
     it_approval_comment: string | null
     it_approval_date: Date | null
     userId: string | null
+    attachment: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5321,6 +5322,7 @@ export namespace Prisma {
     it_approval_comment: string | null
     it_approval_date: Date | null
     userId: string | null
+    attachment: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5344,6 +5346,7 @@ export namespace Prisma {
     it_approval_comment: number
     it_approval_date: number
     userId: number
+    attachment: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5369,6 +5372,7 @@ export namespace Prisma {
     it_approval_comment?: true
     it_approval_date?: true
     userId?: true
+    attachment?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5392,6 +5396,7 @@ export namespace Prisma {
     it_approval_comment?: true
     it_approval_date?: true
     userId?: true
+    attachment?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5415,6 +5420,7 @@ export namespace Prisma {
     it_approval_comment?: true
     it_approval_date?: true
     userId?: true
+    attachment?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5511,6 +5517,7 @@ export namespace Prisma {
     it_approval_comment: string | null
     it_approval_date: Date | null
     userId: string
+    attachment: string | null
     createdAt: Date
     updatedAt: Date
     _count: RequestCountAggregateOutputType | null
@@ -5551,6 +5558,7 @@ export namespace Prisma {
     it_approval_comment?: boolean
     it_approval_date?: boolean
     userId?: boolean
+    attachment?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     employee?: boolean | EmployeeDefaultArgs<ExtArgs>
@@ -5578,6 +5586,7 @@ export namespace Prisma {
     it_approval_comment?: boolean
     it_approval_date?: boolean
     userId?: boolean
+    attachment?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     employee?: boolean | EmployeeDefaultArgs<ExtArgs>
@@ -5603,6 +5612,7 @@ export namespace Prisma {
     it_approval_comment?: boolean
     it_approval_date?: boolean
     userId?: boolean
+    attachment?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     employee?: boolean | EmployeeDefaultArgs<ExtArgs>
@@ -5628,11 +5638,12 @@ export namespace Prisma {
     it_approval_comment?: boolean
     it_approval_date?: boolean
     userId?: boolean
+    attachment?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type RequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "employeeId" | "request_code" | "type_request" | "description" | "reason" | "category" | "priority" | "status" | "approval" | "approval_status" | "approval_comment" | "approval_date" | "it_approval" | "it_approval_status" | "it_approval_comment" | "it_approval_date" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["request"]>
+  export type RequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "employeeId" | "request_code" | "type_request" | "description" | "reason" | "category" | "priority" | "status" | "approval" | "approval_status" | "approval_comment" | "approval_date" | "it_approval" | "it_approval_status" | "it_approval_comment" | "it_approval_date" | "userId" | "attachment" | "createdAt" | "updatedAt", ExtArgs["result"]["request"]>
   export type RequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     employee?: boolean | EmployeeDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -5674,6 +5685,7 @@ export namespace Prisma {
       it_approval_comment: string | null
       it_approval_date: Date | null
       userId: string
+      attachment: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["request"]>
@@ -6120,6 +6132,7 @@ export namespace Prisma {
     readonly it_approval_comment: FieldRef<"Request", 'String'>
     readonly it_approval_date: FieldRef<"Request", 'DateTime'>
     readonly userId: FieldRef<"Request", 'String'>
+    readonly attachment: FieldRef<"Request", 'String'>
     readonly createdAt: FieldRef<"Request", 'DateTime'>
     readonly updatedAt: FieldRef<"Request", 'DateTime'>
   }
@@ -18536,6 +18549,7 @@ export namespace Prisma {
     isPrivate: boolean | null
     isPublished: boolean | null
     content: string | null
+    attachment: string | null
     userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -18547,6 +18561,7 @@ export namespace Prisma {
     isPrivate: boolean | null
     isPublished: boolean | null
     content: string | null
+    attachment: string | null
     userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -18558,6 +18573,7 @@ export namespace Prisma {
     isPrivate: number
     isPublished: number
     content: number
+    attachment: number
     userId: number
     createdAt: number
     updatedAt: number
@@ -18571,6 +18587,7 @@ export namespace Prisma {
     isPrivate?: true
     isPublished?: true
     content?: true
+    attachment?: true
     userId?: true
     createdAt?: true
     updatedAt?: true
@@ -18582,6 +18599,7 @@ export namespace Prisma {
     isPrivate?: true
     isPublished?: true
     content?: true
+    attachment?: true
     userId?: true
     createdAt?: true
     updatedAt?: true
@@ -18593,6 +18611,7 @@ export namespace Prisma {
     isPrivate?: true
     isPublished?: true
     content?: true
+    attachment?: true
     userId?: true
     createdAt?: true
     updatedAt?: true
@@ -18677,6 +18696,7 @@ export namespace Prisma {
     isPrivate: boolean
     isPublished: boolean
     content: string | null
+    attachment: string | null
     userId: string
     createdAt: Date
     updatedAt: Date
@@ -18705,6 +18725,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: boolean
+    attachment?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -18719,6 +18740,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: boolean
+    attachment?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -18731,6 +18753,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: boolean
+    attachment?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -18743,12 +18766,13 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: boolean
+    attachment?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ItNoteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "isPrivate" | "isPublished" | "content" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["itNote"]>
+  export type ItNoteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "isPrivate" | "isPublished" | "content" | "attachment" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["itNote"]>
   export type ItNoteInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     details?: boolean | ItNote$detailsArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -18773,6 +18797,7 @@ export namespace Prisma {
       isPrivate: boolean
       isPublished: boolean
       content: string | null
+      attachment: string | null
       userId: string
       createdAt: Date
       updatedAt: Date
@@ -19206,6 +19231,7 @@ export namespace Prisma {
     readonly isPrivate: FieldRef<"ItNote", 'Boolean'>
     readonly isPublished: FieldRef<"ItNote", 'Boolean'>
     readonly content: FieldRef<"ItNote", 'String'>
+    readonly attachment: FieldRef<"ItNote", 'String'>
     readonly userId: FieldRef<"ItNote", 'String'>
     readonly createdAt: FieldRef<"ItNote", 'DateTime'>
     readonly updatedAt: FieldRef<"ItNote", 'DateTime'>
@@ -23246,6 +23272,7 @@ export namespace Prisma {
     it_approval_comment: 'it_approval_comment',
     it_approval_date: 'it_approval_date',
     userId: 'userId',
+    attachment: 'attachment',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -23440,6 +23467,7 @@ export namespace Prisma {
     isPrivate: 'isPrivate',
     isPublished: 'isPublished',
     content: 'content',
+    attachment: 'attachment',
     userId: 'userId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -23852,6 +23880,7 @@ export namespace Prisma {
     it_approval_comment?: StringNullableFilter<"Request"> | string | null
     it_approval_date?: DateTimeNullableFilter<"Request"> | Date | string | null
     userId?: StringFilter<"Request"> | string
+    attachment?: StringNullableFilter<"Request"> | string | null
     createdAt?: DateTimeFilter<"Request"> | Date | string
     updatedAt?: DateTimeFilter<"Request"> | Date | string
     employee?: XOR<EmployeeScalarRelationFilter, EmployeeWhereInput>
@@ -23878,6 +23907,7 @@ export namespace Prisma {
     it_approval_comment?: SortOrderInput | SortOrder
     it_approval_date?: SortOrderInput | SortOrder
     userId?: SortOrder
+    attachment?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     employee?: EmployeeOrderByWithRelationInput
@@ -23907,6 +23937,7 @@ export namespace Prisma {
     it_approval_comment?: StringNullableFilter<"Request"> | string | null
     it_approval_date?: DateTimeNullableFilter<"Request"> | Date | string | null
     userId?: StringFilter<"Request"> | string
+    attachment?: StringNullableFilter<"Request"> | string | null
     createdAt?: DateTimeFilter<"Request"> | Date | string
     updatedAt?: DateTimeFilter<"Request"> | Date | string
     employee?: XOR<EmployeeScalarRelationFilter, EmployeeWhereInput>
@@ -23933,6 +23964,7 @@ export namespace Prisma {
     it_approval_comment?: SortOrderInput | SortOrder
     it_approval_date?: SortOrderInput | SortOrder
     userId?: SortOrder
+    attachment?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: RequestCountOrderByAggregateInput
@@ -23962,6 +23994,7 @@ export namespace Prisma {
     it_approval_comment?: StringNullableWithAggregatesFilter<"Request"> | string | null
     it_approval_date?: DateTimeNullableWithAggregatesFilter<"Request"> | Date | string | null
     userId?: StringWithAggregatesFilter<"Request"> | string
+    attachment?: StringNullableWithAggregatesFilter<"Request"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Request"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Request"> | Date | string
   }
@@ -24911,6 +24944,7 @@ export namespace Prisma {
     isPrivate?: BoolFilter<"ItNote"> | boolean
     isPublished?: BoolFilter<"ItNote"> | boolean
     content?: StringNullableFilter<"ItNote"> | string | null
+    attachment?: StringNullableFilter<"ItNote"> | string | null
     userId?: StringFilter<"ItNote"> | string
     createdAt?: DateTimeFilter<"ItNote"> | Date | string
     updatedAt?: DateTimeFilter<"ItNote"> | Date | string
@@ -24924,6 +24958,7 @@ export namespace Prisma {
     isPrivate?: SortOrder
     isPublished?: SortOrder
     content?: SortOrderInput | SortOrder
+    attachment?: SortOrderInput | SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -24940,6 +24975,7 @@ export namespace Prisma {
     isPrivate?: BoolFilter<"ItNote"> | boolean
     isPublished?: BoolFilter<"ItNote"> | boolean
     content?: StringNullableFilter<"ItNote"> | string | null
+    attachment?: StringNullableFilter<"ItNote"> | string | null
     userId?: StringFilter<"ItNote"> | string
     createdAt?: DateTimeFilter<"ItNote"> | Date | string
     updatedAt?: DateTimeFilter<"ItNote"> | Date | string
@@ -24953,6 +24989,7 @@ export namespace Prisma {
     isPrivate?: SortOrder
     isPublished?: SortOrder
     content?: SortOrderInput | SortOrder
+    attachment?: SortOrderInput | SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -24970,6 +25007,7 @@ export namespace Prisma {
     isPrivate?: BoolWithAggregatesFilter<"ItNote"> | boolean
     isPublished?: BoolWithAggregatesFilter<"ItNote"> | boolean
     content?: StringNullableWithAggregatesFilter<"ItNote"> | string | null
+    attachment?: StringNullableWithAggregatesFilter<"ItNote"> | string | null
     userId?: StringWithAggregatesFilter<"ItNote"> | string
     createdAt?: DateTimeWithAggregatesFilter<"ItNote"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ItNote"> | Date | string
@@ -25509,6 +25547,7 @@ export namespace Prisma {
     it_approval_status?: string | null
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     employee: EmployeeCreateNestedOneWithoutRequestsInput
@@ -25535,6 +25574,7 @@ export namespace Prisma {
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
     userId: string
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentUncheckedCreateNestedManyWithoutRequestInput
@@ -25557,6 +25597,7 @@ export namespace Prisma {
     it_approval_status?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employee?: EmployeeUpdateOneRequiredWithoutRequestsNestedInput
@@ -25583,6 +25624,7 @@ export namespace Prisma {
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUncheckedUpdateManyWithoutRequestNestedInput
@@ -25607,6 +25649,7 @@ export namespace Prisma {
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
     userId: string
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25628,6 +25671,7 @@ export namespace Prisma {
     it_approval_status?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25651,6 +25695,7 @@ export namespace Prisma {
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26726,6 +26771,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     details?: ItNoteDetailCreateNestedManyWithoutNoteInput
@@ -26738,6 +26784,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: string | null
+    attachment?: string | null
     userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26750,6 +26797,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: ItNoteDetailUpdateManyWithoutNoteNestedInput
@@ -26762,6 +26810,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26774,6 +26823,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: string | null
+    attachment?: string | null
     userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26785,6 +26835,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -26795,6 +26846,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27501,6 +27553,7 @@ export namespace Prisma {
     it_approval_comment?: SortOrder
     it_approval_date?: SortOrder
     userId?: SortOrder
+    attachment?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27524,6 +27577,7 @@ export namespace Prisma {
     it_approval_comment?: SortOrder
     it_approval_date?: SortOrder
     userId?: SortOrder
+    attachment?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -27547,6 +27601,7 @@ export namespace Prisma {
     it_approval_comment?: SortOrder
     it_approval_date?: SortOrder
     userId?: SortOrder
+    attachment?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -28217,6 +28272,7 @@ export namespace Prisma {
     isPrivate?: SortOrder
     isPublished?: SortOrder
     content?: SortOrder
+    attachment?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -28228,6 +28284,7 @@ export namespace Prisma {
     isPrivate?: SortOrder
     isPublished?: SortOrder
     content?: SortOrder
+    attachment?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -28239,6 +28296,7 @@ export namespace Prisma {
     isPrivate?: SortOrder
     isPublished?: SortOrder
     content?: SortOrder
+    attachment?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -29795,6 +29853,7 @@ export namespace Prisma {
     it_approval_status?: string | null
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     employee: EmployeeCreateNestedOneWithoutRequestsInput
@@ -29819,6 +29878,7 @@ export namespace Prisma {
     it_approval_status?: string | null
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentUncheckedCreateNestedManyWithoutRequestInput
@@ -30004,6 +30064,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     details?: ItNoteDetailCreateNestedManyWithoutNoteInput
@@ -30015,6 +30076,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     details?: ItNoteDetailUncheckedCreateNestedManyWithoutNoteInput
@@ -30181,6 +30243,7 @@ export namespace Prisma {
     it_approval_comment?: StringNullableFilter<"Request"> | string | null
     it_approval_date?: DateTimeNullableFilter<"Request"> | Date | string | null
     userId?: StringFilter<"Request"> | string
+    attachment?: StringNullableFilter<"Request"> | string | null
     createdAt?: DateTimeFilter<"Request"> | Date | string
     updatedAt?: DateTimeFilter<"Request"> | Date | string
   }
@@ -30351,6 +30414,7 @@ export namespace Prisma {
     isPrivate?: BoolFilter<"ItNote"> | boolean
     isPublished?: BoolFilter<"ItNote"> | boolean
     content?: StringNullableFilter<"ItNote"> | string | null
+    attachment?: StringNullableFilter<"ItNote"> | string | null
     userId?: StringFilter<"ItNote"> | string
     createdAt?: DateTimeFilter<"ItNote"> | Date | string
     updatedAt?: DateTimeFilter<"ItNote"> | Date | string
@@ -30421,6 +30485,7 @@ export namespace Prisma {
     it_approval_status?: string | null
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutRequestsInput
@@ -30445,6 +30510,7 @@ export namespace Prisma {
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
     userId: string
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentUncheckedCreateNestedManyWithoutRequestInput
@@ -30934,6 +31000,7 @@ export namespace Prisma {
     it_approval_status?: string | null
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     employee: EmployeeCreateNestedOneWithoutRequestsInput
@@ -30959,6 +31026,7 @@ export namespace Prisma {
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
     userId: string
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31033,6 +31101,7 @@ export namespace Prisma {
     it_approval_status?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employee?: EmployeeUpdateOneRequiredWithoutRequestsNestedInput
@@ -31058,6 +31127,7 @@ export namespace Prisma {
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32403,6 +32473,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutItNotesInput
@@ -32414,6 +32485,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: string | null
+    attachment?: string | null
     userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32441,6 +32513,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutItNotesNestedInput
@@ -32452,6 +32525,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32555,6 +32629,7 @@ export namespace Prisma {
     it_approval_status?: string | null
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32626,6 +32701,7 @@ export namespace Prisma {
     isPrivate?: boolean
     isPublished?: boolean
     content?: string | null
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32675,6 +32751,7 @@ export namespace Prisma {
     it_approval_status?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employee?: EmployeeUpdateOneRequiredWithoutRequestsNestedInput
@@ -32699,6 +32776,7 @@ export namespace Prisma {
     it_approval_status?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUncheckedUpdateManyWithoutRequestNestedInput
@@ -32722,6 +32800,7 @@ export namespace Prisma {
     it_approval_status?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32917,6 +32996,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: ItNoteDetailUpdateManyWithoutNoteNestedInput
@@ -32928,6 +33008,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: ItNoteDetailUncheckedUpdateManyWithoutNoteNestedInput
@@ -32939,6 +33020,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     isPublished?: BoolFieldUpdateOperationsInput | boolean
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -33045,6 +33127,7 @@ export namespace Prisma {
     it_approval_comment?: string | null
     it_approval_date?: Date | string | null
     userId: string
+    attachment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -33095,6 +33178,7 @@ export namespace Prisma {
     it_approval_status?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutRequestsNestedInput
@@ -33119,6 +33203,7 @@ export namespace Prisma {
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUncheckedUpdateManyWithoutRequestNestedInput
@@ -33142,6 +33227,7 @@ export namespace Prisma {
     it_approval_comment?: NullableStringFieldUpdateOperationsInput | string | null
     it_approval_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    attachment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

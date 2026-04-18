@@ -52,6 +52,12 @@ export const translations = {
       no_results_desc: "No technical documentation or vault entries found matching",
       confirm_delete: "Confirm Delete",
       no_info: "No information",
+      upload: "Upload",
+      download: "Download",
+      preview: "Preview",
+      hide_preview: "Hide Preview",
+      show_preview: "Show Preview",
+      preview_not_supported: "Preview not supported",
 
     },
     requests: {
@@ -545,6 +551,14 @@ export const translations = {
       published: "Published",
       alert: "IT Alert",
       front_dashboard: "Front Dashboard",
+      click_to_attach: "CLICK TO ATTACH",
+      uploading: "UPLOADING...",
+      download: "DOWNLOAD",
+      hide_preview: "HIDE PREVIEW",
+      show_preview: "SHOW PREVIEW",
+      preview_not_supported: "PREVIEW NOT SUPPORTED",
+      preview: "PREVIEW",
+      no_info: "NO INFO",
     }
   },
   th: {
@@ -600,6 +614,12 @@ export const translations = {
       no_results_desc: "ไม่พบข้อมูลทางเทคนิคหรือรายการใดๆ ที่ตรงกับการค้นหา",
       confirm_delete: "ยืนยันการลบ",
       no_info: "ไม่มีข้อมูล",
+      upload: "อัปโหลด",
+      download: "ดาวน์โหลด",
+      preview: "ดูตัวอย่าง",
+      hide_preview: "ซ่อนตัวอย่าง",
+      show_preview: "แสดงตัวอย่าง",
+      preview_not_supported: "ไม่รองรับการดูตัวอย่างไฟล์ประเภทนี้",
     },
     requests: {
       title: "รายการแจ้งซ่อม",
@@ -819,7 +839,7 @@ export const translations = {
       title: "Notes",
       subtitle: "รายการอีเมลและเบอร์ต่อภายใน",
       search_placeholder: "ค้นหาชื่อ, อีเมล หรือเบอร์ต่อ...",
-      dept_title: "แผนก / ตำแหน่ง",
+      dept_title: "เนื้อหา",
       category: "หมวดหมู่",
       details: "รายละเอียด",
     },
@@ -1096,6 +1116,14 @@ export const translations = {
       published: "แสดงหน้าหลัก",
       alert: "ประกาศด่วน",
       front_dashboard: "หน้าแดชบอร์ด",
+      click_to_attach: "คลิกเพื่อแนบไฟล์",
+      uploading: "กำลังอัปโหลด...",
+      download: "ดาวน์โหลด",
+      hide_preview: "ซ่อนพรีวิว",
+      show_preview: "แสดงพรีวิว",
+      preview_not_supported: "ไม่รองรับการพรีวิวไฟล์ประเภทนี้",
+      preview: "พรีวิว",
+      no_info: "ไม่มีข้อมูล",
     }
   }
 };

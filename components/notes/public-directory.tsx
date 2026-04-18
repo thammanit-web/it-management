@@ -11,7 +11,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { Phone, Mail, Search, Eye } from "lucide-react";
+import { Phone, Mail, Search, Eye, Paperclip } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { ItNoteModal } from "./it-note-modal";
@@ -113,12 +113,15 @@ export function PublicDirectory() {
                         <p className="text-[14px] font-black text-[#0F1059] dark:text-zinc-200 uppercase tracking-tight">{note.title}</p>
                         <p className="text-[10px] text-zinc-400 font-bold mt-1 uppercase truncate max-w-xs">{note.content}</p>
                       </div>
-                      <button 
-                        onClick={() => handleView(note)}
-                        className="p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:text-primary hover:bg-primary/5 transition-all opacity-0 group-hover:opacity-100"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        {note.attachment && <Paperclip className="h-4 w-4 text-blue-500" />}
+                        <button 
+                          onClick={() => handleView(note)}
+                          className="p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:text-primary hover:bg-primary/5 transition-all opacity-0 group-hover:opacity-100"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell className="px-6 py-5">
@@ -152,12 +155,15 @@ export function PublicDirectory() {
             <Card key={note.id} className="border-zinc-100 dark:border-zinc-800 shadow-sm rounded-xl group overflow-hidden">
               <div className="p-4 bg-zinc-50/50 dark:bg-zinc-800/30 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
                   <h3 className="text-[13px] font-black text-[#0F1059] dark:text-zinc-200 uppercase leading-tight">{note.title}</h3>
-                  <button 
-                    onClick={() => handleView(note)}
-                    className="p-2 rounded-lg bg-white dark:bg-zinc-900 text-zinc-400 hover:text-primary transition-all"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {note.attachment && <Paperclip className="h-4 w-4 text-blue-500" />}
+                    <button 
+                      onClick={() => handleView(note)}
+                      className="p-2 rounded-lg bg-white dark:bg-zinc-900 text-zinc-400 hover:text-primary transition-all"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+                  </div>
               </div>
               <CardContent className="p-0">
                   <div className="divide-y divide-zinc-100 dark:divide-zinc-800">

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Trash2, Info, Type, List, Shield, ShieldAlert, Share2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Info, Type, List, Shield, ShieldAlert, Share2, Paperclip, X, FileText, LayoutPanelTop, Eye } from "lucide-react";
 import { ItNoteFormValues, ItNoteDetailFormValues } from "@/lib/validations/it-note";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
@@ -23,15 +23,17 @@ export function ItNoteModal({
   initialData,
   isReadOnly = false,
 }: ItNoteModalProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<ItNoteFormValues>({
     title: "",
     content: "",
     isPrivate: false,
     isPublished: false,
+    attachment: null,
     details: [],
   });
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -40,17 +42,49 @@ export function ItNoteModal({
         content: initialData.content || "",
         isPrivate: initialData.isPrivate || false,
         isPublished: initialData.isPublished || false,
+        attachment: initialData.attachment || null,
         details: initialData.details || [],
       });
+      setShowPreview(!!initialData.attachment);
     } else {
       setFormData({
         title: "",
         isPrivate: false,
         isPublished: false,
+        attachment: null,
         details: [],
       });
+      setShowPreview(false);
     }
   }, [initialData, isOpen]);
+
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+
+    try {
+      // Allow general file upload, not just images (for word/excel/pdf)
+      const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}&folder=notes`, { 
+        method: 'POST', 
+        body: file 
+      });
+      if (res.ok) {
+         const { url } = await res.json();
+         setFormData({ ...formData, attachment: url });
+         setShowPreview(true);
+      } else {
+         alert(t('notes.upload_failed') || 'Upload failed');
+      }
+    } catch (err) {
+      console.error("Upload error", err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const addDetailRow = () => {
     if (isReadOnly) return;
@@ -265,6 +299,117 @@ export function ItNoteModal({
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 placeholder="PROVIDE ADDITIONAL CONTEXT OR INSTRUCTIONS HERE..."
               />
+            </div>
+            
+            {/* Attachment Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-[#0F1059] font-black tracking-tight border-b border-slate-100 pb-3">
+                <div className="h-7 w-7 rounded-lg bg-[#0F1059]/5 flex items-center justify-center">
+                  <Paperclip className="h-4 w-4" />
+                </div>
+                <span className="text-[11px] uppercase tracking-widest">{locale === 'th' ? 'ไฟล์แนบ' : 'ATTACHMENT'} (IMAGE, EXCEL, WORD, PDF)</span>
+              </div>
+              
+              {!formData.attachment ? (
+                 !isReadOnly ? (
+                    <div className="relative border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group p-6 flex flex-col items-center justify-center text-center">
+                       <input 
+                         type="file" 
+                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                         onChange={handleFileUpload}
+                         disabled={isUploading}
+                         accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx"
+                       />
+                       {isUploading ? (
+                          <div className="flex flex-col items-center text-[#0F1059]">
+                             <Loader2 className="h-8 w-8 animate-spin mb-2" />
+                             <span className="text-[10px] font-black uppercase tracking-widest">{t('notes.uploading') || 'UPLOADING...'}</span>
+                          </div>
+                       ) : (
+                          <div className="flex flex-col items-center text-slate-400 group-hover:text-[#0F1059] transition-colors">
+                             <Plus className="h-8 w-8 mb-2" />
+                             <span className="text-[10px] font-black uppercase tracking-widest">{t('notes.click_to_attach') || 'CLICK TO ATTACH'}</span>
+                          </div>
+                       )}
+                    </div>
+                 ) : (
+                    <div className="text-center py-6 border-2 border-dashed border-slate-100 rounded-xl text-slate-400 bg-slate-50/50">
+                       <p className="text-[9px] uppercase font-black tracking-[0.3em] opacity-40">{t('notes.no_info') || 'NO ATTACHMENT'}</p>
+                    </div>
+                 )
+              ) : (
+                 <div className="space-y-3">
+                    <div className="relative rounded-xl border border-slate-200 bg-white p-3 shadow-sm flex items-center gap-3 transition-all hover:border-[#0F1059]/30">
+                       <div className="h-10 w-10 shrink-0 bg-[#0F1059]/5 rounded-lg flex items-center justify-center text-[#0F1059]">
+                          <FileText className="h-5 w-5" />
+                       </div>
+                       <div className="flex-1 overflow-hidden">
+                          <p className="text-[12px] font-black text-[#0F1059] uppercase truncate">
+                            {formData.attachment.split('/').pop()}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                             <a href={formData.attachment} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-slate-400 hover:text-[#0F1059] transition-colors uppercase">
+                               {t('notes.download') || 'DOWNLOAD'}
+                             </a>
+                             <span className="text-slate-300">•</span>
+                             <button 
+                               type="button"
+                               onClick={() => setShowPreview(!showPreview)}
+                               className="text-[10px] font-bold text-slate-400 hover:text-[#0F1059] transition-colors uppercase flex items-center gap-1"
+                             >
+                                <Eye className="h-3 w-3" />
+                                {showPreview ? (t('notes.hide_preview') || 'HIDE PREVIEW') : (t('notes.show_preview') || 'SHOW PREVIEW')}
+                             </button>
+                          </div>
+                       </div>
+                       {!isReadOnly && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData({ ...formData, attachment: null });
+                              setShowPreview(false);
+                            }}
+                            className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                       )}
+                    </div>
+
+                    {showPreview && formData.attachment && (
+                       <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 min-h-[100px] animate-in zoom-in-95 duration-200">
+                          {formData.attachment.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                             <a href={formData.attachment} target="_blank" rel="noopener noreferrer" className="block relative group/img cursor-zoom-in">
+                                <img src={formData.attachment} alt="Preview" className="w-full h-auto max-h-[800px] object-contain mx-auto transition-all group-hover/img:opacity-90" />
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/5">
+                                   <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+                                      <Eye className="h-4 w-4 text-[#0F1059]" />
+                                      <span className="text-[10px] font-black uppercase text-[#0F1059] tracking-widest">{t('notes.preview') || 'VIEW LARGE'}</span>
+                                   </div>
+                                </div>
+                             </a>
+                          ) : formData.attachment.match(/\.pdf$/i) ? (
+                             <iframe 
+                                src={`${formData.attachment}#toolbar=0`} 
+                                className="w-full h-[600px] border-none"
+                                title="PDF Preview"
+                             />
+                          ) : formData.attachment.match(/\.(xlsx|xls|doc|docx|ppt|pptx)$/i) ? (
+                             <iframe 
+                                src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(formData.attachment)}`} 
+                                className="w-full h-[600px] border-none"
+                                title="Office Preview"
+                             />
+                          ) : (
+                             <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+                                <LayoutPanelTop className="h-10 w-10 mb-2 opacity-20" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">{t('notes.preview_not_supported') || 'PREVIEW NOT SUPPORTED'}</span>
+                             </div>
+                          )}
+                       </div>
+                    )}
+                 </div>
+              )}
             </div>
           </div>
         </div>

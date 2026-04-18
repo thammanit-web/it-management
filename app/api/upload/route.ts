@@ -14,7 +14,8 @@ export async function POST(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: 'Filename is required' }, { status: 400 });
     }
   
-    const prefixedFilename = `purchase-orders/${filename}`;
+    const folder = searchParams.get('folder') || 'purchase-orders';
+    const prefixedFilename = `${folder}/${filename}`;
 
     if (!request.body) {
         return NextResponse.json({ error: 'Body is required' }, { status: 400 });

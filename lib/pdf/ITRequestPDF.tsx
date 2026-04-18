@@ -465,10 +465,14 @@ export const ITRequestPDF: React.FC<ITRequestPDFProps> = ({ data, locale = 'th' 
                   <Text style={{ fontSize: 7 }}>{labels.signature}</Text>
                 </View>
                 <View style={styles.sigTableContent}>
-                  <Text style={styles.sigText}>{data.approval}</Text>
+                  <Text style={styles.sigText}>
+                    {(data.approval_status === "APPROVED" || data.approval_status === "REJECTED") ? data.approval : ""}
+                  </Text>
                 </View>
                 <View style={styles.sigTableFooter}>
-                  <Text style={{ fontSize: 7 }}>Date: {formatDate(data.approval_date)}</Text>
+                  <Text style={{ fontSize: 7 }}>
+                    Date: {(data.approval_status === "APPROVED" || data.approval_status === "REJECTED") ? formatDate(data.approval_date) : ""}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -508,10 +512,14 @@ export const ITRequestPDF: React.FC<ITRequestPDFProps> = ({ data, locale = 'th' 
                   <Text style={{ fontSize: 7 }}>{labels.signature}</Text>
                 </View>
                 <View style={styles.sigTableContent}>
-                  <Text style={styles.sigText}>{data.it_approval}</Text>
+                  <Text style={styles.sigText}>
+                    {(data.it_approval_status === "APPROVED" || data.it_approval_status === "REJECTED") ? data.it_approval : ""}
+                  </Text>
                 </View>
                 <View style={styles.sigTableFooter}>
-                  <Text style={{ fontSize: 7 }}>Date: {formatDate(data.it_approval_date)}</Text>
+                  <Text style={{ fontSize: 7 }}>
+                    Date: {(data.it_approval_status === "APPROVED" || data.it_approval_status === "REJECTED") ? formatDate(data.it_approval_date) : ""}
+                  </Text>
                 </View>
               </View>
             </View>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+import { del } from "@vercel/blob";
 import { headers } from "next/headers";
 
 export async function GET(
@@ -132,6 +133,20 @@ export async function DELETE(
     const headList = await headers();
     const ip = headList.get("x-forwarded-for") || "unknown";
     const ua = headList.get("user-agent") || "unknown";
+
+    // Fetch request to check for attachment
+    const apiRequest = await prisma.request.findUnique({
+      where: { id },
+      select: { attachment: true }
+    });
+
+    if (apiRequest?.attachment) {
+      try {
+        await del(apiRequest.attachment);
+      } catch (err) {
+        console.error("Failed to delete attachment blob:", err);
+      }
+    }
 
     await prisma.request.delete({
       where: { id: id }

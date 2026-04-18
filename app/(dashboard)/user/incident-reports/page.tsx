@@ -122,7 +122,7 @@ export default function UserIncidentReportsPage() {
         </motion.button>
       </header>
 
-      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-between bg-white p-3 rounded-[1.5rem] border border-slate-200/60 shadow-sm">
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-between bg-white p-3 rounded-3xl border border-slate-200/60 shadow-sm">
         <div className="relative w-full sm:max-w-md group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4 transition-colors group-focus-within:text-primary" />
           <Input 
@@ -177,7 +177,7 @@ export default function UserIncidentReportsPage() {
                        >
                           <TableCell className="px-8 py-6">
                              <div className="flex flex-col gap-1.5">
-                                <span className="text-[10px] font-black text-primary bg-primary/5 px-2.5 py-1 rounded-lg w-fit tracking-[0.1em]">{r.report_code || "INC-NEW"}</span>
+                                <span className="text-[10px] font-black text-primary bg-primary/5 px-2.5 py-1 rounded-lg w-fit tracking-widest">{r.report_code || "INC-NEW"}</span>
                                 <div className="font-extrabold text-slate-900 text-[15px] group-hover:text-primary transition-colors line-clamp-1">{r.details || "No details provided"}</div>
                              </div>
                           </TableCell>
@@ -233,7 +233,7 @@ export default function UserIncidentReportsPage() {
       <div className="grid grid-cols-1 gap-4 lg:hidden pb-12">
          {loading ? (
              Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="animate-pulse h-48 bg-white rounded-[2rem] border border-slate-100 shadow-sm" />
+                <div key={i} className="animate-pulse h-48 bg-white rounded-4xl border border-slate-100 shadow-sm" />
              ))
          ) : filteredReports.length === 0 ? (
              <Card className="py-24 text-center border-dashed border-slate-200 rounded-[2.5rem] bg-white/50 shadow-none">

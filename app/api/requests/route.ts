@@ -94,7 +94,8 @@ export async function POST(request: Request) {
         it_approval_status,
         it_approval_comment,
         createdAt,
-        ai_reasoning
+        ai_reasoning,
+        attachment
       } = body;
   
       // Use authUserId instead of relying on client-provided id
@@ -156,6 +157,7 @@ export async function POST(request: Request) {
           it_approval,
           it_approval_status: it_approval_status || "PENDING",
           it_approval_comment,
+          attachment,
           createdAt: createdAt ? new Date(createdAt) : undefined,
         },
       include: {

@@ -2,7 +2,7 @@
 import { useSearchParams } from "next/navigation";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { Search, Loader2, Ticket,  Clock, Plus, ClipboardCheck, Link as LinkIcon, Check, FileDown, Eye, X } from "lucide-react";
+import { Search, Loader2, Ticket,  Clock, Plus, ClipboardCheck, Link as LinkIcon, Check, FileDown, Eye, X, ImagePlus } from "lucide-react";
 import {
    Table,
    TableHeader,
@@ -36,6 +36,7 @@ interface UserRequest {
    status: string;
    reason: string;
    type_request?: string;
+   attachment?: string;
    createdAt: string;
    updatedAt: string;
    approval: string;
@@ -80,6 +81,7 @@ function RequestsContent() {
    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
    const [cancelId, setCancelId] = useState<string | null>(null);
    const [isCancelling, setIsCancelling] = useState(false);
+   const [isUploading, setIsUploading] = useState(false);
    const aiRef = React.useRef<AICategorizeSuggestHandle>(null);
 
    // Form State
@@ -91,7 +93,8 @@ function RequestsContent() {
       type_request: "REPAIR",
       type_request_other: "",
       employeeId: (session?.user as any)?.employeeId || "",
-      approval: ""
+      approval: "",
+      attachment: ""
    });
    const [inventory, setInventory] = useState<any[]>([]);
    const [invSearch, setInvSearch] = useState("");
@@ -164,6 +167,27 @@ function RequestsContent() {
       }
    };
 
+   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setIsUploading(true);
+      try {
+         const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}&folder=requests`, {
+            method: "POST",
+            body: file,
+         });
+         const data = await res.json();
+         if (data.url) {
+            setFormData(prev => ({ ...prev, attachment: data.url }));
+         }
+      } catch (error) {
+         console.error("Upload error:", error);
+      } finally {
+         setIsUploading(false);
+      }
+   };
+
    const handleCreate = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!isStandard && !formData.approval) {
@@ -199,11 +223,11 @@ function RequestsContent() {
             })
          });
 
-         if (res.ok) {
-            const data = await res.json();
-            setIsModalOpen(false);
-            setFormData({ ...formData, description: "", reason: "", approval: "", type_request: "REPAIR", type_request_other: "" });
-            fetchMyRequests();
+          if (res.ok) {
+             const data = await res.json();
+             setIsModalOpen(false);
+             setFormData({ ...formData, description: "", reason: "", approval: "", type_request: "REPAIR", type_request_other: "", attachment: "" });
+             fetchMyRequests();
             setShowSuccess({ id: data.id, approvalNeeded: !!(formData.approval && !isStandard) });
          }
       } catch (error) {
@@ -469,6 +493,18 @@ function RequestsContent() {
                         <p className="text-[14px] font-bold text-primary uppercase leading-tight">{viewRequest?.description}</p>
                      </div>
                   </div>
+
+                  {viewRequest?.attachment && (
+                     <div className="space-y-1 pt-3 border-t border-border/50">
+                        <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none mb-2">{locale === 'th' ? 'รูปภาพแนบ' : 'ATTACHMENT'}</p>
+                        <div className="rounded-xl overflow-hidden border border-border bg-black/5 flex items-center justify-center">
+                           <a href={viewRequest.attachment} target="_blank" rel="noopener noreferrer" className="w-full text-center hover:opacity-90 transition-opacity">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={viewRequest.attachment} alt="Attachment" className="max-h-[300px] max-w-full object-contain mx-auto" />
+                           </a>
+                        </div>
+                     </div>
+                  )}
 
                   <div className="space-y-1 pt-3 border-t border-border/50">
                      <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none mb-2">{t('requests.reason_urgency')}</p>
@@ -740,6 +776,37 @@ function RequestsContent() {
                         value={formData.reason}
                         onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                      />
+                  </div>
+
+                  <div className="space-y-1.5">
+                     <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{locale === 'th' ? 'แนบรูปภาพ (ถ้ามี)' : 'ATTACHMENT (OPTIONAL)'}</label>
+                     <div className="flex items-center gap-3">
+                        <label className={cn(
+                           "flex-1 flex items-center justify-center px-4 py-3 border-2 border-dashed rounded-xl cursor-pointer transition-all",
+                           formData.attachment ? "bg-emerald-50 border-emerald-200 text-emerald-600" : "bg-zinc-50 border-zinc-200 text-zinc-400 hover:bg-zinc-100 hover:border-primary/30"
+                        )}>
+                           <div className="flex items-center gap-2 text-sm font-medium">
+                              {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+                              {isUploading ? (locale === 'th' ? "กำลังอัปโหลด..." : "Uploading...") : 
+                               formData.attachment ? (locale === 'th' ? "อัปโหลดแล้ว (คลิกเพื่อเปลี่ยน)" : "Uploaded (Click to change)") : 
+                               (locale === 'th' ? "คลิกเพื่อแนบรูปภาพ" : "Click to attach image")}
+                           </div>
+                           <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={isUploading} />
+                        </label>
+                        {formData.attachment && (
+                           <div className="h-12 w-12 rounded-lg border border-border overflow-hidden shrink-0 relative bg-zinc-100 shadow-sm flex items-center justify-center">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={formData.attachment} alt="Attachment" className="h-full w-full object-cover" />
+                              <button
+                                 type="button"
+                                 onClick={(e) => { e.preventDefault(); setFormData(prev => ({ ...prev, attachment: "" })); }}
+                                 className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 shadow-sm"
+                              >
+                                 <X className="h-2 w-2" />
+                              </button>
+                           </div>
+                        )}
+                     </div>
                   </div>
                </div>
 

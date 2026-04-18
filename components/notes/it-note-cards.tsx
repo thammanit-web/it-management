@@ -2,11 +2,11 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { ItNoteActions } from "./it-note-actions";
-import { Shield, ShieldAlert, Clock, User2 } from "lucide-react";
+import { Shield, ShieldAlert, Clock, User2, Paperclip } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 
 export function ItNoteCards({ notes }: { notes: any[] }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-GB", {
@@ -37,6 +37,12 @@ export function ItNoteCards({ notes }: { notes: any[] }) {
                         <Shield className="h-2.5 w-2.5" />
                         {t("notes.public_wiki")}
                     </div>
+                   )}
+                   {note.attachment && (
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-50 border border-blue-100 rounded-lg text-[9px] text-blue-500 font-bold uppercase tracking-widest shadow-sm">
+                        <Paperclip className="h-2.5 w-2.5" />
+                        {locale === 'th' ? 'มีไฟล์แนบ' : 'ATTACHMENT'}
+                      </div>
                    )}
                 </div>
               </div>

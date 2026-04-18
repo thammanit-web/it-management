@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
+import { del } from "@vercel/blob";
 
 export async function createItNote(data: z.infer<typeof itNoteSchema>) {
   const session = await auth();
@@ -18,6 +19,7 @@ export async function createItNote(data: z.infer<typeof itNoteSchema>) {
       isPrivate: validated.isPrivate,
       isPublished: validated.isPublished,
       content: validated.content,
+      attachment: validated.attachment,
       userId: (session?.user as any).id as string,
       details: {
         create: validated.details.map((d, index) => ({
@@ -58,6 +60,7 @@ export async function updateItNote(id: string, data: z.infer<typeof itNoteSchema
         isPrivate: validated.isPrivate,
         isPublished: validated.isPublished,
         content: validated.content,
+        attachment: validated.attachment,
         details: {
           create: validated.details.map((d, index) => ({
             label: d.label,
@@ -80,6 +83,21 @@ export async function updateItNote(id: string, data: z.infer<typeof itNoteSchema
 export async function deleteItNote(id: string) {
   const session = await auth();
   if (!(session?.user as any)?.id) throw new Error("Unauthorized");
+
+  // Fetch the note first to see if it has an attachment
+  const note = await prisma.itNote.findUnique({
+    where: { id },
+    select: { attachment: true }
+  });
+
+  if (note?.attachment) {
+    try {
+      await del(note.attachment);
+    } catch (error) {
+      console.error("Failed to delete attachment blob:", error);
+      // We continue with note deletion even if blob deletion fails
+    }
+  }
 
   await prisma.itNote.delete({
     where: { id },

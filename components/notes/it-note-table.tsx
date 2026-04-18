@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ItNoteActions } from "./it-note-actions";
-import { Globe, Lock, Share2 } from "lucide-react";
+import { Globe, Lock, Share2, Paperclip } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -66,6 +66,13 @@ export function ItNoteTable({ notes }: { notes: any[] }) {
                         <Badge className="bg-[#0F1059]/5 text-[#0F1059] border-[#0F1059]/10 text-[9px] font-black uppercase rounded-full px-3 py-1 shadow-none w-full justify-center">
                           <Share2 className="h-2.5 w-2.5 mr-1" />
                           DASHBOARD
+                        </Badge>
+                    )}
+                    
+                    {note.attachment && (
+                        <Badge className="bg-blue-50 text-blue-600 border-blue-200 text-[9px] font-black uppercase rounded-full px-3 py-1 shadow-none w-full justify-center">
+                          <Paperclip className="h-2.5 w-2.5 mr-1" />
+                          {t('common.attached_file') || 'ATTACHMENT'}
                         </Badge>
                     )}
                    </div>

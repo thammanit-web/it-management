@@ -13,6 +13,7 @@ export const itNoteSchema = z.object({
   isPrivate: z.boolean().default(false),
   isPublished: z.boolean().default(false),
   content: z.string().optional(),
+  attachment: z.string().optional().nullable(),
   details: z.array(itNoteDetailSchema).default([]),
 });
 

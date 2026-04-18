@@ -35,6 +35,7 @@ interface RequestTicket {
   updatedAt: string;
   employeeId?: string | null;
   type_request?: string | null;
+  attachment?: string | null;
   approval?: string | null;
   approval_status?: string | null;
   approval_comment?: string | null;
@@ -864,6 +865,18 @@ export default function TicketsPage() {
                   <div>
                     <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'ตำแหน่ง' : 'Position'}</p>
                     <p className="text-[11px] font-semibold text-zinc-600">{editingTicket.employee.position || '-'}</p>
+                  </div>
+                </div>
+              )}
+              {/* Attachment row */}
+              {editingTicket.attachment && (
+                <div className="pt-2 border-t border-zinc-100">
+                  <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-2">{locale === 'th' ? 'รูปภาพแนบ' : 'Attachment'}</p>
+                  <div className="rounded-xl overflow-hidden border border-zinc-200 bg-white shadow-sm flex items-center justify-center p-2">
+                    <a href={editingTicket.attachment} target="_blank" rel="noopener noreferrer" className="block text-center hover:opacity-90 transition-opacity">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={editingTicket.attachment} alt="Attachment" className="max-h-[300px] w-auto inline-block rounded-lg" />
+                    </a>
                   </div>
                 </div>
               )}

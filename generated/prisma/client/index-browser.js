@@ -164,6 +164,7 @@ exports.Prisma.RequestScalarFieldEnum = {
   it_approval_comment: 'it_approval_comment',
   it_approval_date: 'it_approval_date',
   userId: 'userId',
+  attachment: 'attachment',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -325,6 +326,7 @@ exports.Prisma.ItNoteScalarFieldEnum = {
   isPrivate: 'isPrivate',
   isPublished: 'isPublished',
   content: 'content',
+  attachment: 'attachment',
   userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
