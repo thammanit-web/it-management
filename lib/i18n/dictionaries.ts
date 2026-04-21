@@ -99,6 +99,8 @@ export const translations = {
       no_approval_option: "-- NO APPROVAL NEEDED --",
       no_info: "No additional information",
       urgent_reason: "Why is this urgent?",
+      cancel_confirm_text: "Are you sure you want to cancel this request?",
+      sent_to_it: "Your request has been sent to IT Dept.",
     },
     categories: {
       hardware: "Hardware",
@@ -661,6 +663,8 @@ export const translations = {
       no_approval_option: "-- ไม่ต้องการการอนุมัติ --",
       no_info: "ไม่มีข้อมูลเพิ่มเติม",
       urgent_reason: "ระบุความเร่งด่วน (ถ้ามี)",
+      cancel_confirm_text: "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกคำขอนี้?",
+      sent_to_it: "ส่งคำขอไปยังฝ่ายไอทีแล้ว",
     },
     categories: {
       hardware: "ฮาร์ดแวร์",

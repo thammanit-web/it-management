@@ -885,7 +885,7 @@ function RequestsContent() {
                    }
                 />
 
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+               <div className="grid-cols-1 sm:grid-cols-2 gap-4 hidden">
                   <div className="space-y-1.5">
                      <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('common.category')}</label>
                      <select
