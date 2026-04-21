@@ -140,7 +140,7 @@ export async function POST(request: Request) {
         SUPPORT: "บริการสนับสนุนอุปกรณ์ไอที",
         PASSWORD_ACCOUNT: "แก้รหัสผ่าน / บัญชี",
         BORROW_ACC: "ขอยืมอุปกรณ์เสริม-อุปกรณ์ไอทีพื้นฐาน",
-        REPAIR: "แจ้งซ่อมอุปกรณ์ตามมาตรฐาน",
+        REPAIR: "แจ้งซ่อมอุปกรณ์",
         ACCESS: "ขอสิทธิ์เข้าใช้งานระบบมาตรฐาน",
         INSTALLATION: "ติดตั้ง / เซ็ตอัพ"
       };  
