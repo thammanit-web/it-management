@@ -24,7 +24,8 @@ import {
   LogOut,
   User as UserIcon,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Bell
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -76,7 +77,6 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
     { name: t('sidebar.dashboard'), href: "/", icon: LayoutDashboard },
     { name: t('sidebar.approvals'), href: "/admin/approvals", icon: CheckCircle2, badge: pendingCount > 0 ? pendingCount.toString() : undefined },
     { name: t('sidebar.tickets'), href: "/admin/tickets", icon: Ticket },
-
     { name: t('sidebar.borrowing'), href: "/admin/equipment-requests", icon: Box },
     { name: t('sidebar.purchase_orders'), href: "/admin/purchase-orders", icon: ShoppingCart },
     { name: t('sidebar.receiving'), href: "/admin/equipment-entry-lists", icon: Truck },
@@ -87,6 +87,7 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
     { name: "Incident Reports", href: "/admin/incident-reports", icon: AlertTriangle },
     { name: t('sidebar.employees'), href: "/admin/employees", icon: Users },
     { name: t('sidebar.users'), href: "/admin/users", icon: UserCog },
+    { name: t('notifications.title'), href: "/admin/notifications", icon: Bell },
     { name: t('sidebar.import'), href: "/admin/import", icon: FileJson },
     { name: t('sidebar.logs'), href: "/admin/logs", icon: History },
   ];
