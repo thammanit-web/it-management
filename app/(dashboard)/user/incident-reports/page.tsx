@@ -106,21 +106,15 @@ export default function UserIncidentReportsPage() {
   };
 
   return (
-    <motion.div 
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="p-4 sm:p-8 space-y-6 w-full min-h-screen bg-slate-50/30"
-    >
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6">
+<div className="p-4 sm:p-6 space-y-6 animate-in fade-in duration-500">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-             <div className="p-3 bg-primary rounded-2xl shadow-lg shadow-primary/30">
-                <AlertTriangle className="h-6 w-6 text-white" />
+             <div className="h-10 w-10 rounded-lg bg-[#0F1059] flex items-center justify-center text-white shadow-sm border border-[#0F1059]/10">
+                <AlertTriangle className="h-5 w-5" />
              </div>
              <div>
                 <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase leading-none">My Incident Logs</h1>
-                <p className="text-slate-500 font-medium text-sm mt-1">Track your submitted reports and their real-time status</p>
              </div>
           </div>
         </div>
@@ -349,6 +343,6 @@ export default function UserIncidentReportsPage() {
            />
         </div>
       </Drawer>
-    </motion.div>
+    </div>
   );
 }
