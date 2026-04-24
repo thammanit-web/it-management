@@ -50,8 +50,8 @@ export default function UserInventoryPage() {
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [filterCategory, setFilterCategory] = useState("ALL");
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({
-    key: 'item_name',
-    direction: 'asc'
+    key: 'remaining',
+    direction: 'desc'
   });
 
   useEffect(() => {
