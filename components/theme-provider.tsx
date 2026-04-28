@@ -20,33 +20,17 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const STORAGE_KEY = "theme";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // 1. Theme State (Initialize from localStorage or default to system)
+  // 1. Theme State (Initialize from localStorage or default to light)
   const [theme, setThemeState] = useState<ThemeMode>(() => {
-    if (typeof window === "undefined") return "system";
-    return (localStorage.getItem(STORAGE_KEY) as ThemeMode) || "system";
+    if (typeof window === "undefined") return "light";
+    return (localStorage.getItem(STORAGE_KEY) as ThemeMode) || "light";
   });
 
-  // 2. System theme tracking
-  const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
-
-  // Track system preference updates
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setSystemTheme(mediaQuery.matches ? "dark" : "light");
-
-    const handler = (e: MediaQueryListEvent) => {
-      setSystemTheme(e.matches ? "dark" : "light");
-    };
-
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
-
-  // 3. Resolve actual applied theme
+  // 2. Resolve actual applied theme (system always resolves to light)
   const resolvedTheme = useMemo(() => {
-    if (theme === "system") return systemTheme;
+    if (theme === "system") return "light";
     return theme as "light" | "dark";
-  }, [theme, systemTheme]);
+  }, [theme]);
 
   // 4. Persistence and Effect application
   const setTheme = useCallback((newTheme: ThemeMode) => {
@@ -80,7 +64,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) {
-        setThemeState((e.newValue as ThemeMode) || "system");
+        setThemeState((e.newValue as ThemeMode) || "light");
       }
     };
     window.addEventListener("storage", handleStorageChange);
