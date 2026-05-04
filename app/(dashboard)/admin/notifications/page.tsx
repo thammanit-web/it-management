@@ -56,7 +56,7 @@ interface Notification {
 
 interface User {
   id: string;
-  username: string;
+  email?: string | null;
   employee?: {
     employee_name_th: string;
   }
@@ -497,7 +497,7 @@ export default function NotificationManagementPage() {
                   <TableCell className="px-4 py-4 whitespace-nowrap">
                     {notif.userId ? (
                       <span className="text-[10px] font-bold text-[#0F1059]/60 bg-[#0F1059]/5 px-2 py-0.5 rounded uppercase">
-                        {users.find(u => u.id === notif.userId)?.username || notif.userId}
+                        {users.find(u => u.id === notif.userId)?.email || notif.userId}
                       </span>
                     ) : (
                       <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
@@ -582,7 +582,7 @@ export default function NotificationManagementPage() {
                     <option value="">{t('notifications.all_users')}</option>
                     {users.map(u => (
                       <option key={u.id} value={u.id}>
-                        {u.username} {u.employee ? `(${u.employee.employee_name_th})` : ''}
+                        {u.email || u.id} {u.employee ? `(${u.employee.employee_name_th})` : ''}
                       </option>
                     ))}
                  </select>

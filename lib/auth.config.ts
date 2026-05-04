@@ -7,7 +7,7 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const role = (auth?.user as any)?.role;
+      const role = auth?.user?.role;
       const isLoginPage = nextUrl.pathname === "/login";
       const isAdminRoute = nextUrl.pathname.startsWith("/admin");
       
@@ -28,18 +28,18 @@ export const authConfig = {
     },
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
+        token.role = user.role;
         token.id = user.id;
-        token.employeeId = (user as any).employeeId;
+        token.employeeId = user.employeeId;
         token.name = user.name;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.id;
-        (session.user as any).employeeId = token.employeeId;
+        session.user.role = token.role ?? "user";
+        session.user.id = token.id as string;
+        session.user.employeeId = token.employeeId;
         session.user.name = token.name as string;
       }
       return session;

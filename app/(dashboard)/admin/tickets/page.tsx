@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Search, Loader2, Ticket, Edit2, Trash2, ChevronUp, ChevronDown, FileSpreadsheet, Eye } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { Search, Loader2, Ticket, Edit2, Trash2, ChevronUp, ChevronDown, FileSpreadsheet, Eye, ExternalLink } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -52,7 +53,7 @@ interface RequestTicket {
     position?: string | null;
     supervisor_name?: string | null;
   };
-  user?: { username: string; role?: string | null };
+  user?: { email?: string | null; role?: string | null };
 }
 
 
@@ -131,19 +132,7 @@ export default function TicketsPage() {
 
 
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchTicketsList();
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search, filterStatus, filterPriority, filterCategory, filterTypeRequest, filterMonth, sortConfig, page]);
-
-  // Reset page to 1 when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [search, filterStatus, filterPriority, filterCategory, filterTypeRequest, filterMonth, sortConfig]);
-
-  const fetchTicketsList = async () => {
+  const fetchTicketsList = useCallback(async () => {
     setIsLoading(true);
     try {
       const params = new URLSearchParams({
@@ -170,7 +159,19 @@ export default function TicketsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page, search, filterStatus, filterPriority, filterCategory, filterTypeRequest, filterMonth, sortConfig]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchTicketsList();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [fetchTicketsList]);
+
+  // Reset page to 1 when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [search, filterStatus, filterPriority, filterCategory, filterTypeRequest, filterMonth, sortConfig]);
 
 
   const handleSort = (key: keyof RequestTicket) => {
@@ -214,7 +215,7 @@ export default function TicketsPage() {
       "Description": t.description,
       "Category": t.category,
       "Priority": t.priority,
-      "Requester": t.employee?.employee_name_th || t.user?.username || '-',
+      "Requester": t.employee?.employee_name_th || t.user?.email || '-',
       "Dept Approver": t.approval || '-',
       "Dept Status": t.approval_status,
       "IT Approver": t.it_approval || '-',
@@ -226,9 +227,9 @@ export default function TicketsPage() {
     setIsExportModalOpen(false);
   };
 
-  const openModal = (ticket?: any) => {
+  const openModal = (ticket?: RequestTicket) => {
     if (ticket) {
-      const isPredefined = ["SUPPORT", "PASSWORD_ACCOUNT", "BORROW_ACC", "REPAIR", "INSTALLATION", "PURCHASE", "LICENSE", "ACCESS", "CHANGE"].includes(ticket.type_request);
+      const isPredefined = ["SUPPORT", "PASSWORD_ACCOUNT", "BORROW_ACC", "REPAIR", "INSTALLATION", "PURCHASE", "LICENSE", "ACCESS", "CHANGE"].includes(ticket.type_request ?? "");
       setEditingId(ticket.id);
       setEditingTicket(ticket);
       setFormData({
@@ -238,7 +239,7 @@ export default function TicketsPage() {
         priority: ticket.priority || "MEDIUM",
         status: ticket.status || "OPEN",
         employeeId: ticket.employeeId || "",
-        type_request: isPredefined ? ticket.type_request : (ticket.type_request ? "OTHER" : "REPAIR"),
+        type_request: isPredefined ? (ticket.type_request || "REPAIR") : (ticket.type_request ? "OTHER" : "REPAIR"),
         type_request_other: isPredefined ? "" : (ticket.type_request || ""),
         approval: ticket.approval || "",
         approval_status: ticket.approval_status || "PENDING",
@@ -277,7 +278,7 @@ export default function TicketsPage() {
     setIsPreviewModalOpen(true);
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSaving(true);
     try {
@@ -363,7 +364,7 @@ export default function TicketsPage() {
 
   const updateStatusInline = async (id: string, field: string, status: string) => {
     try {
-      const payload: any = {};
+      const payload: Record<string, string> = {};
       payload[field] = status;
 
       if (field === 'it_approval_status') {
@@ -516,12 +517,12 @@ export default function TicketsPage() {
 
       <Card className="rounded-xl border-zinc-100 overflow-hidden bg-white/90 shadow-sm">
         <div className="overflow-x-auto">
-          <Table className="w-full text-left min-w-[1400px]">
+          <Table className="w-full text-left min-w-350">
             <TableHeader className="bg-zinc-50/80 border-b border-zinc-100">
               <TableRow>
                 {/* Request Info */}
                 <TableHead
-                  className="px-5 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[220px]"
+                  className="px-5 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-55"
                   onClick={() => handleSort('request_code')}
                 >
                   <div className="flex items-center gap-1">
@@ -531,7 +532,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* Requester / Employee */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[160px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-40"
                   onClick={() => handleSort('employeeId')}
                 >
                   <div className="flex items-center gap-1">
@@ -541,7 +542,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* Type */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[110px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-27.5"
                   onClick={() => handleSort('type_request')}
                 >
                   <div className="flex items-center gap-1">
@@ -551,7 +552,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* Category */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[100px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-25"
                   onClick={() => handleSort('category')}
                 >
                   <div className="flex items-center gap-1">
@@ -561,7 +562,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* Priority */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[90px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-22.5"
                   onClick={() => handleSort('priority')}
                 >
                   <div className="flex items-center gap-1">
@@ -571,7 +572,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* Dept Approver */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[130px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-32.5"
                   onClick={() => handleSort('approval')}
                 >
                   <div className="flex items-center gap-1">
@@ -581,7 +582,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* Dept Status */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[110px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-27.5"
                   onClick={() => handleSort('approval_status')}
                 >
                   <div className="flex items-center gap-1">
@@ -591,7 +592,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* IT Approver */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[130px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-32.5"
                   onClick={() => handleSort('it_approval')}
                 >
                   <div className="flex items-center gap-1">
@@ -601,7 +602,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* IT Status */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[110px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-27.5"
                   onClick={() => handleSort('it_approval_status')}
                 >
                   <div className="flex items-center gap-1">
@@ -611,7 +612,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* Progress */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[120px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-30"
                   onClick={() => handleSort('status')}
                 >
                   <div className="flex items-center gap-1">
@@ -621,7 +622,7 @@ export default function TicketsPage() {
                 </TableHead>
                 {/* Updated */}
                 <TableHead
-                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-[100px]"
+                  className="px-4 py-4 text-[9px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors min-w-25"
                   onClick={() => handleSort('updatedAt')}
                 >
                   <div className="flex items-center gap-1">
@@ -630,7 +631,7 @@ export default function TicketsPage() {
                   </div>
                 </TableHead>
                 {/* Actions */}
-                <TableHead className="px-4 py-4 w-[100px]"></TableHead>
+                <TableHead className="px-4 py-4 w-25"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-zinc-50">
@@ -646,25 +647,25 @@ export default function TicketsPage() {
                     {t('admin_tickets.no_tickets_found')}
                   </TableCell>
                 </TableRow>
-              ) : tickets.map((t_item: any) => (
+              ) : tickets.map((t_item) => (
                 <TableRow key={t_item.id} className="hover:bg-blue-50/20 transition-colors group">
 
                   {/* Request Info */}
                   <TableCell className="px-5 py-3.5 whitespace-nowrap">
-                    <div className="font-semibold text-zinc-800 line-clamp-1 max-w-[200px] text-[12px]" title={t_item.description}>{t_item.description}</div>
+                    <div className="font-semibold text-zinc-800 line-clamp-1 max-w-50 text-[12px]" title={t_item.description}>{t_item.description}</div>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="font-black text-[9px] text-[#0F1059] bg-[#0F1059]/8 px-1.5 py-0.5 rounded-md tracking-wide">{t_item.request_code || 'N/A'}</span>
                       <span className="text-[9px] text-zinc-300">•</span>
                       <span className="text-[9px] text-zinc-400 font-medium">{new Date(t_item.createdAt).toLocaleDateString('en-GB')}</span>
                     </div>
                     {t_item.reason && (
-                      <div className="text-[9px] text-zinc-400 mt-0.5 italic line-clamp-1 max-w-[190px]" title={t_item.reason}>↪ {t_item.reason}</div>
+                      <div className="text-[9px] text-zinc-400 mt-0.5 italic line-clamp-1 max-w-47.5" title={t_item.reason}>↪ {t_item.reason}</div>
                     )}
                   </TableCell>
 
                   {/* Requester / Dept */}
                   <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <div className="text-[11px] font-semibold text-zinc-700 line-clamp-1 max-w-[150px]">{t_item.employee?.employee_name_th || t_item.user?.username || '-'}</div>
+                    <div className="text-[11px] font-semibold text-zinc-700 line-clamp-1 max-w-37.5">{t_item.employee?.employee_name_th || t_item.user?.email || '-'}</div>
                     {t_item.employee?.department && (
                       <div className="text-[9px] text-zinc-400 font-medium mt-0.5 flex items-center gap-1">
                         <span className="inline-block w-1.5 h-1.5 rounded-full bg-indigo-300" />
@@ -672,7 +673,7 @@ export default function TicketsPage() {
                       </div>
                     )}
                     {t_item.employee?.position && (
-                      <div className="text-[9px] text-zinc-300 italic mt-0.5 line-clamp-1 max-w-[150px]">{t_item.employee.position}</div>
+                      <div className="text-[9px] text-zinc-300 italic mt-0.5 line-clamp-1 max-w-37.5">{t_item.employee.position}</div>
                     )}
                   </TableCell>
 
@@ -711,7 +712,7 @@ export default function TicketsPage() {
 
                   {/* Dept Approver */}
                   <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <div className="text-[10px] font-medium text-zinc-600 max-w-[120px] truncate" title={t_item.approval || '-'}>
+                    <div className="text-[10px] font-medium text-zinc-600 max-w-30 truncate" title={t_item.approval || '-'}>
                       {t_item.approval || <span className="text-zinc-300 italic">—</span>}
                     </div>
                     {t_item.approval_date && (
@@ -738,7 +739,7 @@ export default function TicketsPage() {
 
                   {/* IT Approver */}
                   <TableCell className="px-4 py-3.5 whitespace-nowrap">
-                    <div className="text-[10px] font-medium text-zinc-600 max-w-[120px] truncate" title={t_item.it_approval || '-'}>
+                    <div className="text-[10px] font-medium text-zinc-600 max-w-30 truncate" title={t_item.it_approval || '-'}>
                       {t_item.it_approval || <span className="text-zinc-300 italic">—</span>}
                     </div>
                     {t_item.it_approval_date && (
@@ -793,6 +794,13 @@ export default function TicketsPage() {
                   {/* Actions */}
                   <TableCell className="px-4 py-3.5 whitespace-nowrap text-right">
                     <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                      <Link
+                        href={`/admin/requests/${t_item.id}`}
+                        className="p-2 rounded-lg bg-white border border-zinc-100 text-zinc-400 hover:text-[#0F1059] hover:border-[#0F1059]/20 transition-all shadow-sm"
+                        title="View Detail"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </Link>
                       <button
                         onClick={() => {
                           setPreviewData(t_item);
@@ -818,7 +826,7 @@ export default function TicketsPage() {
         </div>
 
         {/* Pagination UI Desktop */}
-        <div className="px-6 py-4 bg-zinc-50/50 border-t border-zinc-100 flex items-center justify-between min-w-[1400px]">
+        <div className="px-6 py-4 bg-zinc-50/50 border-t border-zinc-100 flex items-center justify-between min-w-350">
             <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
                {t('common.total')} {total} {t('admin_tickets.entry_count') || 'TICKETS'}
             </div>
@@ -880,7 +888,7 @@ export default function TicketsPage() {
                 </div>
                 <div>
                   <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'ผู้ใช้ระบบ' : 'System User'}</p>
-                  <p className="text-[11px] font-semibold text-zinc-600">{editingTicket.user?.username || '-'}</p>
+                  <p className="text-[11px] font-semibold text-zinc-600">{editingTicket.user?.email || '-'}</p>
                 </div>
                 <div>
                   <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'รหัสพนักงาน' : 'Emp. Code'}</p>
@@ -911,7 +919,7 @@ export default function TicketsPage() {
                   <div className="rounded-xl overflow-hidden border border-zinc-200 bg-white shadow-sm flex items-center justify-center p-2">
                     <a href={editingTicket.attachment} target="_blank" rel="noopener noreferrer" className="block text-center hover:opacity-90 transition-opacity">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={editingTicket.attachment} alt="Attachment" className="max-h-[300px] w-auto inline-block rounded-lg" />
+                      <img src={editingTicket.attachment} alt="Attachment" className="max-h-75 w-auto inline-block rounded-lg" />
                     </a>
                   </div>
                 </div>
@@ -981,7 +989,7 @@ export default function TicketsPage() {
               <textarea
                 required
                 readOnly={!!editingId}
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-[80px] resize-none"
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-20 resize-none"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
@@ -992,7 +1000,7 @@ export default function TicketsPage() {
               </label>
               <textarea
                 readOnly={!!editingId}
-                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-[80px] resize-none"
+                className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-20 resize-none"
                 value={formData.reason}
                 onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                 placeholder={locale === 'th' ? 'ระบุเหตุผลเพิ่มเติม (ถ้ามี)' : 'Optional additional reason...'}
@@ -1095,7 +1103,7 @@ export default function TicketsPage() {
             <div className="space-y-1">
               <label className="text-[9px] font-black text-zinc-400 uppercase">{t('admin_tickets.dept_reviewer_comment')}</label>
               <textarea
-                className="w-full bg-white border border-amber-100 rounded-lg px-3 py-2 text-xs resize-none min-h-[56px]"
+                className="w-full bg-white border border-amber-100 rounded-lg px-3 py-2 text-xs resize-none min-h-14"
                 value={formData.approval_comment}
                 onChange={(e) => setFormData({ ...formData, approval_comment: e.target.value })}
                 placeholder={locale === 'th' ? 'ความเห็นจากผู้อนุมัติแผนก...' : 'Department approver comment...'}
@@ -1144,7 +1152,7 @@ export default function TicketsPage() {
             <div className="space-y-1">
               <label className="text-[9px] font-black text-zinc-400 uppercase">{t('admin_tickets.it_auditor_comment')}</label>
               <textarea
-                className="w-full bg-white border border-[#0F1059]/10 rounded-lg px-3 py-2 text-xs resize-none min-h-[56px]"
+                className="w-full bg-white border border-[#0F1059]/10 rounded-lg px-3 py-2 text-xs resize-none min-h-14"
                 value={formData.it_approval_comment}
                 onChange={(e) => setFormData({ ...formData, it_approval_comment: e.target.value })}
                 placeholder={locale === 'th' ? 'ความเห็นจาก IT...' : 'IT approver comment...'}
@@ -1168,14 +1176,14 @@ export default function TicketsPage() {
 
           {/* ── ACTIONS ── */}
           <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-zinc-100">
-            <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)} className="flex-1 min-w-[120px] h-12 rounded-xl text-[11px] font-black uppercase tracking-widest">
+            <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)} className="flex-1 min-w-30 h-12 rounded-xl text-[11px] font-black uppercase tracking-widest">
               {t('common.cancel')}
             </Button>
             {editingId && (
               <Button
                 type="button"
                 onClick={handleExportPDF}
-                className="flex-1 min-w-[120px] h-12 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 text-[11px] font-black uppercase tracking-widest"
+                className="flex-1 min-w-30 h-12 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-100 text-[11px] font-black uppercase tracking-widest"
               >
                 <Eye className="mr-2 h-4 w-4" /> {t('admin_tickets.view_pdf')}
               </Button>
@@ -1183,7 +1191,7 @@ export default function TicketsPage() {
             <Button
               type="submit"
               disabled={isSaving}
-              className="flex-2 min-w-[200px] h-12 rounded-xl bg-[#0F1059] hover:bg-black text-white shadow-xl shadow-[#0F1059]/10 text-[11px] font-black uppercase tracking-widest transition-all"
+              className="flex-2 min-w-50 h-12 rounded-xl bg-[#0F1059] hover:bg-black text-white shadow-xl shadow-[#0F1059]/10 text-[11px] font-black uppercase tracking-widest transition-all"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : t('admin_tickets.save_changes')}
             </Button>

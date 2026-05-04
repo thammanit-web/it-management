@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
+import { auth } from "@/lib/auth";
 
 export async function GET(
   _request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   try {
     const { id } = await context.params;
     const user = await prisma.user.findUnique({
@@ -32,27 +35,21 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
   try {
     const { id } = await context.params;
     const body = await request.json();
-    const { username, password, role, employeeId } = body;
-
-    const data: any = {
-      username,
-      role,
-      employeeId,
-    };
-
-    if (password) {
-      data.password = await bcrypt.hash(password, 10);
-    }
+    const { role, employeeId } = body;
 
     const user = await prisma.user.update({
-      where: { id: id },
-      data,
-      include: {
-        employee: true,
+      where: { id },
+      data: {
+        role,
+        employeeId: employeeId || null,
       },
+      include: { employee: true },
     });
 
     return NextResponse.json(user);
@@ -66,6 +63,9 @@ export async function DELETE(
   _request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
   try {
     const { id } = await context.params;
     await prisma.user.delete({

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Document,
   Page,
@@ -250,15 +251,58 @@ const styles = StyleSheet.create({
   }
 });
 
+interface ITRequestData {
+  createdAt?: string | Date | null;
+  request_code?: string | null;
+  equipment_code?: string | null;
+  type_request?: string | null;
+  description?: string | null;
+  reason?: string | null;
+  priority?: string | null;
+  approval?: string | null;
+  approval_status?: string | null;
+  approval_comment?: string | null;
+  approval_date?: string | Date | null;
+  it_approval?: string | null;
+  it_approval_status?: string | null;
+  it_approval_comment?: string | null;
+  it_approval_date?: string | Date | null;
+  quantity?: number | null;
+  employee?: {
+    employee_code?: string | null;
+    employee_name_th?: string | null;
+    department?: string | null;
+    position?: string | null;
+  } | null;
+  user?: {
+    email?: string | null;
+    role?: string | null;
+    employee?: {
+      employee_code?: string | null;
+      employee_name_th?: string | null;
+      department?: string | null;
+      position?: string | null;
+    } | null;
+  } | null;
+  equipmentList?: {
+    equipmentEntry?: {
+      list?: string | null;
+      item_name?: string | null;
+      brand_name?: string | null;
+      purchaseOrder?: { detail?: string | null } | null;
+    } | null;
+  } | null;
+}
+
 interface ITRequestPDFProps {
-  data: any;
+  data: ITRequestData;
   locale?: 'en' | 'th';
 }
 
 export const ITRequestPDF: React.FC<ITRequestPDFProps> = ({ data, locale = 'th' }) => {
   if (!data) return null;
 
-  const formatDate = (date: any) => {
+  const formatDate = (date: string | Date | null | undefined) => {
     if (!date) return "";
     return new Date(date).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-GB', {
       day: '2-digit',
@@ -286,7 +330,7 @@ export const ITRequestPDF: React.FC<ITRequestPDFProps> = ({ data, locale = 'th' 
     return map[type] || type;
   };
 
-  const isOther = !["REPAIR", "ACCESS", "BORROW_ACC", "PURCHASE"].includes(data.type_request) && !isEquipment;
+  const isOther = !["REPAIR", "ACCESS", "BORROW_ACC", "PURCHASE"].includes(data.type_request ?? "") && !isEquipment;
   const eqCode = data.equipment_code || data.request_code || "";
 
   const labels = {
@@ -393,7 +437,7 @@ export const ITRequestPDF: React.FC<ITRequestPDFProps> = ({ data, locale = 'th' 
                 <View style={[styles.square, isOther ? styles.squareChecked : {}]}>
                   {isOther && <View style={styles.checkedDot} />}
                 </View>
-                <Text>{labels.other} {isOther ? `: ${getTypeName(data.type_request)}` : ""}</Text>
+                <Text>{labels.other} {isOther ? `: ${getTypeName(data.type_request ?? "")}` : ""}</Text>
               </View>
             </View>
             <View style={{ width: '35%', borderLeft: '0.5pt solid #ddd', paddingLeft: 15 }}>

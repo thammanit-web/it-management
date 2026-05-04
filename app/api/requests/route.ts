@@ -33,7 +33,7 @@ export async function GET(request: Request) {
         { reason: { contains: search, mode: "insensitive" } },
         { employee: { employee_name_th: { contains: search, mode: "insensitive" } } },
         { employee: { department: { contains: search, mode: "insensitive" } } },
-        { user: { username: { contains: search, mode: "insensitive" } } },
+        { user: { email: { contains: search, mode: "insensitive" } } },
       ];
     }
     if (status !== "ALL") where.status = status;
@@ -194,7 +194,7 @@ export async function POST(request: Request) {
     try {
       const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3003";
 
-      const creatorName = (newRequest as any).employee?.employee_name_th || (newRequest as any).user?.username || 'Unknown';
+      const creatorName = (newRequest as any).employee?.employee_name_th || session.user?.name || 'Unknown';
       const creatorPosition = (newRequest as any).employee?.position || '-';
       const creatorDept = (newRequest as any).employee?.department || '-';
       const creatorDisplay = `${creatorName} (ตำแหน่ง: ${creatorPosition}, แผนก: ${creatorDept})`;

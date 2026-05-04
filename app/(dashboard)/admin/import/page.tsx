@@ -1,18 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  FileBox, 
-  Users, 
-  FileText, 
-  Download, 
-  Upload, 
-  CheckCircle2, 
-  AlertCircle, 
-  Loader2, 
+import {
+  FileBox,
+  Users,
+  FileText,
+  Download,
+  Upload,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
   ArrowRight,
   ShieldCheck,
   Box,
+  StickyNote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -21,7 +22,7 @@ import { cn } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export-utils";
 import { useTranslation } from "@/lib/i18n/LanguageContext";
 
-type ImportType = "PURCHASE_ORDER" | "REQUEST" | "EMPLOYEE_USER";
+type ImportType = "PURCHASE_ORDER" | "REQUEST" | "EMPLOYEE_USER" | "IT_NOTE";
 
 interface ImportStatus {
   success: boolean;
@@ -84,17 +85,36 @@ export default function ImportPage() {
       icon: Users,
       template: [
         {
-          employee_code: "EMP001",
-          employee_name_th: "สมชาย ใจดี",
-          employee_name_en: "Somchai Jaidee",
-          gender: "M",
+          name: "Austin Zhang",
+          email: "Austin@xxx.co.th",
           position: "Manager",
           department: "IT",
           work_location: "Head Office",
-          username: "somchai.j",
-          password: "password123",
+          role: "user"
+        },
+        {
+          name: "Janice Jang",
+          email: "Janice@xxx.co.th",
+          position: "",
+          department: "",
+          work_location: "",
           role: "user"
         }
+      ]
+    },
+    {
+      id: "IT_NOTE" as ImportType,
+      title: "IT Notes",
+      thTitle: "บันทึก IT",
+      description: "Import IT notes with variable detail rows (up to any number of label/value pairs)",
+      icon: StickyNote,
+      template: [
+        { title: "Server Info", content: "Main server details", isPrivate: "false", isPublished: "true",  detail_label: "IP",           detail_value: "192.168.1.10" },
+        { title: "Server Info", content: "",                    isPrivate: "",      isPublished: "",       detail_label: "OS",           detail_value: "Ubuntu 22.04" },
+        { title: "Server Info", content: "",                    isPrivate: "",      isPublished: "",       detail_label: "RAM",          detail_value: "16GB"         },
+        { title: "Server Info", content: "",                    isPrivate: "",      isPublished: "",       detail_label: "Storage",      detail_value: "1TB"          },
+        { title: "Network Config", content: "Office network",  isPrivate: "false", isPublished: "false",  detail_label: "Gateway",      detail_value: "192.168.1.1"  },
+        { title: "Network Config", content: "",                 isPrivate: "",      isPublished: "",       detail_label: "DNS",          detail_value: "8.8.8.8"      },
       ]
     }
   ];
@@ -171,7 +191,7 @@ export default function ImportPage() {
       </header>
 
       {/* Import Type Selection */}
-      <div className="grid grid-cols-3 gap-4 ">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 ">
         {importOptions.map((option) => (
           <button
             key={option.id}
@@ -246,7 +266,7 @@ export default function ImportPage() {
               <label
                 htmlFor="file-upload"
                 className={cn(
-                  "flex flex-col items-center justify-center w-full min-h-[220px] border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200",
+                  "flex flex-col items-center justify-center w-full min-h-55 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200",
                   file 
                     ? "border-primary/50 bg-primary/5" 
                     : "border-slate-200 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-900/10 hover:bg-slate-50 dark:hover:bg-slate-900/30"

@@ -52,7 +52,7 @@ interface BorrowGroup {
     }
   }>;
   user?: {
-    username: string;
+    email?: string | null;
     employee?: {
       employee_name_th: string;
       employee_code: string;
@@ -71,7 +71,7 @@ interface Equipment {
 
 interface User {
   id: string;
-  username: string;
+  email?: string | null;
 }
 
 export default function AdminEquipmentRequestsPage() {
@@ -195,7 +195,7 @@ export default function AdminEquipmentRequestsPage() {
   const filteredRequests = requests
     .filter(g => {
       const searchLow = search.toLowerCase();
-      const matchesSearch = (g.user?.username || "").toLowerCase().includes(searchLow) ||
+      const matchesSearch = (g.user?.email || "").toLowerCase().includes(searchLow) ||
                            (g.user?.employee?.employee_name_th || "").toLowerCase().includes(searchLow) ||
                            (g.group_code || "").toLowerCase().includes(searchLow) ||
                            g.requests.some(r => 
@@ -209,8 +209,8 @@ export default function AdminEquipmentRequestsPage() {
       return matchesSearch && matchesItStatus && matchesDeptStatus;
     })
     .sort((a, b) => {
-      const aValue = (a as any)[sortConfig.key] || "";
-      const bValue = (b as any)[sortConfig.key] || "";
+      const aValue = (a[sortConfig.key] ?? "") as string;
+      const bValue = (b[sortConfig.key] ?? "") as string;
       
       if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
       if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -245,13 +245,13 @@ export default function AdminEquipmentRequestsPage() {
       return;
     }
 
-    const flatRows: any[] = [];
+    const flatRows: Record<string, string | number | undefined>[] = [];
     groupsToExport.forEach(g => {
        g.requests.forEach(r => {
           flatRows.push({
             "Group Code": g.group_code,
             "Date": new Date(g.createdAt).toLocaleDateString('en-GB'),
-            "Requester": g.user?.employee?.employee_name_th || g.user?.username,
+            "Requester": g.user?.employee?.employee_name_th || g.user?.email || undefined,
             "Item": r.equipmentList?.equipmentEntry?.list || r.equipmentList?.equipmentEntry?.item_name,
             "Code": r.equipment_code,
             "Qty": r.quantity,
@@ -275,7 +275,7 @@ export default function AdminEquipmentRequestsPage() {
       setEditingId(group.id);
       setSelectedGroup(group);
       setFormData({
-        userId: group.user?.username || "", 
+        userId: group.user?.email || "",
         equipment_list_id: "BATCH",
         quantity: group.requests.reduce((acc, r) => acc + r.quantity, 0),
         reason: group.reason || "",
@@ -285,7 +285,7 @@ export default function AdminEquipmentRequestsPage() {
         it_approval: group.it_approval || "",
         it_approval_status: group.it_approval_status || "PENDING",
         it_approval_comment: group.it_approval_comment || ""
-      } as any);
+      });
     } else {
       setEditingId(null);
       setSelectedGroup(null);
@@ -312,7 +312,7 @@ export default function AdminEquipmentRequestsPage() {
       const url = editingId ? `/api/equipment-requests/${editingId}` : "/api/equipment-requests";
       const method = editingId ? "PATCH" : "POST";
       
-      let payload: any;
+      let payload: Record<string, unknown>;
       if (editingId) {
         payload = {
           approval_status: formData.approval_status,
@@ -359,7 +359,7 @@ export default function AdminEquipmentRequestsPage() {
 
   const updateStatusInline = async (id: string, field: string, status: string) => {
     try {
-      const payload: any = {};
+      const payload: Record<string, string> = {};
       payload[field] = status;
       if (field === 'it_approval_status') {
          payload.it_approval = session?.user?.name || "IT Admin";
@@ -530,7 +530,7 @@ export default function AdminEquipmentRequestsPage() {
                   <TableCell className="px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                         <User2 className="h-3.5 w-3.5 text-zinc-300" />
-                        <span className="text-[11px] font-black text-zinc-700 uppercase">{g.user?.employee?.employee_name_th || g.user?.username}</span>
+                        <span className="text-[11px] font-black text-zinc-700 uppercase">{g.user?.employee?.employee_name_th || g.user?.email}</span>
                     </div>
                   </TableCell>
                   <TableCell className="px-4 py-4 whitespace-nowrap">
@@ -633,8 +633,8 @@ export default function AdminEquipmentRequestsPage() {
                  <div className="grid grid-cols-2 gap-4 pb-3 border-b border-zinc-200/50">
                     <div>
                        <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'ผู้ร้องขอ' : 'Requester'}</p>
-                       <p className="text-[11px] font-bold text-zinc-700">{selectedGroup.user?.employee?.employee_name_th || selectedGroup.user?.username || '-'}</p>
-                       <p className="text-[9px] text-zinc-400 mt-0.5 font-mono">{selectedGroup.user?.employee?.employee_code || selectedGroup.user?.username || '-'}</p>
+                       <p className="text-[11px] font-bold text-zinc-700">{selectedGroup.user?.employee?.employee_name_th || selectedGroup.user?.email || '-'}</p>
+                       <p className="text-[9px] text-zinc-400 mt-0.5 font-mono">{selectedGroup.user?.employee?.employee_code || selectedGroup.user?.email || '-'}</p>
                     </div>
                     <div>
                        <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest mb-0.5">{locale === 'th' ? 'วันที่สร้าง' : 'Created At'}</p>
@@ -646,7 +646,7 @@ export default function AdminEquipmentRequestsPage() {
 
                  <div className="pb-3 border-b border-zinc-200/50 space-y-1">
                     <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest">{t('po.reason')}</p>
-                    <p className="text-[12px] font-medium text-zinc-600 leading-relaxed max-h-[80px] overflow-y-auto pr-2 custom-scrollbar">
+                    <p className="text-[12px] font-medium text-zinc-600 leading-relaxed max-h-20 overflow-y-auto pr-2 custom-scrollbar">
                        {selectedGroup.reason || t('common.no_info')}
                     </p>
                  </div>
@@ -686,7 +686,7 @@ export default function AdminEquipmentRequestsPage() {
                         onChange={(e) => setFormData({...formData, userId: e.target.value})}
                      >
                         <option value="">-- SELECT USER --</option>
-                        {users.map(u => <option key={u.id} value={u.username}>{u.username}</option>)}
+                        {users.map(u => <option key={u.id} value={u.email || u.id}>{u.email || u.id}</option>)}
                      </select>
                   </div>
                   <div className="space-y-1.5">
@@ -698,7 +698,7 @@ export default function AdminEquipmentRequestsPage() {
                         onChange={(e) => setFormData({...formData, equipment_list_id: e.target.value})}
                      >
                         <option value="">-- SELECT ITEM --</option>
-                        {inventory.map((item: any) => (
+                        {inventory.map((item) => (
                           <option key={item.id} value={item.id} disabled={item.remaining <= 0}>
                             {item.equipmentEntry?.list || item.equipmentEntry?.item_name} (Stock: {item.remaining})
                           </option>
@@ -710,7 +710,7 @@ export default function AdminEquipmentRequestsPage() {
                <div className="space-y-1.5">
                   <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('po.reason')}</label>
                   <textarea 
-                     className="w-full bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-3 text-sm font-medium outline-none min-h-[80px] focus:border-[#0F1059]/30 shadow-sm transition-all"
+                     className="w-full bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-3 text-sm font-medium outline-none min-h-20 focus:border-[#0F1059]/30 shadow-sm transition-all"
                      value={formData.reason}
                      onChange={(e) => setFormData({...formData, reason: e.target.value})}
                   />
@@ -746,7 +746,7 @@ export default function AdminEquipmentRequestsPage() {
               <div className="space-y-2">
                  <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('borrowing.dept_comment')}</label>
                  <textarea 
-                    className="w-full bg-white border border-amber-100 rounded-lg px-4 py-3 text-xs font-medium shadow-sm outline-none min-h-[60px]"
+                    className="w-full bg-white border border-amber-100 rounded-lg px-4 py-3 text-xs font-medium shadow-sm outline-none min-h-15"
                     value={formData.approval_comment}
                     onChange={(e) => setFormData({...formData, approval_comment: e.target.value})}
                  />
@@ -781,7 +781,7 @@ export default function AdminEquipmentRequestsPage() {
               <div className="space-y-2">
                  <label className="text-[9px] font-black text-zinc-400 uppercase tracking-widest ml-1">{t('borrowing.it_comment')}</label>
                  <textarea 
-                    className="w-full bg-white border border-[#0F1059]/10 rounded-lg px-4 py-3 text-xs font-medium shadow-sm outline-none min-h-[60px]"
+                    className="w-full bg-white border border-[#0F1059]/10 rounded-lg px-4 py-3 text-xs font-medium shadow-sm outline-none min-h-15"
                     placeholder="Stock check result..."
                     value={formData.it_approval_comment}
                     onChange={(e) => setFormData({...formData, it_approval_comment: e.target.value})}

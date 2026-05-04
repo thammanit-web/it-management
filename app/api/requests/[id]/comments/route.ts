@@ -15,7 +15,7 @@ export async function GET(
       where: { requestId: id },
       include: {
         user: {
-          select: { username: true, role: true }
+          select: { email: true, role: true }
         }
       },
       orderBy: { createdAt: "asc" }
@@ -43,12 +43,12 @@ export async function POST(
       data: {
         content,
         requestId: id,
-        userId: (session.user as any).id,
+        userId: session.user.id,
         parentId: parentId || null
       },
       include: {
         user: {
-          select: { username: true, role: true }
+          select: { email: true, role: true }
         }
       }
     });

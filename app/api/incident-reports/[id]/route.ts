@@ -13,7 +13,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
     const report = await prisma.incidentReport.findUnique({
       where: { id },
       include: {
-        user: { select: { username: true } }
+        user: { select: { email: true, id: true } }
       }
     });
 
