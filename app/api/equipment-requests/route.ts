@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     if (search) {
        where.OR = [
           { group_code: { contains: search, mode: 'insensitive' } },
-          { user: { username: { contains: search, mode: 'insensitive' } } },
+          { user: { email: { contains: search, mode: 'insensitive' } } },
           { user: { employee: { employee_name_th: { contains: search, mode: 'insensitive' } } } },
           { reason: { contains: search, mode: 'insensitive' } },
        ];
@@ -168,7 +168,7 @@ export async function POST(request: Request) {
     try {
       const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3003";
 
-      const creatorName = (result as any).user?.employee?.employee_name_th || (result as any).user?.username || (session?.user as any)?.name || 'Unknown';
+      const creatorName = (result as any).user?.employee?.employee_name_th || session?.user?.name || 'Unknown';
       const creatorPosition = (result as any).user?.employee?.position || '-';
       const creatorDept = (result as any).user?.employee?.department || '-';
       const creatorDisplay = `${creatorName} (ตำแหน่ง: ${creatorPosition}, แผนก: ${creatorDept})`;

@@ -531,7 +531,7 @@ function RequestsContent() {
                         <div className="rounded-xl overflow-hidden border border-border bg-black/5 flex items-center justify-center">
                            <a href={viewRequest.attachment} target="_blank" rel="noopener noreferrer" className="w-full text-center hover:opacity-90 transition-opacity">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={viewRequest.attachment} alt="Attachment" className="max-h-[300px] max-w-full object-contain mx-auto" />
+                              <img src={viewRequest.attachment} alt="Attachment" className="max-h-75 max-w-full object-contain mx-auto" />
                            </a>
                         </div>
                      </div>
@@ -539,7 +539,7 @@ function RequestsContent() {
 
                   <div className="space-y-1 pt-3 border-t border-border/50">
                      <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none mb-2">{t('requests.reason_urgency')}</p>
-                     <div className="p-3 rounded-lg bg-surface/50 border border-border min-h-[60px]">
+                     <div className="p-3 rounded-lg bg-surface/50 border border-border min-h-15">
                         <p className="text-[13px] font-medium text-foreground/80 leading-relaxed">
                            {viewRequest?.reason || t('requests.no_info')}
                         </p>
@@ -759,7 +759,7 @@ function RequestsContent() {
                            </div>
 
                            {invSearch.length > 0 && (
-                              <div className="space-y-1.5 max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
+                              <div className="space-y-1.5 max-h-37.5 overflow-y-auto custom-scrollbar pr-2">
                                  {inventory
                                     .filter(item => {
                                        const s = invSearch.toLowerCase();
@@ -792,7 +792,7 @@ function RequestsContent() {
 
                      <textarea
                         required
-                        className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-[80px] focus:border-[#0F1059]/20 transition-all font-sans"
+                        className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-20 focus:border-[#0F1059]/20 transition-all font-sans"
                         placeholder={formData.type_request === "PURCHASE" ? t('requests.specify_details') : t('requests.fault_details')}
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -802,7 +802,7 @@ function RequestsContent() {
                   <div className="space-y-1.5">
                      <label className="text-[11px] font-black text-zinc-400 uppercase tracking-widest">{t('requests.reason_urgency')}</label>
                      <textarea
-                        className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-[80px] focus:border-[#0F1059]/20 transition-all font-sans"
+                        className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-3 text-sm font-medium outline-none min-h-20 focus:border-[#0F1059]/20 transition-all font-sans"
                         placeholder={t('requests.urgent_reason')}
                         value={formData.reason}
                         onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
@@ -847,7 +847,7 @@ function RequestsContent() {
                      required
                      disabled
                      className="w-full border bg-black/10 border-zinc-200 rounded-xl px-4 py-3 text-sm font-medium outline-none appearance-none cursor-not-allowed transition-all shadow-sm font-sans"
-                     value={formData.employeeId}
+                     value={formData.employeeId ?? ""}
                      onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
                   >
                      <option value="">{t('requests.select_employee')}</option>
@@ -1047,7 +1047,7 @@ function RequestsContent() {
 
 export default function MyRequestsPage() {
    return (
-      <Suspense fallback={<div className="flex items-center justify-center min-h-[400px]"><Loader2 className="h-8 w-8 animate-spin text-[#0F1059]" /></div>}>
+      <Suspense fallback={<div className="flex items-center justify-center min-h-100"><Loader2 className="h-8 w-8 animate-spin text-[#0F1059]" /></div>}>
          <RequestsContent />
       </Suspense>
    );

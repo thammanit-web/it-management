@@ -125,7 +125,7 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
           <span className="text-sm truncate flex-1">{link.name}</span>
         )}
         {!isCollapsed && link.badge && (
-           <span className="bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-lg shadow-rose-500/20">
+           <span className="bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-4.5 text-center shadow-lg shadow-rose-500/20">
               {link.badge}
            </span>
         )}
@@ -206,7 +206,7 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
       {/* Desktop Sidebar */}
       <aside className={cn(
         "hidden lg:block h-screen fixed left-0 top-0 z-40 transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-[72px]" : "w-[240px]"
+        isCollapsed ? "w-18" : "w-60"
       )}>
         {sidebarContent}
       </aside>
@@ -226,7 +226,7 @@ export function Sidebar({ isCollapsed, onToggle, isMobileOpen, onCloseMobile }: 
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-[280px] z-50 lg:hidden"
+              className="fixed inset-y-0 left-0 w-70 z-50 lg:hidden"
             >
               {sidebarContent}
             </motion.aside>

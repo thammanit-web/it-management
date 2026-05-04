@@ -44,7 +44,7 @@ interface RequestItem {
   priority?: string;
   requests?: any[];       // For Equipment batch items
   user?: {
-    username?: string;
+    email?: string | null;
     employee?: {
       employee_name_th?: string;
       employee_code?: string;
@@ -182,7 +182,7 @@ export default function ApprovalsPage() {
       const code = r.__type === "EQUIPMENT" ? (r.group_code || "") : (r.request_code || "");
       
       const matchesSearch = r.__type === "EQUIPMENT" 
-         ? ((r.user?.username || "").toLowerCase().includes(searchLow) ||
+         ? ((r.user?.email || "").toLowerCase().includes(searchLow) ||
             (r.user?.employee?.employee_name_th || "").toLowerCase().includes(searchLow) ||
             (r.reason || "").toLowerCase().includes(searchLow) ||
             (code.toLowerCase().includes(searchLow)) ||
@@ -270,7 +270,7 @@ export default function ApprovalsPage() {
             </div>
             
             <div className="md:col-span-6 flex flex-wrap items-center gap-2 justify-end">
-               <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-lg border border-border h-10 min-w-[140px]">
+               <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-lg border border-border h-10 min-w-35">
                   <Filter className="h-3.5 w-3.5 text-accent" />
                   <select 
                      className="bg-transparent border-none outline-none text-[10px] font-black uppercase text-primary w-full cursor-pointer"
@@ -374,7 +374,7 @@ export default function ApprovalsPage() {
                            <TableCell className="py-3 px-4">
                               <p className="text-[13px] font-bold text-foreground/80 uppercase truncate">
                                  {r.__type === "EQUIPMENT" 
-                                    ? (r.user?.employee?.employee_name_th || r.user?.username || 'GUEST') 
+                                    ? (r.user?.employee?.employee_name_th || r.user?.email || 'GUEST') 
                                     : (r.employee?.employee_name_th || 'GUEST')}
                               </p>
                            </TableCell>
@@ -423,7 +423,7 @@ export default function ApprovalsPage() {
                       <div className="flex items-start justify-between gap-3">
                          <div className="space-y-1 flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                               <span className="text-[9px] font-black text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 tracking-widest uppercase truncate max-w-[120px] italic">#{requestCode}</span>
+                               <span className="text-[9px] font-black text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 tracking-widest uppercase truncate max-w-30 italic">#{requestCode}</span>
                                <Badge variant={r.__type === "EQUIPMENT" ? "default" : "secondary"} className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border-none">
                                  {r.__type === "EQUIPMENT" ? t('approvals.equipment_type') : t('approvals.ticket_type')}
                                </Badge>
@@ -446,7 +446,7 @@ export default function ApprovalsPage() {
                             </div>
                             <p className="text-[11px] font-bold text-foreground/70 uppercase">
                                {r.__type === "EQUIPMENT" 
-                                  ? (r.user?.employee?.employee_name_th || r.user?.username || 'GUEST') 
+                                  ? (r.user?.employee?.employee_name_th || r.user?.email || 'GUEST') 
                                   : (r.employee?.employee_name_th || 'GUEST')}
                             </p>
                         </div>
@@ -512,7 +512,7 @@ export default function ApprovalsPage() {
                           <Boxes className="h-3.5 w-3.5" />
                           {locale === 'th' ? 'รายการอุปกรณ์ที่เบิก' : 'ITEMIZED LIST'}
                        </p>
-                       <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
+                       <div className="space-y-2 max-h-50 overflow-y-auto custom-scrollbar pr-1">
                           {confirmData.fullData.requests.map((item: any) => (
                              <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-surface/50 border border-border group hover:bg-surface transition-colors shadow-sm">
                                 <div className="min-w-0 flex-1 pr-4">
@@ -566,7 +566,7 @@ export default function ApprovalsPage() {
                    </div>
                    <p className="text-[12px] font-bold text-primary uppercase truncate leading-none">
                       {confirmData.type === "EQUIPMENT" 
-                         ? (confirmData.fullData?.user?.employee?.employee_name_th || confirmData.fullData?.user?.username || 'GUEST') 
+                         ? (confirmData.fullData?.user?.employee?.employee_name_th || confirmData.fullData?.user?.email || 'GUEST') 
                          : (confirmData.fullData?.employee?.employee_name_th || 'GUEST')}
                    </p>
                 </div>
@@ -606,7 +606,7 @@ export default function ApprovalsPage() {
                {t('approvals.it_comment')}
             </label>
             <textarea 
-              className="w-full bg-surface border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[13px] font-medium min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary/5 transition-all shadow-inner placeholder:text-accent/30"
+              className="w-full bg-surface border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-[13px] font-medium min-h-30 focus:outline-none focus:ring-2 focus:ring-primary/5 transition-all shadow-inner placeholder:text-accent/30"
               placeholder={t('approvals.it_comment_placeholder')}
               value={confirmData.comment}
               onChange={(e) => setConfirmData({...confirmData, comment: e.target.value})}

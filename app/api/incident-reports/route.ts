@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
         include: {
-          user: { select: { username: true } },
+          user: { select: { email: true, id: true } },
         }
       }),
       prisma.incidentReport.count({ where }),

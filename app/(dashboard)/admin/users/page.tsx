@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { Search, Loader2, Users, Plus, Edit2, Trash2, User as UserIcon, ChevronUp, ChevronDown } from "lucide-react";
-import { 
-  Table, 
-  TableHeader, 
-  TableBody, 
-  TableHead, 
-  TableRow, 
-  TableCell 
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -19,8 +19,9 @@ import { useTranslation } from "@/lib/i18n/LanguageContext";
 
 interface User {
   id: string;
-  username: string;
+  email?: string | null;
   role: string;
+  createdAt?: string;
   employee?: {
     employee_name_th: string;
     employee_code: string;
@@ -43,10 +44,9 @@ export default function UsersPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // Filters & Sorting logic states
   const [filterRole, setFilterRole] = useState("ALL");
   const [sortConfig, setSortConfig] = useState<{ key: keyof User; direction: 'asc' | 'desc' }>({
-    key: 'username',
+    key: 'email',
     direction: 'asc'
   });
   const [page, setPage] = useState(1);
@@ -54,29 +54,20 @@ export default function UsersPage() {
   const [total, setTotal] = useState(0);
   const limit = 50;
 
-  // Form State
+  // Form only needs role + employee link for MS365 users
   const [formData, setFormData] = useState({
-    username: "",
-    password: "",
     role: "user",
     employeeId: ""
   });
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
+  useEffect(() => { fetchEmployees(); }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchUsersList();
-    }, 300);
+    const timer = setTimeout(() => { fetchUsersList(); }, 300);
     return () => clearTimeout(timer);
   }, [search, filterRole, sortConfig, page]);
 
-  // Reset page to 1 when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [search, filterRole, sortConfig]);
+  useEffect(() => { setPage(1); }, [search, filterRole, sortConfig]);
 
   const fetchUsersList = async () => {
     setIsLoading(true);
@@ -102,62 +93,49 @@ export default function UsersPage() {
       setIsLoading(false);
     }
   };
+
   const fetchEmployees = async () => {
     try {
       const res = await fetch("/api/employees?limit=1000");
       const result = await res.json();
-      if (Array.isArray(result)) {
-        setEmployees(result);
-      } else if (result && Array.isArray(result.data)) {
-        setEmployees(result.data);
-      }
+      if (Array.isArray(result)) setEmployees(result);
+      else if (result && Array.isArray(result.data)) setEmployees(result.data);
     } catch (error) {
       console.error("Fetch employees error:", error);
     }
   };
 
   const handleSort = (key: keyof User) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
   };
 
   const openModal = (user?: User) => {
     if (user) {
       setEditingId(user.id);
       setFormData({
-        username: user.username,
-        password: "", 
         role: user.role,
         employeeId: (user as any).employeeId || ""
       });
     } else {
       setEditingId(null);
-      setFormData({
-        username: "",
-        password: "",
-        role: "user",
-        employeeId: ""
-      });
+      setFormData({ role: "user", employeeId: "" });
     }
     setIsModalOpen(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editingId) return; // MS365 users are created on first login — no manual creation
     setIsSaving(true);
     try {
-      const url = editingId ? `/api/users/${editingId}` : "/api/users";
-      const method = editingId ? "PATCH" : "POST";
-
-      const res = await fetch(url, {
-        method,
+      const res = await fetch(`/api/users/${editingId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
-
       if (res.ok) {
         setIsModalOpen(false);
         fetchUsersList();
@@ -194,24 +172,20 @@ export default function UsersPage() {
           </h1>
           <p className="text-[12px] font-medium text-zinc-500 uppercase tracking-widest mt-2">{t('users.subtitle')}</p>
         </div>
-        <Button onClick={() => openModal()} className="rounded-lg bg-[#0F1059] hover:bg-black h-12 px-8 font-black uppercase tracking-widest text-[13px] transition-all shadow-xl shadow-[#0F1059]/10">
-          <Plus className="mr-2 h-4 w-4" /> {t('users.create_user')}
-        </Button>
       </header>
 
       {/* Filter Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-center p-4 rounded-xl border border-zinc-100 bg-white/50 shadow-sm font-sans uppercase">
         <div className="flex items-center gap-3 px-4 py-2 bg-zinc-50 rounded-lg border border-zinc-100 group focus-within:border-[#0F1059]/30 transition-all lg:col-span-3">
              <Search className="h-4 w-4 text-zinc-400 group-focus-within:text-[#0F1059]" />
-             <input 
+             <input
                 className="bg-transparent border-none outline-none text-[10px] font-black uppercase w-full"
                 placeholder={t('users.search_placeholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
              />
         </div>
-        
-        <select 
+        <select
           className="bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-2.5 text-[12px] font-black uppercase outline-none text-zinc-600 focus:border-[#0F1059]/30 font-sans cursor-pointer transition-all"
           value={filterRole}
           onChange={(e) => setFilterRole(e.target.value)}
@@ -227,18 +201,18 @@ export default function UsersPage() {
           <Table className="w-full text-left font-sans">
             <TableHeader className="bg-zinc-50/50">
               <TableRow className="border-none">
-                <TableHead 
+                <TableHead
                    className="px-6 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
-                   onClick={() => handleSort('username')}
+                   onClick={() => handleSort('email')}
                 >
                   <div className="flex items-center gap-1">
-                    {t('users.username')}
-                    {sortConfig.key === 'username' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
+                    {locale === 'th' ? 'อีเมล Microsoft 365' : 'Microsoft 365 Email'}
+                    {sortConfig.key === 'email' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                   </div>
                 </TableHead>
                 <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{t('users.linked_identity')}</TableHead>
                 <TableHead className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest">{locale === 'th' ? 'รหัสพนักงาน' : 'EMP CODE'}</TableHead>
-                <TableHead 
+                <TableHead
                    className="px-4 py-5 text-[10px] font-black text-[#0F1059] uppercase tracking-widest cursor-pointer hover:bg-zinc-100 transition-colors"
                    onClick={() => handleSort('role')}
                 >
@@ -272,7 +246,7 @@ export default function UsersPage() {
                            <UserIcon className="h-5 w-5 text-zinc-400" />
                         </div>
                         <div className="flex flex-col">
-                           <span className="font-black text-[#0F1059] uppercase tracking-tight text-sm">{user.username}</span>
+                           <span className="font-black text-[#0F1059] tracking-tight text-sm">{user.email || '-'}</span>
                            <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest leading-none mt-1">UID: {user.id.slice(-8).toUpperCase()}</span>
                         </div>
                      </div>
@@ -287,8 +261,8 @@ export default function UsersPage() {
                     </span>
                   </TableCell>
                   <TableCell className="px-4 py-4 whitespace-nowrap">
-                     <Badge 
-                       className={cn("rounded-lg text-[10px] font-black uppercase tracking-widest px-3 py-1 border-none shadow-none", 
+                     <Badge
+                       className={cn("rounded-lg text-[10px] font-black uppercase tracking-widest px-3 py-1 border-none shadow-none",
                          user.role === "admin" ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"
                        )}
                      >
@@ -297,7 +271,7 @@ export default function UsersPage() {
                   </TableCell>
                   <TableCell className="px-4 py-4 whitespace-nowrap">
                     <span className="text-[10px] font-bold text-zinc-400">
-                      {(user as any).createdAt ? new Date((user as any).createdAt).toLocaleDateString('en-GB') : '-'}
+                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : '-'}
                     </span>
                   </TableCell>
                   <TableCell className="px-4 py-4 whitespace-nowrap text-right">
@@ -316,7 +290,6 @@ export default function UsersPage() {
           </Table>
         </div>
 
-        {/* Pagination UI Desktop */}
         <div className="px-6 py-4 bg-zinc-50/50 border-t border-zinc-100 flex items-center justify-between">
             <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
                {t('common.total')} {total} {t('users.entry_count') || 'USERS'}
@@ -349,40 +322,17 @@ export default function UsersPage() {
         </div>
       </Card>
 
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        title={editingId ? t('users.update_title') : t('users.new_title')}
+      {/* Edit modal — only role and employee link, no password */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={t('users.update_title')}
       >
         <form onSubmit={handleSave} className="space-y-6 font-sans">
-           <div className="space-y-1.5">
-              <label className="text-[13px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('users.username')}</label>
-              <input 
-                 required
-                 className="w-full bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
-                 value={formData.username}
-                 onChange={(e) => setFormData({...formData, username: e.target.value})}
-              />
-           </div>
-           
-           <div className="space-y-1.5">
-              <label className="text-[13px] font-black text-zinc-400 uppercase tracking-widest px-1">
-                 {editingId ? t('users.password_reset') : t('users.password_default')}
-              </label>
-              <input 
-                 required={!editingId}
-                 type="password"
-                 className="w-full bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-3 text-sm font-medium outline-none focus:border-[#0F1059]/30 transition-all shadow-sm"
-                 placeholder={editingId ? t('users.password_placeholder') : "••••••••"}
-                 value={formData.password}
-                 onChange={(e) => setFormData({...formData, password: e.target.value})}
-              />
-           </div>
-
            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                  <label className="text-[13px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('users.system_authority')}</label>
-                 <select 
+                 <select
                     className="w-full bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-3 text-sm font-black text-[#0F1059] uppercase outline-none focus:border-[#0F1059]/30 shadow-sm transition-all cursor-pointer"
                     value={formData.role}
                     onChange={(e) => setFormData({...formData, role: e.target.value})}
@@ -393,7 +343,7 @@ export default function UsersPage() {
               </div>
               <div className="space-y-1.5">
                  <label className="text-[13px] font-black text-zinc-400 uppercase tracking-widest px-1">{t('users.linked_identity')}</label>
-                 <select 
+                 <select
                     className="w-full bg-zinc-50 border border-zinc-100 rounded-lg px-4 py-3 text-sm font-bold outline-none focus:border-[#0F1059]/30 shadow-sm transition-all cursor-pointer"
                     value={formData.employeeId}
                     onChange={(e) => setFormData({...formData, employeeId: e.target.value})}
@@ -408,8 +358,8 @@ export default function UsersPage() {
               <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)} className="flex-1 h-12 rounded-lg text-[13px] font-black uppercase tracking-widest">
                  {t('common.cancel')}
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isSaving}
                 className="flex-1 h-12 rounded-lg bg-[#0F1059] hover:bg-black text-white text-[13px] font-black uppercase tracking-widest transition-all shadow-xl shadow-[#0F1059]/20"
               >
