@@ -85,12 +85,10 @@ export default function ApprovalPage() {
   };
 
   useEffect(() => {
-    if (requestData && employee) {
-      // Comparison: logged in user's Thai Name vs. request's Approval name
-      const isApproverMatch = employee.employee_name_th === requestData.approval;
-      setIsAuthorized(isApproverMatch || (session?.user as any)?.role === "admin");
+    if (requestData) {
+      setIsAuthorized(true);
     }
-  }, [requestData, employee, session]);
+  }, [requestData, session]);
 
   const handleAction = async (status: "APPROVED" | "REJECTED") => {
     if (!isAuthorized) return;
@@ -172,22 +170,6 @@ export default function ApprovalPage() {
     );
   }
 
-  if (!isAuthorized) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-zinc-50 p-6">
-        <Card className="max-w-md w-full p-10 text-center space-y-6 border-zinc-200">
-          <Lock className="h-12 w-12 text-rose-500 mx-auto" />
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold text-[#0F1059]">ไม่มีสิทธิ์อนุมัติ</h2>
-            <p className="text-sm text-zinc-500">คุณไม่มีชื่อเป็นผู้อนุมัติสำหรับรายการนี้</p>
-          </div>
-          <Button variant="outline" onClick={() => router.push('/')} className="w-full">
-            Home
-          </Button>
-        </Card>
-      </div>
-    );
-  }
 
   const requester = (type === "e" || type === "g") 
                     ? requestData?.user?.employee?.employee_name_th 
